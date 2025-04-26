@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:reconhecimento/pages/PerfilPage.dart';
-import 'package:reconhecimento/pages/RelacaoPage.dart';
-import 'package:reconhecimento/pages/login_page.dart';
-import 'package:reconhecimento/pages/FaceDetectionCameraScreen.dart';
-import 'package:reconhecimento/pages/CalendarPage.dart';
+// import 'package:reconhecimento/pages/Colaborador/perfil_page.dart';
+import 'package:reconhecimento/pages/RegistroPonto/registro_ponto_page.dart';
+import 'package:reconhecimento/pages/Auth/login_page.dart';
+
+//import 'package:reconhecimento/pages/PerfilPage.dart';
 
 class MainPage extends StatefulWidget {
   final bool isAdm;
@@ -89,7 +89,7 @@ class MainPageState extends State<MainPage> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => FaceDetectionCameraScreen(),
+                              builder: (context) => RegistroPonto(),
                             ),
                           );
                         },
@@ -120,6 +120,7 @@ class MainPageState extends State<MainPage> {
                           style: GoogleFonts.roboto(color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                        //
                         //  Navigator.of(context).push(
                          //   MaterialPageRoute(
                          //     builder: (context) => const PerfilPage(),
@@ -257,7 +258,7 @@ class MainPageState extends State<MainPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        FaceDetectionCameraScreen()),
+                                        RegistroPonto()),
                               );
                             },
                             child: Text(

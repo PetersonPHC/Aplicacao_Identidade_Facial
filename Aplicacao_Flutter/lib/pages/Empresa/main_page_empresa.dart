@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import 'package:reconhecimento/pages/CadastroPage.dart';
-import 'package:reconhecimento/pages/DadosEmpresa.dart';
-import 'package:reconhecimento/pages/RelacaoPage.dart';
-import 'package:reconhecimento/pages/login_page.dart';
+import 'package:reconhecimento/pages/Colaborador/cadastro_colaborador_page.dart';
+import 'package:reconhecimento/pages/Empresa/Dados_Empresa_Page.dart';
+import 'package:reconhecimento/pages/Auth/login_page.dart';
+import 'package:reconhecimento/pages/Colaborador/relacao_page.dart';
+import 'package:reconhecimento/pages/RegistroPonto/registro_ponto_page.dart';
 
 class MainPageEmpresa extends StatefulWidget {
   final bool isAdm;
- final String cnpj; 
+  final String cnpj;
   const MainPageEmpresa({super.key, required this.isAdm, required this.cnpj});
 
   @override
@@ -74,8 +74,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  MainPageEmpresa(isAdm: widget.isAdm, cnpj: widget.cnpj),
+                              builder: (context) => MainPageEmpresa(
+                                  isAdm: widget.isAdm, cnpj: widget.cnpj),
                             ),
                           );
                         },
@@ -113,7 +113,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>  Cadastropage(cnpj: widget.cnpj),
+                                builder: (context) =>
+                                    CadastroColaboradorPage(cnpj: widget.cnpj),
                               ),
                             );
                           },
@@ -131,12 +132,35 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>  RelacaoPage(cnpj: widget.cnpj),
+                                builder: (context) =>
+                                    RelacaoPage(cnpj: widget.cnpj),
+                              ),
+                            );
+                          },
+                        ),
+                   
+
+                      if (widget.isAdm) SizedBox(height: 15),
+                      if (widget.isAdm)
+                        ListTile(
+                          leading: const Icon(Icons.access_time_filled_sharp,
+                              color: Color.fromARGB(255, 0, 0, 0)),
+                          title: Text(
+                            "Registro de ponto",
+                            style: GoogleFonts.roboto(
+                                color: const Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RegistroPonto(),
                               ),
                             );
                           },
                         ),
                       SizedBox(height: 15),
+                      
                       ListTile(
                         leading: const Icon(Icons.exit_to_app_sharp,
                             color: Color.fromARGB(255, 0, 0, 0)),
@@ -244,13 +268,15 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                             ),
                           ),
                           onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => Cadastropage(cnpj: widget.cnpj), // Use o nome do parâmetro
-    ),
-  );
-},
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CadastroColaboradorPage(
+                                    cnpj:
+                                        widget.cnpj), // Use o nome do parâmetro
+                              ),
+                            );
+                          },
                           child: Text(
                             "Cadastro",
                             style: GoogleFonts.roboto(
@@ -333,7 +359,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RelacaoPage(cnpj: widget.cnpj)),
+                                  builder: (context) =>
+                                      RelacaoPage(cnpj: widget.cnpj)),
                             );
                           },
                           child: Text(
@@ -418,8 +445,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>   DadosEmpresaPage(cnpj: widget.cnpj)
-                              ),
+                                  builder: (context) =>
+                                      DadosEmpresaPage(cnpj: widget.cnpj)),
                             );
                           },
                           child: Text(

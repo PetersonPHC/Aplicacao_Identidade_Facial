@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:reconhecimento/pages/MainPage.dart';
-import 'package:reconhecimento/pages/MainPageEmpresa.dart';
-
-import 'package:reconhecimento/pages/CadastroEmpresaPage.dart';
-import 'package:reconhecimento/pages/resetPage.dart';
+import 'package:reconhecimento/pages/Colaborador/Main_Page_Colaborador_Page.dart';
+import 'package:reconhecimento/pages/Empresa/main_page_empresa.dart';
+import 'package:reconhecimento/pages/Empresa/cadastro_empresa_page.dart';
+import 'package:reconhecimento/pages/Colaborador/reset_senha_colaborador_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,34 +17,15 @@ class _LoginPageState extends State<LoginPage> {
   bool IsAdm = false;
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController matriculaController = TextEditingController();
-  final FocusNode emailFocusNode = FocusNode();
-  final FocusNode senhaFocusNode = FocusNode();
   bool isObscureText = true;
 
-  @override
-  void initState() {
-    super.initState();
-    // Adiciona listeners para os FocusNode
-    emailFocusNode.addListener(() {
-      if (emailFocusNode.hasFocus) {
-        print("Campo de matrícula em foco");
-      }
-    });
-    senhaFocusNode.addListener(() {
-      if (senhaFocusNode.hasFocus) {
-        print("Campo de senha em foco");
-      }
-    });
-  }
+  // Removemos os FocusNodes e usaremos o gerenciamento automático de foco
 
   @override
   void dispose() {
-    emailFocusNode.dispose();
-    senhaFocusNode.dispose();
     matriculaController.dispose();
     senhaController.dispose();
     super.dispose();
-
   }
 
 Future<void> loginColaborador(String login, String senha, BuildContext context) async {
@@ -92,13 +72,10 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
   }
 }
  Future<void> loginEmpresa(String cnpj, String senha, BuildContext context) async {
-  print("Função loginEmpresa chamada com CNPJ: $cnpj e Senha: $senha"); // Log de chamada da função
-
-  // Substitua pelo IP correto da sua máquina
-  final url = Uri.parse("http://localhost:3000/empresa/login");
+  final url = Uri.parse("http://localhost:3000/loginEmpresa");
   final body = {'cnpj': cnpj, 'senha': senha};
 
-  print("Corpo da requisição de login (empresa): ${jsonEncode(body)}"); // Log do corpo da requisição
+  print("Corpo da requisição de login (empresa): ${jsonEncode(body)}");
 
   try {
     final response = await http.post(
@@ -107,39 +84,62 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
       body: jsonEncode(body),
     );
 
-    print("Resposta do servidor (empresa): ${response.statusCode}, ${response.body}"); // Log da resposta
+    print("Resposta do servidor (empresa): ${response.statusCode}, ${response.body}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data['success']) {
+      
+      // Verificação mais robusta dos dados recebidos
+      if (data['CNPJ_EMPRESA'] != null && data['ADMIN'] != null && data['empresa'] != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login efetuado com sucesso")),
         );
+        
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => MainPageEmpresa(
-              isAdm: data['isAdm'],
-              cnpj: cnpj, // Passa o CNPJ para a MainPageEmpresa
+              isAdm: data['ADMIN'] ?? false, // Fornece um valor padrão caso seja null
+              cnpj: data['CNPJ_EMPRESA'].toString(), // Garante que é uma String
             ),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'])),
+          const SnackBar(content: Text("Dados de login inválidos ou incompletos")),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Erro no servidor")),
+        SnackBar(content: Text("Erro no servidor: ${response.statusCode}")),
       );
     }
   } catch (e) {
-    print("Erro durante a requisição (empresa): $e"); // Log de erro
+    print("Erro durante a requisição (empresa): $e");
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Erro durante a requisição")),
     );
   }
 }
+ 
+
+  void _performLogin(BuildContext context) {
+    final matricula = matriculaController.text.trim();
+    final senha = senhaController.text.trim();
+
+    if (matricula.isEmpty || senha.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Matrícula e senha são obrigatórios!")),
+      );
+      return;
+    }
+
+    if (matricula.length == 14) {
+      loginEmpresa(matricula, senha, context);
+    } else {
+      loginColaborador(matricula, senha, context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -175,7 +175,7 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                   ],
                 ),
                 const Text(
-                  "PONTO-VIEW",
+                  "IDENTIDADE-FACIAL",
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
@@ -184,7 +184,10 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                 const SizedBox(height: 50),
                 const Text(
                   "LOGIN",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 0, 0, 0)),
                 ),
                 const SizedBox(height: 10),
                 Container(
@@ -193,7 +196,6 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                   alignment: Alignment.center,
                   child: TextField(
                     controller: matriculaController,
-                    focusNode: emailFocusNode,
                     keyboardType: TextInputType.emailAddress,
                     style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                     decoration: const InputDecoration(
@@ -215,6 +217,7 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                         color: Color.fromARGB(255, 3, 33, 255),
                       ),
                     ),
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -224,7 +227,6 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                   alignment: Alignment.center,
                   child: TextField(
                     controller: senhaController,
-                    focusNode: senhaFocusNode,
                     obscureText: isObscureText,
                     style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                     decoration: InputDecoration(
@@ -259,6 +261,10 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                         ),
                       ),
                     ),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) {
+                      _performLogin(context);
+                    },
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -268,23 +274,7 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                   alignment: Alignment.center,
                   child: TextButton(
                     onPressed: () {
-                      final matricula = matriculaController.text.trim();
-                      final senha = senhaController.text.trim();
-
-                      if (matricula.isEmpty || senha.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Matrícula e senha são obrigatórios!")),
-                        );
-                        return;
-                      }
-
-                      if (matricula.length == 14) {
-                        // Login de empresa
-                        loginEmpresa(matricula, senha, context);
-                      } else {
-                        // Login de colaborador
-                        loginColaborador(matricula, senha, context);
-                      }
+                      _performLogin(context);
                     },
                     style: ButtonStyle(
                       shape: WidgetStateProperty.all(
@@ -339,7 +329,7 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
                     alignment: Alignment.center,
-                    child: Text(
+                    child: const Text(
                       "Contrate nosso serviços",
                       style: TextStyle(
                         color: Color.fromARGB(223, 0, 0, 0),

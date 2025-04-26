@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
-
+import 'package:reconhecimento/widgets/modals.dart';
 class CalendarPage extends StatefulWidget {
     final String matricula;
   
@@ -9,10 +9,10 @@ class CalendarPage extends StatefulWidget {
   
   @override
 
-  _CalendarPageState createState() => _CalendarPageState();
+  relacaoPontoColaborador createState() => relacaoPontoColaborador();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
+class relacaoPontoColaborador extends State<CalendarPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -131,7 +131,7 @@ class _CalendarPageState extends State<CalendarPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  _showAddPointModal(context);
+                  justificativaModal(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 3, 33, 255), // Fundo preto
@@ -154,64 +154,4 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  void _showAddPointModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white, // Modal branco
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                style: TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  labelText: 'Horário',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                style: TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  labelText: 'Motivo',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 3, 33, 255), // Fundo preto
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text(
-                  'Enviar',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }

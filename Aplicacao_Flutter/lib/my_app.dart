@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:reconhecimento/pages/login_page.dart' ;
+import 'package:reconhecimento/pages/Auth/login_page.dart' ;
 
 
 

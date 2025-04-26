@@ -4,13 +4,13 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-class FaceDetectionCameraScreen extends StatefulWidget {
+class RegistroPonto extends StatefulWidget {
   @override
-  _FaceDetectionCameraScreenState createState() =>
-      _FaceDetectionCameraScreenState();
+  _RegistroPontoState createState() =>
+      _RegistroPontoState();
 }
 
-class _FaceDetectionCameraScreenState extends State<FaceDetectionCameraScreen> {
+class _RegistroPontoState extends State<RegistroPonto> {
   late CameraController _cameraController;
   List<CameraDescription> _cameras = [];
   Uint8List? _webImageBytes;
