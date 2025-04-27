@@ -32,33 +32,34 @@ class ColaboradorRepository {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
-  async findByMatriculaAndCNPJ(matricula, cnpj) {
+  /*async findByMatriculaAndCNPJ(matricula, cnpj) {
     return await this.prisma.colaborador.findFirst({
       where: {
         MATRICULA: matricula,
         CNPJ_EMPRESA: cnpj
       }
     });
-  }
+  }*/
 
-  async findByMatricula(matricula, cnpjEmpresa) {
+  async findByMatricula(matricula) {
     return await this.prisma.colaborador.findUnique({
       where: {
-        MATRICULA_CNPJ_EMPRESA: {
+        //MATRICULA_CNPJ_EMPRESA: {
           MATRICULA: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
+          //CNPJ_EMPRESA: cnpjEmpresa
+        //}
       }
     });
   }
 
-  async update(matricula, cnpjEmpresa, colaboradorData) {
+  //Alteração -> CNPJ Removido
+  async update(matricula, colaboradorData) {
     return await this.prisma.colaborador.update({
       where: {
-        MATRICULA_CNPJ_EMPRESA: {
+        //MATRICULA_CNPJ_EMPRESA: {
           MATRICULA: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
+          //CNPJ_EMPRESA: cnpjEmpresa
+        //}
       },
       data: colaboradorData,
       include: {
@@ -68,13 +69,14 @@ class ColaboradorRepository {
     });
   }
 
-  async delete(matricula, cnpjEmpresa) {
+  //Alteração -> CNPJ Removido
+  async delete(matricula) {
     const colaborador = await this.prisma.colaborador.delete({
       where: {
-        MATRICULA_CNPJ_EMPRESA: {
+        //MATRICULA_CNPJ_EMPRESA: {
           MATRICULA: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
+          //CNPJ_EMPRESA: cnpjEmpresa
+        //}
       }
     });
     console.log(colaborador);

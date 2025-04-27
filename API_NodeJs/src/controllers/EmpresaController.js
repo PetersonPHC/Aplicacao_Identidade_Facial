@@ -70,6 +70,7 @@ class EmpresaController {
     }
   }
 
+  //Alteração -> Pegar o objeto empresa do banco e retornar ao Front, junto com o código da empresa
   async criar(req, res) {
     try {
       // Validação e formatação da data

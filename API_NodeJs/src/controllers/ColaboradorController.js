@@ -70,7 +70,7 @@ class ColaboradorController {
       }
   
       const colaboradorData = {
-        MATRICULA: String(req.body.MATRICULA).trim(),
+        MATRICULA: this.concatMatricula(req),
         CNPJ: String(req.body.CNPJ).trim(),
         NOME: String(req.body.NOME || '').trim(),
         CPF: String(req.body.CPF || '').replace(/\D/g, ''),
@@ -103,8 +103,9 @@ class ColaboradorController {
 
   buscar = async (req, res) => {
     try {
-      const { matricula, cnpjEmpresa } = req.params;
-      const colaborador = await ColaboradorService.buscarColaborador(matricula, cnpjEmpresa);
+      //Alteração: Removido CNPJ
+      //const { matricula, codigo_empresa } = req.params;
+      const colaborador = await ColaboradorService.buscarColaborador(this.concatMatricula(req));
       
       res.json({
         status: 'success',
@@ -118,6 +119,7 @@ class ColaboradorController {
     }
   };
 
+  //Alteração -> Remoção do CNPJ como parâmetro
   atualizar = [
     (req, res, next) => {
       this.uploadMiddleware(req, res, (err) => {
@@ -129,15 +131,14 @@ class ColaboradorController {
     },
     async (req, res) => {
       try {
-        const { matricula, cnpjEmpresa } = req.params;
+        //const { matricula, codigo_empresa } = req.params;
         const dadosAtualizacao = {
           ...req.body,
           IMAGEM: req.file?.buffer
         };
 
         const colaborador = await ColaboradorService.atualizarColaborador(
-          matricula, 
-          cnpjEmpresa, 
+          this.concatMatricula(req), 
           dadosAtualizacao
         );
 
@@ -151,10 +152,11 @@ class ColaboradorController {
     }
   ];
 
+  //Alteração -> CNPJ Removido
   deletar = async (req, res) => {
     try {
-      const { matricula, cnpjEmpresa } = req.params;
-      await ColaboradorService.deletarColaborador(matricula, cnpjEmpresa);
+      //const { matricula, codigo_empresa } = req.params;
+      await ColaboradorService.deletarColaborador(this.concatMatricula(req));
       res.status(204).end();
     } catch (error) {
       this.handleError(error, res);
@@ -177,6 +179,12 @@ class ColaboradorController {
       this.handleError(error, res);
     }
   };
+
+concatMatricula(req){
+  //return MATRICULA = String(req.body.CODIGO_EMPRESA).trim() + String(req.body.MATRICULA).trim();
+  return MATRICULA = String(req.body.CODIGO_EMPRESA).trim().concat(String(req.body.MATRICULA).trim());
+}
+
 }
 
 module.exports = new ColaboradorController();

@@ -14,12 +14,14 @@ class RegistroPontoRepository {
     });
   }
 
-  async findByColaboradorAndDate(matricula, cnpjEmpresa, data) {
+  //Alteração -> CNPJ Removido
+  async findByColaboradorAndDate(matricula, data) {
     return await this.prisma.rEGISTRO_PONTO.findUnique({
       where: {
-        MATRICULA_COLABORADOR_CNPJ_EMPRESA_DATA: {
+        //MATRICULA_COLABORADOR_CNPJ_EMPRESA_DATA: {
+          MATRICULA_COLABORADOR_DATA: {
           MATRICULA_COLABORADOR: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa,
+          //CNPJ_EMPRESA: cnpjEmpresa,
           DATA: data
         }
       },
@@ -29,23 +31,25 @@ class RegistroPontoRepository {
     });
   }
 
-  async delete(matricula, cnpjEmpresa, data) {
+
+  async delete(matricula, data) {
     return await this.prisma.rEGISTRO_PONTO.delete({
       where: {
-        MATRICULA_COLABORADOR_CNPJ_EMPRESA_DATA: {
+        //MATRICULA_COLABORADOR_CNPJ_EMPRESA_DATA: {
+          MATRICULA_COLABORADOR_DATA: {
           MATRICULA_COLABORADOR: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa,
+          //CNPJ_EMPRESA: cnpjEmpresa,
           DATA: data
         }
       }
     });
   }
 
-  async findAllByColaborador(matricula, cnpjEmpresa) {
+  async findAllByColaborador(matricula) {
     return await this.prisma.rEGISTRO_PONTO.findMany({
       where: {
         MATRICULA_COLABORADOR: matricula,
-        CNPJ_EMPRESA: cnpjEmpresa
+        //CNPJ_EMPRESA: cnpjEmpresa
       },
       include: {
         colaborador: true

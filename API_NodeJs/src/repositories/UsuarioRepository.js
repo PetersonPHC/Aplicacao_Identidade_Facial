@@ -9,7 +9,7 @@ class UsuarioRepository {
     return await this.prisma.usuario.create({
       data: {
         MATRICULA_COLABORADOR: usuarioData.MATRICULA_COLABORADOR,
-        CNPJ_EMPRESA: usuarioData.CNPJ_EMPRESA,
+        //CNPJ_EMPRESA: usuarioData.CNPJ_EMPRESA,
         SENHA: usuarioData.SENHA,
         ADMIN: usuarioData.ADMIN
       },
@@ -54,13 +54,15 @@ class UsuarioRepository {
       }
     });
   }
-  async update(matricula, cnpjEmpresa, usuarioData) {
+
+  //Alteração -> CNPJ Removido
+  async update(matricula, usuarioData) {
     return await this.prisma.usuario.update({
       where: {
-        MATRICULA_COLABORADOR_CNPJ_EMPRESA: {
-          MATRICULA_COLABORADOR: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
+        //MATRICULA_COLABORADOR_CNPJ_EMPRESA: {
+          MATRICULA_COLABORADOR: matricula
+          //CNPJ_EMPRESA: cnpjEmpresa
+        //}
       },
       data: usuarioData,
       include: {
@@ -70,13 +72,14 @@ class UsuarioRepository {
     });
   }
 
-  async delete(matricula, cnpjEmpresa) {
+  //Alteração -> CNPJ Removido
+  async delete(matricula) {
     return await this.prisma.usuario.delete({
       where: {
-        MATRICULA_COLABORADOR_CNPJ_EMPRESA: {
+        //MATRICULA_COLABORADOR_CNPJ_EMPRESA: {
           MATRICULA_COLABORADOR: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
+          //CNPJ_EMPRESA: cnpjEmpresa
+        //}
       }
     });
   }

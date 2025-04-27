@@ -32,13 +32,14 @@ class ColaboradorService {
     });
   }
 
-  async buscarColaborador(matricula, cnpjEmpresa) {
+  //Alteração -> Remoção do CNPJ como chave
+  async buscarColaborador(matricula) {
     // Logs mantidos exatamente iguais
     console.log('[ColaboradorService] Buscando colaborador com:');
     console.log('→ MATRICULA:', matricula);
-    console.log('→ CNPJ_EMPRESA:', cnpjEmpresa);
+    //console.log('→ CNPJ_EMPRESA:', cnpjEmpresa);
     
-    const colaborador = await ColaboradorRepository.findByMatricula(matricula, cnpjEmpresa);
+    const colaborador = await ColaboradorRepository.findByMatricula(matricula);
     if (!colaborador) throw new Error('Colaborador não encontrado');
     
     // Conversão de campos mantida idêntica
@@ -48,9 +49,11 @@ class ColaboradorService {
       BANCO_DE_HORAS: colaborador.BANCO_DE_HORAS.toTimeString().substring(0, 8)
     };
   }
-  async atualizarColaborador(matricula, cnpjEmpresa, colaboradorData) {
+
+  //Alteração -> CNPJ removido
+  async atualizarColaborador(matricula, colaboradorData) {
     // Verifica se existe
-    await this.buscarColaborador(matricula, cnpjEmpresa);
+    await this.buscarColaborador(matricula);
     
     // Formatação dos campos de tempo
     if (colaboradorData.CARGA_HORARIA) {
@@ -74,12 +77,14 @@ class ColaboradorService {
       }
     }
     
-    return await ColaboradorRepository.update(matricula, cnpjEmpresa, dadosParaAtualizar);
+    return await ColaboradorRepository.update(matricula, dadosParaAtualizar);
   }
-  async deletarColaborador(matricula, cnpjEmpresa) {
+
+  //Alteração -> CNPJ Removido
+  async deletarColaborador(matricula) {
     try {
-      await this.buscarColaborador(matricula, cnpjEmpresa);
-      return await ColaboradorRepository.delete(matricula, cnpjEmpresa);
+      await this.buscarColaborador(matricula);
+      return await ColaboradorRepository.delete(matricula);
     } catch (error) {
       console.error('[ColaboradorService] Erro ao deletar:', {
         message: error.message,

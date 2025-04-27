@@ -21,15 +21,17 @@ class RegistroPontoController {
     }
   }
 
+  //Alteração -> CNPJ Removido
   async buscar(req, res) {
     try {
-      const { matricula, cnpjEmpresa, data } = req.params;
-      
-      if (!matricula || !cnpjEmpresa || !data) {
+      //const { matricula, codigo_empresa, data } = req.params;
+      const matricula = this.concatMatricula(req);
+      const data = req.body.DATA;
+      if (!matricula || !data) {
         throw new Error('Parâmetros obrigatórios não fornecidos');
       }
 
-      const registro = await this.registroPontoService.buscarRegistro(matricula, cnpjEmpresa, data);
+      const registro = await this.registroPontoService.buscarRegistro(matricula, data);
       res.json(registro);
     } catch (error) {
       console.error('Erro ao buscar registro:', error);
@@ -41,15 +43,17 @@ class RegistroPontoController {
     }
   }
 
+  //Alteração -> CNPJ Removido
   async deletar(req, res) {
     try {
-      const { matricula, cnpjEmpresa, data } = req.query;
-      
-      if (!matricula || !cnpjEmpresa || !data) {
+      //const { matricula, cnpjEmpresa, data } = req.query;
+      const matricula = this.concatMatricula(req);
+      const data = req.body.DATA;
+      if (!matricula || !data) {
         throw new Error('Parâmetros obrigatórios não fornecidos');
       }
 
-      await this.registroPontoService.deletarRegistro(matricula, cnpjEmpresa, data);
+      await this.registroPontoService.deletarRegistro(matricula, data);
       res.json({ message: 'Registro deletado com sucesso' });
     } catch (error) {
       console.error('Erro ao deletar registro:', error);
@@ -61,15 +65,18 @@ class RegistroPontoController {
     }
   }
 
+  //Alteração -> CNPJ Removido
   async listarPorColaborador(req, res) {
     try {
-      const { matricula, cnpjEmpresa } = req.params;
+      //const { matricula, cnpjEmpresa } = req.params;
       
-      if (!matricula || !cnpjEmpresa) {
+      const matricula = this.concatMatricula(req);
+
+      if (!matricula) {
         throw new Error('Parâmetros obrigatórios não fornecidos');
       }
 
-      const registros = await this.registroPontoService.listarRegistrosPorColaborador(matricula, cnpjEmpresa);
+      const registros = await this.registroPontoService.listarRegistrosPorColaborador(matricula);
       res.json(registros);
     } catch (error) {
       console.error('Erro ao listar registros por colaborador:', error);
@@ -79,6 +86,12 @@ class RegistroPontoController {
       });
     }
   }
+
+  concatMatricula(req){
+    //return MATRICULA = String(req.body.CODIGO_EMPRESA).trim() + String(req.body.MATRICULA).trim();
+    return MATRICULA = String(req.body.CODIGO_EMPRESA).trim().concat(String(req.body.MATRICULA).trim());
+  }
+
 }
 
 module.exports = new RegistroPontoController();

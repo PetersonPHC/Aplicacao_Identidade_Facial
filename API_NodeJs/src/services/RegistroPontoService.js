@@ -2,20 +2,22 @@ const RegistroPontoRepository = require('../repositories/RegistroPontoRepository
 const ColaboradorService = require('./ColaboradorService');
 
 class RegistroPontoService {
+
+  //Alteração -> CNPJ Removido
   async criarRegistro(registroData) {
     // Verifica se o colaborador existe
     await ColaboradorService.buscarColaborador(
       registroData.MATRICULA_COLABORADOR, 
-      registroData.CNPJ_EMPRESA
+      //registroData.CNPJ_EMPRESA
     );
     
     return await RegistroPontoRepository.create(registroData);
   }
 
-  async buscarRegistro(matricula, cnpjEmpresa, data) {
+  //Alteração -> CNPJ Removido
+  async buscarRegistro(matricula, data) {
     const registro = await RegistroPontoRepository.findByColaboradorAndDate(
       matricula, 
-      cnpjEmpresa, 
       new Date(data)
     );
     
@@ -23,18 +25,19 @@ class RegistroPontoService {
     return registro;
   }
 
-  async deletarRegistro(matricula, cnpjEmpresa, data) {
-    await this.buscarRegistro(matricula, cnpjEmpresa, data); // Verifica se existe
+  //Alteração -> CNPJ Removido
+  async deletarRegistro(matricula, data) {
+    await this.buscarRegistro(matricula, data); // Verifica se existe
     return await RegistroPontoRepository.delete(
       matricula, 
-      cnpjEmpresa, 
       new Date(data)
     );
   }
 
-  async listarRegistrosPorColaborador(matricula, cnpjEmpresa) {
-    await ColaboradorService.buscarColaborador(matricula, cnpjEmpresa);
-    return await RegistroPontoRepository.findAllByColaborador(matricula, cnpjEmpresa);
+  //Alteração -> CNPJ Removido
+  async listarRegistrosPorColaborador(matricula) {
+    await ColaboradorService.buscarColaborador(matricula);
+    return await RegistroPontoRepository.findAllByColaborador(matricula);
   }
 }
 

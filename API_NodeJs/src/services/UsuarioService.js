@@ -4,16 +4,17 @@ const ColaboradorService = require('./ColaboradorService');
 class UsuarioService {
  
 
+  //Alteração -> CNPJ Removido
   async criarUsuario(usuarioData) {
     try {
       await ColaboradorService.buscarColaborador(
         usuarioData.MATRICULA_COLABORADOR, 
-        usuarioData.CNPJ_EMPRESA
+        //usuarioData.CNPJ_EMPRESA
       );
       
       const usuarioExistente = await UsuarioRepository.findByMatriculaAndCnpj(
         usuarioData.MATRICULA_COLABORADOR,
-        usuarioData.CNPJ_EMPRESA
+        //usuarioData.CNPJ_EMPRESA
       );
       
       if (usuarioExistente) {
@@ -27,24 +28,23 @@ class UsuarioService {
     }
   }
 
- async buscarUsuario(matricula, cnpj) {
-    const usuario = await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpj);
+  //Alteração -> CNPJ Removido
+  async buscarUsuario(matricula) {
+    const usuario = await UsuarioRepository.findByMatricula(matricula);
     if (!usuario) throw new Error(' usuario não encontrado');
     return usuario;
   }
 
-
-
-
-
-  async atualizarUsuario(matricula, cnpjEmpresa, usuarioData) {
-    await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpjEmpresa);
-    return await UsuarioRepository.update(matricula, cnpjEmpresa, usuarioData);
+  //Alteração -> CNPJ Removido
+  async atualizarUsuario(matricula, usuarioData) {
+    await UsuarioRepository.findByMatricula(matricula);
+    return await UsuarioRepository.update(matricula, usuarioData);
   }
 
-  async deletarUsuario(matricula, cnpjEmpresa) {
-    await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpjEmpresa);
-    return await UsuarioRepository.delete(matricula, cnpjEmpresa);
+  //Alteração -> CNPJ Removido
+  async deletarUsuario(matricula) {
+    await UsuarioRepository.findByMatricula(matricula);
+    return await UsuarioRepository.delete(matricula);
   }
 
   async listarUsuariosPorEmpresa(cnpjEmpresa) {

@@ -6,8 +6,8 @@ module.exports = {
       console.log(req.body);
   
       const usuarioData = {
-        MATRICULA_COLABORADOR: req.body.MATRICULA,
-        CNPJ_EMPRESA: req.body.CNPJ_EMPRESA,
+        MATRICULA_COLABORADOR: this.concatMatricula(req),
+        //CNPJ_EMPRESA: req.body.CNPJ_EMPRESA,
         SENHA: req.body.SENHA,
         ADMIN: req.body.ADMIN || false
       };
@@ -27,11 +27,13 @@ module.exports = {
       });
     }
   },
+
+  //Alteração -> CNPJ Removido
   buscar: async (req, res) => {
     try {
       const usuario = await UsuarioService.buscarUsuario(
-        req.params.matricula, 
-        req.params.cnpjEmpresa
+        this.concatMatricula(req.params.matricula), 
+        //req.params.cnpjEmpresa
       );
       res.json(usuario);
     } catch (error) {
@@ -40,11 +42,12 @@ module.exports = {
     }
   },
 
+  //Alteração -> CNPJ Removido
   atualizar: async (req, res) => {
     try {
       const usuario = await UsuarioService.atualizarUsuario(
-        req.params.matricula, 
-        req.params.cnpjEmpresa, 
+        this.concatMatricula(req.params.matricula), 
+        //req.params.cnpjEmpresa, 
         req.body
       );
       res.json(usuario);
@@ -54,12 +57,13 @@ module.exports = {
     }
   },
 
+  //Alteração -> CNPJ Removido
   deletar: async (req, res) => {
     
     try {
       await UsuarioService.deletarUsuario(
-        req.params.matricula, 
-        req.params.cnpjEmpresa
+        this.concatMatricula(req.params.matricula)
+        //req.params.cnpjEmpresa
       );
       res.json({ message: 'Usuário deletado com sucesso' });
     } catch (error) {
@@ -91,13 +95,22 @@ module.exports = {
     }
   },
 
+  //Alteração -> Adição do Prefixo como um CONCAT
   loginColaborador: async (req, res) => {
     try {
-      const { matricula, senha } = req.body;
+      //const { matricula, senha } = req.body;
+      const matricula = this.concatMatricula(req);
+      const senha = req.body.SENHA;
       const colaborador = await UsuarioService.autenticarColaborador(matricula, senha);
       res.json(colaborador);
     } catch (error) {
       res.status(401).json({ error: error.message });
     }
+  },
+
+  concatMatricula(req){
+    //return MATRICULA = String(req.body.CODIGO_EMPRESA).trim() + String(req.body.MATRICULA).trim();
+    return MATRICULA = String(req.body.CODIGO_EMPRESA).trim().concat(String(req.body.MATRICULA).trim());
   }
+
 };
