@@ -22,9 +22,9 @@ class EmpresaRepository {
       throw new Error('CNPJ não fornecido');
     }
 
-    return await prisma.empresa.findUnique({
+    return await prisma.EMPRESA.findUnique({
       where: {
-        CNPJ: String(cnpj) // Garante que o CNPJ seja string
+        CNPJ: cnpj 
       }
     });
   }

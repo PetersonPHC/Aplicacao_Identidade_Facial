@@ -42,7 +42,7 @@ class ColaboradorService {
       // Adiciona todos os campos (em MAIÚSCULAS conforme o backend espera)
       requestColab.fields.addAll({
         'MATRICULA': matricula.trim(),
-        'CNPJ': cnpj.trim(),
+        'CNPJ_EMPRESA': cnpj.trim(),
         'NOME': nome.trim(),
         'CPF': cpf.replaceAll(RegExp(r'[^0-9]'), ''),
         'RG': rg.replaceAll(RegExp(r'[^0-9]'), ''),
@@ -50,7 +50,7 @@ class ColaboradorService {
         'DATA_ADMISSAO': dataAdmissao,
         'CTPS': ctps.trim(),
         'NIS': nis.trim(),
-        'CARGAHORARIA': cargaHoraria.toString(),
+        'CARGA_HORARIA': cargaHoraria.toString(),
         'CARGO': cargo.trim(),
       });
 
@@ -107,10 +107,9 @@ class ColaboradorService {
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          'MATRICULA_COLABORADOR': matricula.trim(),
-          'CNPJ_EMPRESA': cnpj.trim(),
+          'USUARIO_ID': matricula.trim(),
           'SENHA': senha,
-          'ADMIN': isAdm
+          'ADM': isAdm
         }),
       );
 

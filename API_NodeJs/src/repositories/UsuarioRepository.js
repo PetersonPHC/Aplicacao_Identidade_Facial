@@ -1,17 +1,19 @@
-const prisma = require('../config/prisma');
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
 class UsuarioRepository {
   constructor() {
-    this.prisma = prisma;
+    this.prisma = require('../config/prisma'); // ou sua inicialização do Prisma
   }
 
+
   async create(usuarioData) {
-    return await this.prisma.usuario.create({
+    return await prisma.uSUARIO_COLABORADOR.create({
       data: {
-        MATRICULA_COLABORADOR: usuarioData.MATRICULA_COLABORADOR,
-        //CNPJ_EMPRESA: usuarioData.CNPJ_EMPRESA,
+        USUARIO_ID: usuarioData.USUARIO_ID,
+        
         SENHA: usuarioData.SENHA,
-        ADMIN: usuarioData.ADMIN
+        ADM : usuarioData.ADM
       },
       include: {
         colaborador: true
@@ -20,22 +22,18 @@ class UsuarioRepository {
   }
 
   async findByMatricula(matricula) {
-    return await this.prisma.usuario.findFirst({
-      where: {
-        MATRICULA_COLABORADOR: matricula
-      },
-      include: {
-        empresa: true,
-        colaborador: true
-      }
+    return await this.prisma.uSUARIO_COLABORADOR.findFirst({
+      where: { USUARIO_ID : matricula }
+     
     });
   }
+  
 
   // Busca empresa APENAS por CNPJ (para login de empresa)
-  async findByCnpj(cnpj) {
-    return await this.prisma.usuario.findFirst({
+  async findByCnpj(id) {
+    return await this.prisma.USUARIO_EMPRESA.findFirst({
       where: {
-        CNPJ_EMPRESA: cnpj,
+        USUARIO_ID: id,
       },
       include: {
         empresa: true // Inclui dados relacionados da empresa se necessário

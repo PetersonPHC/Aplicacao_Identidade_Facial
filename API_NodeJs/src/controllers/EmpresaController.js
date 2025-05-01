@@ -100,7 +100,7 @@ class EmpresaController {
     }
   }
 
-  async buscarPorCNPJ(req, res) {
+   buscarPorCNPJ = async (req, res) => {
     try {
       if (!req.params.cnpj) {
         throw new EmpresaError('CNPJ é obrigatório', 400);

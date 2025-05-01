@@ -1,69 +1,74 @@
+
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
-  url      =  env("mysql://root:Gveloso15@localhost:3306/Registro_Database")
+  url      = env("DATABASE_URL")
 }
 
-model empresa {
-  CNPJ         String        @id @db.Char(14)
-  NOMEFANTASIA String        @db.VarChar(35)
-  CEP          Int
-  UF           String        @db.Char(2)
-  CIDADE       String        @db.VarChar(35)
-  BAIRRO       String        @db.VarChar(35)
-  LOGRADOURO   String        @db.VarChar(100)
-  NUMERO       Int
-  COMPLEMENTO  String?       @db.VarChar(50)
-  DATACRIACAO  DateTime      @db.Date
-  colaborador  colaborador[]
-  usuario      usuario[]
-  registro_ponto registro_ponto[]
+model EMPRESA {
+  CNPJ            String               @id @db.VarChar(14)
+  CODIGO_EMPRESA  Int                  @unique @default(autoincrement())
+  NOMEFANTASIA    String               @db.VarChar(35)
+  CEP             Int
+  UF              String               @db.VarChar(2)
+  CIDADE          String               @db.VarChar(35)
+  BAIRRO          String               @db.VarChar(35)
+  LOGRADOURO      String               @db.VarChar(100)
+  NUMERO          Int
+  COMPLEMENTO     String?              @db.VarChar(50)
+  DATACRIACAO     DateTime             @db.Date
+  COLABORADOR     Colaborador[]
+  USUARIO_EMPRESA USUARIO_EMPRESA?
+  REGISTRO_PONTO  REGISTRO_PONTO[]
 }
 
-model registro_ponto {
-  MATRICULA_COLABORADOR String      @db.VarChar(36)
-  CNPJ_EMPRESA          String      @db.Char(14)
-  DATA                  DateTime    @db.DateTime(0)
-  colaborador           colaborador @relation(fields: [MATRICULA_COLABORADOR, CNPJ_EMPRESA], references: [MATRICULA, CNPJ_EMPRESA])
-  empresa               empresa     @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
-
-  @@id([MATRICULA_COLABORADOR, CNPJ_EMPRESA, DATA])
-  @@index([CNPJ_EMPRESA], map: "FK_REGISTRO_PONTO_EMPRESA")
-}
-
-model colaborador {
-  MATRICULA       String          @db.VarChar(36)
-  CNPJ_EMPRESA    String          @db.Char(14)
-  NOME            String          @db.VarChar(100)
-  CPF             String          @db.Char(11)
-  RG              String          @db.Char(9)
-  DATA_NASCIMENTO DateTime        @db.Date
-  DATA_ADMISSAO   DateTime        @db.Date
-  NIS             String          @db.Char(11)
-  CTPS            String          @db.Char(11)
-  CARGA_HORARIA   DateTime        @db.Time(0)
-  CARGO           String          @db.VarChar(40)
-  IMAGEM          Bytes?          @db.Blob
-  BANCO_DE_HORAS  DateTime        @db.Time(0)
-  empresa         empresa         @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
-  usuario         usuario?
-  registro_ponto  registro_ponto[]
+model Colaborador {
+  MATRICULA        String              @db.VarChar(14)
+  CNPJ_EMPRESA     String              @db.VarChar(14)  @map("CNPJ_EMPRESA")
+  NOME             String              @db.VarChar(100)
+  CPF              String              @db.VarChar(11)
+  RG               String              @db.VarChar(9)
+  DATA_NASCIMENTO  DateTime            @db.Date
+  DATA_ADMISSAO    DateTime            @db.Date
+  NIS              String              @db.VarChar(11)
+  CTPS             String              @db.VarChar(11)
+  CARGA_HORARIA    DateTime            @db.Time 
+  CARGO            String              @db.VarChar(40)
+  IMAGEM           Bytes?
+  EMPRESA          EMPRESA             @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
+  USUARIO_COLABORADOR USUARIO_COLABORADOR?
+  REGISTRO_PONTO   REGISTRO_PONTO[]
 
   @@id([MATRICULA, CNPJ_EMPRESA])
-  @@index([CNPJ_EMPRESA], map: "FK_COLABORADOR_CNPJ_EMPRESA")
+  @@unique([MATRICULA, CNPJ_EMPRESA])
+  @@unique([MATRICULA]) // Adicionado para a relação com USUARIO_COLABORADOR
 }
 
-model usuario {
-  MATRICULA_COLABORADOR String      @db.VarChar(36)
-  CNPJ_EMPRESA          String      @db.Char(14)
-  SENHA                 String      @db.VarChar(100)
-  ADMIN                 Boolean
-  colaborador           colaborador @relation(fields: [MATRICULA_COLABORADOR, CNPJ_EMPRESA], references: [MATRICULA, CNPJ_EMPRESA])
-  empresa               empresa     @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
+model USUARIO_COLABORADOR {
+  USUARIO_ID  String         @id @db.VarChar(14)
+  SENHA       String         @db.VarChar(100)
+  ADM         Boolean
+  colaborador Colaborador    @relation(fields: [USUARIO_ID], references: [MATRICULA])
+}
 
-  @@id([MATRICULA_COLABORADOR, CNPJ_EMPRESA])
-  @@index([CNPJ_EMPRESA], map: "FK_USUARIO_EMPRESA")
+model USUARIO_EMPRESA {
+  USUARIO_ID String    @id @db.VarChar(14)
+  SENHA      String    @db.VarChar(100)
+  ADM        Boolean
+  empresa    EMPRESA   @relation(fields: [USUARIO_ID], references: [CNPJ])
+}
+
+model REGISTRO_PONTO {
+  MATRICULA      String      @db.VarChar(14)
+  CNPJ_EMPRESA   String      @db.VarChar(14)
+  DATA_PONTO     DateTime
+  BANCO_DE_HORAS   DateTime            @db.Time
+  colaborador    Colaborador @relation(fields: [MATRICULA, CNPJ_EMPRESA], references: [MATRICULA, CNPJ_EMPRESA])
+  empresa        EMPRESA     @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
+
+  @@id([MATRICULA, CNPJ_EMPRESA, DATA_PONTO])
 }

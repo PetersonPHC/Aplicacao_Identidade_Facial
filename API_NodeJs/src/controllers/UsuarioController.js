@@ -1,116 +1,100 @@
 const UsuarioService = require('../services/UsuarioService');
-module.exports = {
-  criar: async (req, res) => {
-    try {
-      console.log('[UsuarioController] Requisição recebida com body:');
-      console.log(req.body);
-  
-      const usuarioData = {
-        MATRICULA_COLABORADOR: this.concatMatricula(req),
-        //CNPJ_EMPRESA: req.body.CNPJ_EMPRESA,
-        SENHA: req.body.SENHA,
-        ADMIN: req.body.ADMIN || false
-      };
-  
-      const usuario = await UsuarioService.criarUsuario(usuarioData);
-      
-      // Remove a senha do objeto de resposta por segurança
-      const usuarioResponse = { ...usuario };
-      delete usuarioResponse.SENHA;
-      
-      res.status(201).json(usuarioResponse);
-    } catch (error) {
-      console.error('[UsuarioController] Erro ao criar usuário:', error);
-      res.status(400).json({ 
-        error: error.message,
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      });
-    }
-  },
 
-  //Alteração -> CNPJ Removido
-  buscar: async (req, res) => {
+class UsuarioErrorHandler {
+  static handle(error, res) {
+    console.error('[UsuarioController] Erro:', error);
+    
+    const statusCode = error.message === 'Usuário não encontrado' ? 404 : 
+                      error.message === 'Não autorizado' ? 401 : 
+                      500;
+    
+    res.status(statusCode).json({ 
+      error: error.message,
+      ...(process.env.NODE_ENV === 'development' && { details: error.stack })
+    });
+  }
+}
+
+
+
+
+class UsuarioController {
+  criar = async (req, res) => {
+    try {
+      console.log('[UsuarioController] Requisição recebida com body:', req.body);
+      
+      const usuario = await UsuarioService.criarUsuario(req.body);
+      
+      res.status(201).json(usuario);
+    } catch (error) {
+      UsuarioErrorHandler.handle(error, res);
+    }
+  }
+
+  buscar = async (req, res) => {
     try {
       const usuario = await UsuarioService.buscarUsuario(
-        this.concatMatricula(req.params.matricula), 
-        //req.params.cnpjEmpresa
+        (req.params)
       );
-      res.json(usuario);
+      res.json((usuario));
     } catch (error) {
-      res.status(error.message === 'Usuário não encontrado' ? 404 : 500)
-         .json({ error: error.message });
+      UsuarioErrorHandler.handle(error, res);
     }
-  },
+  }
 
-  //Alteração -> CNPJ Removido
-  atualizar: async (req, res) => {
+  atualizar = async (req, res) => {
     try {
-      const usuario = await UsuarioService.atualizarUsuario(
-        this.concatMatricula(req.params.matricula), 
-        //req.params.cnpjEmpresa, 
-        req.body
-      );
-      res.json(usuario);
+      const usuario = await UsuarioService.atualizarUsuario(req.body);
+      res.json((usuario));
     } catch (error) {
-      res.status(error.message === 'Usuário não encontrado' ? 404 : 500)
-         .json({ error: error.message });
+      UsuarioErrorHandler.handle(error, res);
     }
-  },
+  }
 
-  //Alteração -> CNPJ Removido
-  deletar: async (req, res) => {
-    
+  deletar = async (req, res) => {
     try {
-      await UsuarioService.deletarUsuario(
-        this.concatMatricula(req.params.matricula)
-        //req.params.cnpjEmpresa
-      );
+    const usuarios =  await UsuarioService.deletarUsuario(req.params.cnpjEmpresa, req.params.MATRICULA);
       res.json({ message: 'Usuário deletado com sucesso' });
     } catch (error) {
-      res.status(error.message === 'Usuário não encontrado' ? 404 : 500)
-         .json({ error: error.message });
+      UsuarioErrorHandler.handle(error, res);
     }
-  },
+  }
 
-  listarPorEmpresa: async (req, res) => {
+  listarPorEmpresa = async (req, res) => {
     try {
       const usuarios = await UsuarioService.listarUsuariosPorEmpresa(
         req.params.cnpjEmpresa
       );
       res.json(usuarios);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      UsuarioErrorHandler.handle(error, res);
     }
-  },
-
-
-
-  loginEmpresa: async (req, res) => {
-    try {
-      const { cnpj, senha } = req.body;
-      const empresa = await UsuarioService.autenticarEmpresa(cnpj, senha);
-      res.json(empresa);
-    } catch (error) {
-      res.status(401).json({ error: error.message });
-    }
-  },
-
-  //Alteração -> Adição do Prefixo como um CONCAT
-  loginColaborador: async (req, res) => {
-    try {
-      //const { matricula, senha } = req.body;
-      const matricula = this.concatMatricula(req);
-      const senha = req.body.SENHA;
-      const colaborador = await UsuarioService.autenticarColaborador(matricula, senha);
-      res.json(colaborador);
-    } catch (error) {
-      res.status(401).json({ error: error.message });
-    }
-  },
-
-  concatMatricula(req){
-    //return MATRICULA = String(req.body.CODIGO_EMPRESA).trim() + String(req.body.MATRICULA).trim();
-    return MATRICULA = String(req.body.CODIGO_EMPRESA).trim().concat(String(req.body.MATRICULA).trim());
   }
 
-};
+  loginEmpresa = async (req, res) => {
+    try {
+      const { USUARIO_ID, SENHA } = req.body;
+      console.log('→ pj:', USUARIO_ID);
+      console.log('→ senha:', SENHA);
+      const empresa = await UsuarioService.autenticarEmpresa(USUARIO_ID, SENHA);
+      res.json(empresa);
+    } catch (error) {
+      UsuarioErrorHandler.handle(error, res);
+    }
+  }
+
+  loginColaborador = async (req, res) => {
+    try {
+      const matricula = req.body.MATRICULA;
+      const colaborador = await UsuarioService.autenticarColaborador(
+        matricula, 
+        req.body.SENHA
+      );
+      res.json(colaborador);
+    } catch (error) {
+      UsuarioErrorHandler.handle(error, res);
+    }
+  }
+}
+
+module.exports = new UsuarioController();

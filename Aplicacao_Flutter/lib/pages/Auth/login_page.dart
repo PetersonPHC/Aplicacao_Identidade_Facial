@@ -73,7 +73,7 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
 }
  Future<void> loginEmpresa(String cnpj, String senha, BuildContext context) async {
   final url = Uri.parse("http://localhost:3000/loginEmpresa");
-  final body = {'cnpj': cnpj, 'senha': senha};
+  final body = {'USUARIO_ID': cnpj, 'SENHA': senha};
 
   print("Corpo da requisição de login (empresa): ${jsonEncode(body)}");
 
@@ -90,7 +90,7 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
       final data = jsonDecode(response.body);
       
       // Verificação mais robusta dos dados recebidos
-      if (data['CNPJ_EMPRESA'] != null && data['ADMIN'] != null && data['empresa'] != null) {
+      if (data['USUARIO_ID'] != null && data['SENHA'] != null ) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login efetuado com sucesso")),
         );
@@ -98,8 +98,8 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => MainPageEmpresa(
-              isAdm: data['ADMIN'] ?? false, // Fornece um valor padrão caso seja null
-              cnpj: data['CNPJ_EMPRESA'].toString(), // Garante que é uma String
+              isAdm: data['ADM'] ?? false, // Fornece um valor padrão caso seja null
+              cnpj: data['USUARIO_ID'].toString(), // Garante que é uma String
             ),
           ),
         );

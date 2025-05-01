@@ -1,13 +1,16 @@
+const prisma = require('./config/prisma');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const upload = multer();
 
-// Importe os controllers e verifique se cada um exporta todos os métodos necessários
-const EmpresaController = require('./controllers/EmpresaController');
 const ColaboradorController = require('./controllers/ColaboradorController');
+const EmpresaController = require('./controllers/EmpresaController');
 const UsuarioController = require('./controllers/UsuarioController');
 const RegistroPontoController = require('./controllers/RegistroPontoController');
+
 
 const app = express();
 
@@ -24,8 +27,8 @@ app.delete('/empresas/:cnpj', EmpresaController.deletar);
 app.get('/empresas', EmpresaController.listar);
 
 // Rotas de Colaborador
-app.post('/colaboradores', ColaboradorController.uploadMiddleware, ColaboradorController.criar);
-app.get('/colaboradores/:cnpjEmpresa/:matricula', ColaboradorController.buscar);
+app.post('/colaboradores', upload.single('IMAGEM'), ColaboradorController.criar);
+app.get('/colaboradores/:cnpj/:matricula', ColaboradorController.buscar);
 app.put('/colaboradores/:cnpjEmpresa/:matricula', ColaboradorController.atualizar);
 app.delete('/colaboradores/:cnpjEmpresa/:matricula', ColaboradorController.deletar);
 app.get('/colaboradores/:cnpjEmpresa', ColaboradorController.listarPorEmpresa);
@@ -54,6 +57,7 @@ app.use((err, req, res, next) => {
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
+
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;

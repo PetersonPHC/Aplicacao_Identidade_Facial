@@ -1,12 +1,34 @@
-const prisma = require('../config/prisma')
-class ColaboradorRepository {
-  
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
+class ColaboradorRepository {
+  constructor() {
+    this.prisma = require('../config/prisma'); // ou sua inicialização do Prisma
+  }
+
+  
+    async findByMatriculaAndCNPJ(cnpj, matricula) {
+      try {
+        
+        return await this.prisma.colaborador.findFirst({
+          where: {
+            CNPJ_EMPRESA: cnpj,
+            MATRICULA: matricula
+           
+          }
+        });
+      } catch (error) {
+        console.error('Erro no repositório:', error);
+        throw error;
+      }
+    }
+  
+  
   async create(colaborador) {
+    console.log('→ repository:');
     return await prisma.colaborador.create({
       data: {
         MATRICULA: colaborador.MATRICULA,
-        CNPJ: colaborador.CNPJ,
         NOME: colaborador.NOME,
         CPF: colaborador.CPF,
         RG: colaborador.RG,
@@ -14,15 +36,18 @@ class ColaboradorRepository {
         DATA_ADMISSAO: this.formatDate(colaborador.DATA_ADMISSAO),     // Formatando para apenas data
         CTPS: colaborador.CTPS,
         NIS: colaborador.NIS,
-        CARGA_HORARIA: colaborador.CARGA_HORARIA,
+        CARGA_HORARIA: this.formatarCargaHoraria(colaborador.CARGA_HORARIA),
         CARGO: colaborador.CARGO,
-        IMAGEM: colaborador.IMAGEM
-      },
-      include: {
-        empresa: true,
-        usuario: true
+        IMAGEM: colaborador.IMAGEM,
+        EMPRESA: {
+          connect: {
+            CNPJ: colaborador.CNPJ_EMPRESA
+          }
+        }
+
+
       }
-    });
+          });
   }
 
   // Método para formatar a data (removendo a parte de tempo)
@@ -31,46 +56,51 @@ class ColaboradorRepository {
     const d = new Date(date);
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
-
-  /*async findByMatriculaAndCNPJ(matricula, cnpj) {
-    return await this.prisma.colaborador.findFirst({
-      where: {
-        MATRICULA: matricula,
-        CNPJ_EMPRESA: cnpj
-      }
-    });
-  }*/
-
-  async findByMatricula(matricula) {
-    return await this.prisma.colaborador.findUnique({
-      where: {
-        //MATRICULA_CNPJ_EMPRESA: {
-          MATRICULA: matricula,
-          //CNPJ_EMPRESA: cnpjEmpresa
-        //}
-      }
-    });
+  formatarCargaHoraria(cargaHoraria) {
+    // Se já for um objeto Date válido
+    if (cargaHoraria instanceof Date) {
+      return cargaHoraria;
+    }
+  
+    // Se for string no formato HH:MM:SS
+    if (typeof cargaHoraria === 'string' && /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(cargaHoraria)) {
+      const [hours, minutes, seconds] = cargaHoraria.split(':');
+      return new Date(1970, 0, 1, hours, minutes, seconds);
+    }
+  
+    // Se for apenas um número (como '8')
+    const apenasNumeros = cargaHoraria.toString().replace(/\D/g, '');
+    const horas = apenasNumeros.slice(0, 2).padStart(2, '0');
+    
+    return new Date(1970, 0, 1, horas, 0, 0);
   }
 
-  //Alteração -> CNPJ Removido
+    async findByMatricula(matricula) {
+      return await this.prisma.colaborador.findFirst({
+        where: { MATRICULA: matricula }
+       
+      });
+    }
+    
+
+  
+  
   async update(matricula, colaboradorData) {
     return await this.prisma.colaborador.update({
       where: {
-        //MATRICULA_CNPJ_EMPRESA: {
-          MATRICULA: matricula,
-          //CNPJ_EMPRESA: cnpjEmpresa
-        //}
+        MATRICULA: matricula // Apenas a matrícula como critério de busca
       },
       data: colaboradorData,
-      include: {
-        usuario: true,
-        registro_ponto: true
-      }
+      
     });
   }
 
   //Alteração -> CNPJ Removido
   async delete(matricula) {
+    
+    console.log('→ REPOSITORY:');
+    console.log('→ MATRICULA:', matricula);
+    
     const colaborador = await this.prisma.colaborador.delete({
       where: {
         //MATRICULA_CNPJ_EMPRESA: {
@@ -84,13 +114,23 @@ class ColaboradorRepository {
   }
 
   async findAllByEmpresa(cnpjEmpresa) {
-    return await this.prisma.colaborador.findMany({
-      where: { CNPJ_EMPRESA: cnpjEmpresa },
-      include: {
-        empresa: true,
-        usuario: true,
-      }
-    });
+
+
+    try {
+      
+      
+      return await this.prisma.colaborador.findMany({
+        where: { CNPJ_EMPRESA: cnpjEmpresa },
+        include: {
+          USUARIO_COLABORADOR : true
+        }
+      
+      });
+    } catch (error) {
+      console.error('Erro no repositório:', error);
+      throw error;
+    }
+
   }
 }
 
