@@ -33,13 +33,14 @@ class UsuarioService {
     return usuario;
   }
 
-
-
-
-
-  async atualizarUsuario(matricula, cnpjEmpresa, usuarioData) {
-    await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpjEmpresa);
-    return await UsuarioRepository.update(matricula, cnpjEmpresa, usuarioData);
+  //Alteração -> CNPJ Removido
+  async atualizarUsuario( matricula, usuarioData) {
+    const usuarioExistente = await UsuarioRepository.findByMatricula(matricula);
+    if (!usuarioExistente) {
+      throw new Error('Usuário não encontrado');
+    }
+    return await UsuarioRepository.update(matricula, usuarioData); 
+  
   }
 
   async deletarUsuario(matricula, cnpjEmpresa) {

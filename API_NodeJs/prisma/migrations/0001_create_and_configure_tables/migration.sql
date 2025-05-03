@@ -87,8 +87,11 @@ CREATE TABLE IF NOT EXISTS `REGISTRO_PONTO` (
     `MATRICULA` VARCHAR(14) NOT NULL,
     `CNPJ_EMPRESA` CHAR(14) NOT NULL,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     `DATA` DATETIME NOT NULL
 =======
+=======
+>>>>>>> Stashed changes
     `DATA_PONTO` DATETIME NOT NULL
 
 >>>>>>> Stashed changes

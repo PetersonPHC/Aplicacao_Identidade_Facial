@@ -48,9 +48,20 @@ class ColaboradorService {
       BANCO_DE_HORAS: colaborador.BANCO_DE_HORAS.toTimeString().substring(0, 8)
     };
   }
-  async atualizarColaborador(matricula, cnpjEmpresa, colaboradorData) {
-    // Verifica se existe
-    await this.buscarColaborador(matricula, cnpjEmpresa);
+  async atualizarColaborador(matricula, colaboradorData) {
+    console.log('[ColaboradorService] Iniciando atualização', {
+      matricula,
+      colaboradorData: { ...colaboradorData, IMAGEM: colaboradorData.IMAGEM ? 'Buffer presente' : 'Nenhuma imagem' }
+    });
+  
+    // Verifica se o colaborador existe
+    await this.buscarColaboradorMatricula(matricula);
+    console.log('[ColaboradorService] Colaborador encontrado, prosseguindo com atualização');
+  
+    // Formatação de datas
+    if (colaboradorData.DATA_NASCIMENTO) {
+      colaboradorData.DATA_NASCIMENTO = new Date(colaboradorData.DATA_NASCIMENTO + 'T00:00:00.000Z');
+    }
     
     if (colaboradorData.DATA_ADMISSAO) {
       colaboradorData.DATA_ADMISSAO = new Date(colaboradorData.DATA_ADMISSAO + 'T00:00:00.000Z');
@@ -92,10 +103,17 @@ class ColaboradorService {
         dadosParaAtualizar[campo] = colaboradorData[campo];
       }
     }
-    
-    return await ColaboradorRepository.update(matricula, cnpjEmpresa, dadosParaAtualizar);
+  
+    console.log('[ColaboradorService] Dados filtrados para atualização:', dadosParaAtualizar);
+  
+    const resultado = await ColaboradorRepository.update(matricula, dadosParaAtualizar);
+    console.log('[ColaboradorService] Atualização no repositório concluída:', resultado);
+  
+    return resultado;
   }
-  async deletarColaborador(matricula, cnpjEmpresa) {
+  //Alteração -> CNPJ Removido
+  async deletarColaborador( cnpj, matricula) {
+
     try {
       await this.buscarColaborador(matricula, cnpjEmpresa);
       return await ColaboradorRepository.delete(matricula, cnpjEmpresa);

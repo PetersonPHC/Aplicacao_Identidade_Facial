@@ -40,14 +40,12 @@ module.exports = {
     }
   },
 
-  atualizar: async (req, res) => {
+  atualizar : async (req, res) => {
+  
+    const { matricula } = req.params;
     try {
-      const usuario = await UsuarioService.atualizarUsuario(
-        req.params.matricula, 
-        req.params.cnpjEmpresa, 
-        req.body
-      );
-      res.json(usuario);
+      const usuario = await UsuarioService.atualizarUsuario( matricula, req.body);
+      res.json((usuario));
     } catch (error) {
       res.status(error.message === 'Usuário não encontrado' ? 404 : 500)
          .json({ error: error.message });
@@ -93,8 +91,14 @@ module.exports = {
 
   loginColaborador: async (req, res) => {
     try {
-      const { matricula, senha } = req.body;
-      const colaborador = await UsuarioService.autenticarColaborador(matricula, senha);
+      const { USUARIO_ID, SENHA } = req.body;
+      console.log('→ matricula:', USUARIO_ID);
+      console.log('→ senha:', SENHA);
+      const matricula = req.body.MATRICULA;
+      const colaborador = await UsuarioService.autenticarColaborador(
+            USUARIO_ID, 
+        SENHA
+      );
       res.json(colaborador);
     } catch (error) {
       res.status(401).json({ error: error.message });

@@ -100,57 +100,28 @@ class ColaboradorController {
       this.handleError(error, res);
     }
   }
-
-  buscar = async (req, res) => {
+  atualizar = async (req, res) => {
+    console.log('Dados recebidos (raw):', req.body); // Agora deve mostrar os campos
+    
     try {
-      const { matricula, cnpjEmpresa } = req.params;
-      const colaborador = await ColaboradorService.buscarColaborador(matricula, cnpjEmpresa);
+      const { matricula } = req.params;
+      const dadosAtualizacao = {
+        ...req.body, // Campos do form-data
+        IMAGEM: req.file?.buffer // Arquivo se existir
+      };
+  
+      console.log('Dados preparados:', dadosAtualizacao);
       
-      res.json({
-        status: 'success',
-        data: {
-          ...colaborador,
-          IMAGEM: colaborador.IMAGEM?.toString('base64')
-        }
-      });
+      const colaborador = await ColaboradorService.atualizarColaborador(
+        matricula,
+        dadosAtualizacao
+      );
+  
+      res.json(colaborador);
     } catch (error) {
       this.handleError(error, res);
     }
-  };
-
-  atualizar = [
-    (req, res, next) => {
-      this.uploadMiddleware(req, res, (err) => {
-        if (err) {
-          return this.handleError(err, res);
-        }
-        next();
-      });
-    },
-    async (req, res) => {
-      try {
-        const { matricula, cnpjEmpresa } = req.params;
-        const dadosAtualizacao = {
-          ...req.body,
-          IMAGEM: req.file?.buffer
-        };
-
-        const colaborador = await ColaboradorService.atualizarColaborador(
-          matricula, 
-          cnpjEmpresa, 
-          dadosAtualizacao
-        );
-
-        res.json({
-          status: 'success',
-          data: colaborador
-        });
-      } catch (error) {
-        this.handleError(error, res);
-      }
-    }
-  ];
-
+  }
   deletar = async (req, res) => {
     try {
       const { matricula, cnpjEmpresa } = req.params;

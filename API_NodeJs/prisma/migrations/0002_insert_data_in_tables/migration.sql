@@ -67,7 +67,11 @@ VALUES
 -- Inserindo dados na tabela REGISTRO_PONTO
 INSERT INTO
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     REGISTRO_PONTO (MATRICULA, CNPJ_EMPRESA, DATA)
+=======
+    REGISTRO_PONTO (MATRICULA, CNPJ_EMPRESA, DATA_PONTO)
+>>>>>>> Stashed changes
 =======
     REGISTRO_PONTO (MATRICULA, CNPJ_EMPRESA, DATA_PONTO)
 >>>>>>> Stashed changes
@@ -75,6 +79,7 @@ VALUES
     ('100MAT001', '00000000000100', '2023-07-01 08:00:00'),
     ('100MAT001', '00000000000100', '2023-07-01 17:00:00'),
     ('100MAT002', '00000000000100', '2023-07-01 08:10:00'),
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     ('100MAT002', '00000000000100', '2023-07-01 17:05:00'),
 
@@ -97,6 +102,9 @@ VALUES
     ('500MAT009', '00000000000500', '2023-07-01 17:00:00'),
     ('500MAT010', '00000000000500', '2023-07-01 08:05:00'),
     ('500MAT010', '00000000000500', '2023-07-01 17:10:00');
+=======
+    ('100MAT002', '00000000000100', '2023-07-01 17:05:00');
+>>>>>>> Stashed changes
 =======
     ('100MAT002', '00000000000100', '2023-07-01 17:05:00');
 >>>>>>> Stashed changes

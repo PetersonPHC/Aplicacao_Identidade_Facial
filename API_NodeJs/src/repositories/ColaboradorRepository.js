@@ -2,6 +2,25 @@ const prisma = require('../config/prisma')
 class ColaboradorRepository {
   
 
+  
+    async findByMatriculaAndCNPJ(cnpj, matricula) {
+      console.log('Dados CHEGARAM AQ:', cnpj, matricula);
+      try {
+        
+        return await this.prisma.colaborador.findFirst({
+          where: {
+            CNPJ_EMPRESA: cnpj,
+            MATRICULA: matricula
+           
+          }
+        });
+      } catch (error) {
+        console.error('Erro no repositório:', error);
+        throw error;
+      }
+    }
+  
+  
   async create(colaborador) {
     return await prisma.colaborador.create({
       data: {
@@ -32,43 +51,41 @@ class ColaboradorRepository {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
-  async findByMatriculaAndCNPJ(matricula, cnpj) {
-    return await this.prisma.colaborador.findFirst({
-      where: {
-        MATRICULA: matricula,
-        CNPJ_EMPRESA: cnpj
-      }
-    });
-  }
+    async findByMatricula(matricula) {
+      return await this.prisma.colaborador.findFirst({
+        where: { MATRICULA: matricula }
+       
+      });
+    }
+    
 
-  async findByMatricula(matricula, cnpjEmpresa) {
-    return await this.prisma.colaborador.findUnique({
-      where: {
-        MATRICULA_CNPJ_EMPRESA: {
-          MATRICULA: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
+    async update(matricula, colaboradorData) {
+      console.log('[ColaboradorRepo] Dados recebidos para atualização:', colaboradorData);
+      
+      // Validação adicional para CARGA_HORARIA
+      if (colaboradorData.CARGA_HORARIA && isNaN(colaboradorData.CARGA_HORARIA.getTime())) {
+        throw new Error('CARGA_HORARIA inválida - não é um objeto Date válido');
       }
-    });
-  }
-
-  async update(matricula, cnpjEmpresa, colaboradorData) {
-    return await this.prisma.colaborador.update({
-      where: {
-        MATRICULA_CNPJ_EMPRESA: {
-          MATRICULA: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
-      },
-      data: colaboradorData,
-      include: {
-        usuario: true,
-        registro_ponto: true
+    
+      try {
+        const resultado = await this.prisma.colaborador.update({
+          where: { MATRICULA: matricula },
+          data: colaboradorData
+        });
+        
+        console.log('[ColaboradorRepo] Atualização bem-sucedida:', resultado);
+        return resultado;
+      } catch (error) {
+        console.error('[ColaboradorRepo] Erro detalhado:', error);
+        throw error;
       }
-    });
-  }
-
-  async delete(matricula, cnpjEmpresa) {
+    }
+  //Alteração -> CNPJ Removido
+  async delete(matricula) {
+    
+    console.log('→ REPOSITORY:');
+    console.log('→ MATRICULA:', matricula);
+    
     const colaborador = await this.prisma.colaborador.delete({
       where: {
         MATRICULA_CNPJ_EMPRESA: {

@@ -20,14 +20,13 @@ class UsuarioRepository {
   }
 
   async findByMatricula(matricula) {
-    return await this.prisma.usuario.findFirst({
-      where: {
-        MATRICULA_COLABORADOR: matricula
-      },
+    console.log('Dados normalizados para criação:', matricula);
+    return await this.prisma.uSUARIO_COLABORADOR.findFirst({
+      where: { USUARIO_ID : matricula },
       include: {
-        empresa: true,
-        colaborador: true
-      }
+        colaborador: true}
+    
+     
     });
   }
 
@@ -54,13 +53,12 @@ class UsuarioRepository {
       }
     });
   }
-  async update(matricula, cnpjEmpresa, usuarioData) {
-    return await this.prisma.usuario.update({
+
+  //Alteração -> CNPJ Removido
+  async update(matricula, usuarioData) {
+    return await this.prisma.uSUARIO_COLABORADOR.update({
       where: {
-        MATRICULA_COLABORADOR_CNPJ_EMPRESA: {
-          MATRICULA_COLABORADOR: matricula,
-          CNPJ_EMPRESA: cnpjEmpresa
-        }
+         USUARIO_ID: matricula
       },
       data: usuarioData,
     });
