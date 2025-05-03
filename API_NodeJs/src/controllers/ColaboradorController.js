@@ -11,30 +11,30 @@ class AppError extends Error {
   }
 }
 
-class ColaboradorController {
+class MulterConfig {
   constructor() {
-    // Configuração do Multer movida para dentro do construtor
-    const storage = multer.memoryStorage();
+    this.storage = multer.memoryStorage();
     this.upload = multer({
-      storage: storage,
+      storage: this.storage,
       preservePath: true,
-      fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
-          cb(null, true);
-        } else {
-          cb(new Error('Apenas imagens são permitidas!'), false);
-        }
-      },
+      fileFilter: this.fileFilter,
       limits: {
         fileSize: 5 * 1024 * 1024 // 5MB
       }
     });
-    
-    // Cria o middleware de upload
-    this.uploadMiddleware = this.upload.single('IMAGEM');
   }
 
-  handleError(error, res) {
+  fileFilter(req, file, cb) {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Apenas imagens são permitidas!'), false);
+    }
+  }
+}
+
+class ErrorHandler {
+  static handle(error, res) {
     console.error('Erro no controller:', {
       message: error.message,
       statusCode: error.statusCode || 500,
@@ -55,6 +55,34 @@ class ColaboradorController {
 
     res.status(statusCode).json(response);
   }
+}
+
+
+class ColaboradorController {
+  constructor() {
+    
+    this.multerConfig = new MulterConfig();
+    this.uploadMiddleware = this.multerConfig.upload.single('IMAGEM');
+  }
+
+  buscar = async (req, res) => {
+    try {
+      const { matricula, cnpj } = req.params;
+      console.log('→ MATRICULA:', matricula);
+      console.log('→ cnpj:', cnpj);
+      const Colaborador = await ColaboradorService.buscarColaboradorMatriculaCnpj(cnpj, matricula);
+      
+      res.json({
+        status: 'success',
+        data: {
+          ...Colaborador,
+          IMAGEM: Colaborador.IMAGEM?.toString('base64')
+        }
+      });
+    } catch (error) {
+      ErrorHandler.handle(error, res);
+    }
+  };
 
   criar = async (req, res) => {
     try {
@@ -64,29 +92,12 @@ class ColaboradorController {
         headers: req.headers
       });
   
-      // Verifica se os campos obrigatórios existem
-      if (!req.body.MATRICULA || !req.body.CNPJ) {
-        throw new AppError('Matrícula e CNPJ são obrigatórios', 400);
-      }
-  
+      // Corrigido: combina body e file corretamente
       const colaboradorData = {
-        MATRICULA: String(req.body.MATRICULA).trim(),
-        CNPJ: String(req.body.CNPJ).trim(),
-        NOME: String(req.body.NOME || '').trim(),
-        CPF: String(req.body.CPF || '').replace(/\D/g, ''),
-        RG: String(req.body.RG || '').replace(/\D/g, ''),
-        DATA_NASCIMENTO: req.body.DATA_NASCIMENTO,
-        DATA_ADMISSAO: req.body.DATA_ADMISSAO,
-        CTPS: String(req.body.CTPS || ''),
-        NIS: String(req.body.NIS || ''),
-        CARGA_HORARIA: parseInt(req.body.CARGA_HORARIA) || 0,
-        CARGO: String(req.body.CARGO || '').trim(),
+        ...req.body,
         IMAGEM: req.file?.buffer
       };
-      // Validações adicionais
-      if (!colaboradorData.NOME) throw new AppError('Nome é obrigatório', 400);
-      if (!colaboradorData.CPF || colaboradorData.CPF.length !== 11) throw new AppError('CPF inválido', 400);
-  
+      
       console.log('Dados normalizados para criação:', colaboradorData);
   
       const colaborador = await ColaboradorService.criarColaborador(colaboradorData);
@@ -96,8 +107,7 @@ class ColaboradorController {
         data: colaborador
       });
     } catch (error) {
-      console.error('Erro no controller:', error);
-      this.handleError(error, res);
+      ErrorHandler.handle(error, res);
     }
   }
   atualizar = async (req, res) => {
@@ -119,16 +129,19 @@ class ColaboradorController {
   
       res.json(colaborador);
     } catch (error) {
-      this.handleError(error, res);
+      ErrorHandler.handle(error, res);
     }
   }
   deletar = async (req, res) => {
     try {
-      const { matricula, cnpjEmpresa } = req.params;
-      await ColaboradorService.deletarColaborador(matricula, cnpjEmpresa);
+      const { cnpjEmpresa } = req.params;
+      const { matricula } = req.params;
+      console.log('→ MATRICULA:', matricula);
+      console.log('→ cnpj:', cnpjEmpresa);
+      const colaboradores = await ColaboradorService.deletarColaborador(cnpjEmpresa, matricula);
       res.status(204).end();
     } catch (error) {
-      this.handleError(error, res);
+      ErrorHandler.handle(error, res);
     }
   };
 
@@ -145,7 +158,7 @@ class ColaboradorController {
         }))
       });
     } catch (error) {
-      this.handleError(error, res);
+      ErrorHandler.handle(error, res);
     }
   };
 }

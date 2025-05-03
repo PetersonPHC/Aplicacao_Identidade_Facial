@@ -70,6 +70,7 @@ class EmpresaController {
     }
   }
 
+  //Alteração -> Pegar o objeto empresa do banco e retornar ao Front, junto com o código da empresa
   async criar(req, res) {
     try {
       // Validação e formatação da data
@@ -99,7 +100,7 @@ class EmpresaController {
     }
   }
 
-  async buscarPorCNPJ(req, res) {
+   buscarPorCNPJ = async (req, res) => {
     try {
       if (!req.params.cnpj) {
         throw new EmpresaError('CNPJ é obrigatório', 400);

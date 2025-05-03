@@ -1,20 +1,16 @@
 const UsuarioRepository = require('../repositories/UsuarioRepository');
-const ColaboradorService = require('./ColaboradorService');
+const ColaboradorRepository = require('../repositories/ColaboradorRepository');
+
 
 class UsuarioService {
  
 
+  //Alteração -> CNPJ Removido
   async criarUsuario(usuarioData) {
     try {
-      await ColaboradorService.buscarColaborador(
-        usuarioData.MATRICULA_COLABORADOR, 
-        usuarioData.CNPJ_EMPRESA
-      );
-      
-      const usuarioExistente = await UsuarioRepository.findByMatriculaAndCnpj(
-        usuarioData.MATRICULA_COLABORADOR,
-        usuarioData.CNPJ_EMPRESA
-      );
+         
+      const usuarioExistente = await UsuarioRepository.findByMatricula(
+        usuarioData.USUARIO_ID);
       
       if (usuarioExistente) {
         throw new Error('Já existe um usuário cadastrado para este colaborador');
@@ -27,8 +23,16 @@ class UsuarioService {
     }
   }
 
- async buscarUsuario(matricula, cnpj) {
-    const usuario = await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpj);
+
+
+  async buscarUsuario(MATRICULA ,CNPJ) {
+    const usuario = await UsuarioRepository.findByMatriculaAndCnpj(MATRICULA, CNPJ);
+    if (!usuario) throw new Error(' usuario não encontrado');
+    return usuario;
+  }
+  //Alteração -> CNPJ Removido
+  async buscarEmpresa(CNPJ) {
+    const usuario = await UsuarioRepository.findByCnpj(CNPJ);
     if (!usuario) throw new Error(' usuario não encontrado');
     return usuario;
   }
@@ -43,17 +47,18 @@ class UsuarioService {
   
   }
 
-  async deletarUsuario(matricula, cnpjEmpresa) {
-    await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpjEmpresa);
-    return await UsuarioRepository.delete(matricula, cnpjEmpresa);
+  //Alteração -> CNPJ Removido
+  async deletarUsuario(matricula, cnpj) {
+    await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpj);
+    return await UsuarioRepository.delete(matricula);
   }
 
   async listarUsuariosPorEmpresa(cnpjEmpresa) {
     return await UsuarioRepository.findAllByEmpresa(cnpjEmpresa);
   }
 
-  async autenticarEmpresa(cnpj, senha) {
-    const empresa = await UsuarioRepository.findByCnpj(cnpj);
+  async autenticarEmpresa(USUARIO_ID, senha) {
+    const empresa = await UsuarioRepository.findByCnpj(USUARIO_ID);
     if (!empresa) {
       throw new Error('Empresa não encontrada');
     }

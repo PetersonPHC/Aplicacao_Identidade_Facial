@@ -1,11 +1,13 @@
-const ColaboradorRepository = require('../repositories/ColaboradorRepository');
 const EmpresaRepository = require('../repositories/EmpresaRepository');
+const ColaboradorRepository = require('../repositories/ColaboradorRepository');
 
 class ColaboradorService {
 
   async criarColaborador(dadosColaborador) {
-    // Verifica se a empresa existe
-    const cnpj = dadosColaborador.CNPJ || dadosColaborador.cnpj; // Adicionado fallback
+    if (!dadosColaborador) {
+      throw new Error('Dados do colaborador não fornecidos');
+    }
+    const cnpj = dadosColaborador.CNPJ_EMPRESA ; // Adicionado fallback
     if (!cnpj) {
       throw new Error('CNPJ não fornecido');
     }
@@ -24,7 +26,7 @@ class ColaboradorService {
     if (colaboradorExistente) {
       throw new Error('Colaborador já cadastrado');
     }
-
+    console.log('→ service:');
     // Cria o colaborador
     return await ColaboradorRepository.create({
       ...dadosColaborador,
@@ -32,20 +34,36 @@ class ColaboradorService {
     });
   }
 
-  async buscarColaborador(matricula, cnpjEmpresa) {
-    // Logs mantidos exatamente iguais
-    console.log('[ColaboradorService] Buscando colaborador com:');
+
+  
+  async buscarColaboradorMatricula( matricula) {
+    console.log('[ColaboradorService] Buscando colaborador com metodo de matricula:');
     console.log('→ MATRICULA:', matricula);
-    console.log('→ CNPJ_EMPRESA:', cnpjEmpresa);
+  
     
-    const colaborador = await ColaboradorRepository.findByMatricula(matricula, cnpjEmpresa);
+    const colaborador = await ColaboradorRepository.findByMatricula( matricula);
     if (!colaborador) throw new Error('Colaborador não encontrado');
     
-    // Conversão de campos mantida idêntica
     return {
       ...colaborador,
-      CARGA_HORARIA: colaborador.CARGA_HORARIA.toTimeString().substring(0, 8),
-      BANCO_DE_HORAS: colaborador.BANCO_DE_HORAS.toTimeString().substring(0, 8)
+      CARGA_HORARIA: colaborador.CARGA_HORARIA?.toTimeString().substring(0, 8) || null,
+      BANCO_DE_HORAS: colaborador.BANCO_DE_HORAS?.toTimeString().substring(0, 8) || null
+    };
+  }
+
+
+
+  async buscarColaboradorMatriculaCnpj(cnpj, matricula) {
+    console.log('[ColaboradorService] Buscando colaborador com:');
+    console.log('→ MATRICULA:', matricula);
+    console.log('→ cnpj:', cnpj);
+    
+    const colaborador = await ColaboradorRepository.findByMatriculaAndCNPJ(cnpj, matricula);
+    if (!colaborador) throw new Error('Colaborador não encontrado');
+    
+    return {
+      ...colaborador,
+      CARGA_HORARIA: colaborador.CARGA_HORARIA?.toTimeString().substring(0, 8) || null
     };
   }
   async atualizarColaborador(matricula, colaboradorData) {
@@ -94,7 +112,7 @@ class ColaboradorService {
     // Filtra campos permitidos
     const camposPermitidos = [
       'NOME', 'CPF', 'RG', 'DATA_NASCIMENTO', 'DATA_ADMISSAO',
-      'NIS', 'CTPS', 'CARGA_HORARIA', 'CARGO', 'IMAGEM', 'BANCO_DE_HORAS'
+      'NIS', 'CTPS', 'CARGA_HORARIA', 'CARGO', 'BANCO_DE_HORAS', 'IMAGEM'
     ];
     
     const dadosParaAtualizar = {};
@@ -115,8 +133,12 @@ class ColaboradorService {
   async deletarColaborador( cnpj, matricula) {
 
     try {
-      await this.buscarColaborador(matricula, cnpjEmpresa);
-      return await ColaboradorRepository.delete(matricula, cnpjEmpresa);
+      
+      console.log('SERVICE');
+      console.log('→ MATRICULA:', matricula);
+      console.log('→ cnpj:', cnpj);
+      await this.buscarColaboradorMatriculaCnpj(cnpj, matricula);
+      return await ColaboradorRepository.delete(matricula);
     } catch (error) {
       console.error('[ColaboradorService] Erro ao deletar:', {
         message: error.message,
@@ -136,11 +158,9 @@ class ColaboradorService {
     
     const colaboradores = await ColaboradorRepository.findAllByEmpresa(cnpjEmpresa);
     
-    // Mapeamento mantido idêntico
     return colaboradores.map(colab => ({
       ...colab,
-      CARGA_HORARIA: colab.CARGA_HORARIA.toTimeString().substring(0, 8),
-      BANCO_DE_HORAS: colab.BANCO_DE_HORAS.toTimeString().substring(0, 8)
+      CARGA_HORARIA: colab.CARGA_HORARIA.toTimeString().substring(0, 8)
     }));
   }
 }
