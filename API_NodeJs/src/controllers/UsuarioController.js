@@ -52,13 +52,11 @@ module.exports = {
     }
   },
 
-  deletar: async (req, res) => {
-    
+  
+
+  deletar : async (req, res) => {
     try {
-      await UsuarioService.deletarUsuario(
-        req.params.matricula, 
-        req.params.cnpjEmpresa
-      );
+    const usuarios =  await UsuarioService.deletarUsuario(req.params.cnpjEmpresa, req.params.MATRICULA);
       res.json({ message: 'Usuário deletado com sucesso' });
     } catch (error) {
       res.status(error.message === 'Usuário não encontrado' ? 404 : 500)

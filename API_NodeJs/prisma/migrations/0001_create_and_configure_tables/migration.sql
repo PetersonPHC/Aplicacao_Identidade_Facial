@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `COLABORADOR` (
     `CARGA_HORARIA` TIME NOT NULL,
     `CARGO` VARCHAR(40) NOT NULL,
     `IMAGEM` BLOB DEFAULT NULL,
-    `BANCO_DE_HORAS` TIME NOT NULL
+   
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Criando Chave Primária
@@ -86,15 +86,9 @@ ON DELETE RESTRICT ON UPDATE CASCADE;
 CREATE TABLE IF NOT EXISTS `REGISTRO_PONTO` (
     `MATRICULA` VARCHAR(14) NOT NULL,
     `CNPJ_EMPRESA` CHAR(14) NOT NULL,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    `DATA` DATETIME NOT NULL
-=======
-=======
->>>>>>> Stashed changes
     `DATA_PONTO` DATETIME NOT NULL
 
->>>>>>> Stashed changes
+
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Criando Chave Primária
