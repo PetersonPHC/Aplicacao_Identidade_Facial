@@ -40,11 +40,7 @@ module.exports = {
     }
   },
 
-<<<<<<< Updated upstream
   atualizar : async (req, res) => {
-=======
-  atualizar = async (req, res) => {
->>>>>>> Stashed changes
   
     const { matricula } = req.params;
     try {
