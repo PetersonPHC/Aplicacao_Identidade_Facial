@@ -63,10 +63,6 @@ class UsuarioRepository {
         }
       },
       data: usuarioData,
-      include: {
-        empresa: true,
-        colaborador: true
-      }
     });
   }
 

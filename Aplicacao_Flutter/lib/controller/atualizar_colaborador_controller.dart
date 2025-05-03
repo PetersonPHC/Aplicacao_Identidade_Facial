@@ -20,7 +20,7 @@ class AtualizarColaboradorController {
     required this.matricula,
   });
 
-  bool _isAdm = false;
+ 
   bool _isLoading = true;
   
   final cpfController = MaskedTextController(mask: '000.000.000-00');
@@ -33,14 +33,12 @@ class AtualizarColaboradorController {
   final TextEditingController matriculaController = TextEditingController();
   final TextEditingController cargoController = TextEditingController();
   final TextEditingController nisController = TextEditingController();
-  final TextEditingController senhaController = TextEditingController();
+  
 
   File? _imagemSelecionada;
   Uint8List? _imagemSelecionadaWeb;
   Uint8List? _imagemBytes;
 
-  bool get isAdm => _isAdm;
-  set isAdm(bool value) => _isAdm = value;
 
   bool get isLoading => _isLoading;
   set isLoading(bool value) => _isLoading = value;
@@ -52,37 +50,79 @@ class AtualizarColaboradorController {
   final ColaboradorService _colaboradorService = ColaboradorService();
   final ImageService _imageService = ImageService();
 
-  Future<void> carregarDadosColaborador() async {
-    try {
-      final colaboradorData = await _colaboradorService.buscarColaborador(cnpj, matricula);
+Future<void> carregarDadosColaborador() async {
+  print('DADOS FINAL METODO carregar');
+  print('Status: {/$cnpj/$matricula}');
+  
+  try {
+    final colaboradorData = await _colaboradorService.buscarColaborador(cnpj, matricula);
 
-      nomeController.text = colaboradorData['Nome'] ?? '';
-      cpfController.text = colaboradorData['CPF'] ?? '';
-      rgController.text = colaboradorData['RG'] ?? '';
-      dataNascimentoController.text = colaboradorData['DataNascimento'] != null
-          ? DateFormat('dd/MM/yyyy').format(DateTime.parse(colaboradorData['DataNascimento']))
-          : '';
-      dataAdmissaoController.text = colaboradorData['DataAdmissao'] != null
-          ? DateFormat('dd/MM/yyyy').format(DateTime.parse(colaboradorData['DataAdmissao']))
-          : '';
-      cargaHorariaController.text = colaboradorData['CargaHoraria']?.toString() ?? '';
-      ctpsController.text = colaboradorData['CTPS'] ?? '';
-      matriculaController.text = colaboradorData['Matricula'] ?? '';
-      cargoController.text = colaboradorData['Cargo'] ?? '';
-      nisController.text = colaboradorData['NIS'] ?? '';
-      senhaController.text = colaboradorData['Senha'] ?? '';
-      _isAdm = colaboradorData['IsAdm'] ?? false;
+    print('DADOS FINAL METODO');
+  
+    
+    // Acessando os campos com os nomes corretos que vieram da API
+    final data = colaboradorData['data']; // Acessando o objeto dentro de 'data'
+    
+    nomeController.text = data['NOME'] ?? '';
+    cpfController.text = data['CPF'] ?? '';
+    rgController.text = data['RG'] ?? '';
+    dataNascimentoController.text = data['DATA_NASCIMENTO'] != null
+        ? DateFormat('dd/MM/yyyy').format(DateTime.parse(data['DATA_NASCIMENTO']))
+        : '';
+    dataAdmissaoController.text = data['DATA_ADMISSAO'] != null
+        ? DateFormat('dd/MM/yyyy').format(DateTime.parse(data['DATA_ADMISSAO']))
+        : '';
+    
+    // Tratamento especial para CARGA_HORARIA que vem no formato "HH:mm:ss"
+      cargaHorariaController.text = data['CARGA_HORARIA'] ?? '';
+    
+    ctpsController.text = data['CTPS'] ?? '';
+    matriculaController.text = data['MATRICULA'] ?? '';
+    cargoController.text = data['CARGO'] ?? '';
+    nisController.text = data['NIS'] ?? '';
+   
 
-      if (colaboradorData['imagem'] != null && colaboradorData['imagem'] is String) {
-        _imagemBytes = base64Decode(colaboradorData['imagem']);
+   if (data['IMAGEM'] != null) {
+      if (data['IMAGEM'] is String) {
+        // Se for string de bytes separados por vírgulas (como no Postman)
+        final bytesString = data['IMAGEM'] as String;
+        final bytesList = bytesString.split(',').map((e) => int.parse(e.trim())).toList();
+        _imagemBytes = Uint8List.fromList(bytesList);
+      } else if (data['IMAGEM'] is List) {
+        // Se for uma lista de bytes diretamente
+        _imagemBytes = Uint8List.fromList(data['IMAGEM'].cast<int>());
+      } else if (data['IMAGEM'].runtimeType.toString().contains('Buffer')) {
+        // Se for um objeto Buffer (Node.js)
+        final bufferData = data['IMAGEM']['data'] as List<dynamic>;
+        _imagemBytes = Uint8List.fromList(bufferData.cast<int>());
       }
-
-      _isLoading = false;
-    } catch (e) {
-      _isLoading = false;
-      throw Exception('Erro ao carregar dados do colaborador: $e');
     }
+
+    _isLoading = false;
+  } catch (e) {
+    _isLoading = false;
+    throw Exception('Erro ao carregar dados do colaborador: $e');
   }
+}
+
+
+
+  void _limparCampos() {
+    nomeController.clear();
+    cpfController.clear();
+    rgController.clear();
+    matriculaController.clear();
+    ctpsController.clear();
+    dataNascimentoController.clear();
+    dataAdmissaoController.clear();
+    nisController.clear();
+    cargoController.clear();
+    cargaHorariaController.clear();
+    _imagemSelecionada = null;
+    _imagemSelecionadaWeb = null;
+   
+  }
+
 
   Future<void> selecionarImagem() async {
     final result = await _imageService.selecionarImagem();
@@ -96,6 +136,11 @@ class AtualizarColaboradorController {
   }
 
   Future<void> atualizar(BuildContext context) async {
+     print('Valores ANTES de enviar controller:');
+  print('Nome: ${nomeController.text}');
+  print('NIS: ${nisController.text}');
+  print('CTPS: ${ctpsController.text}');
+  print('Cargo: ${cargoController.text}');
     if (nomeController.text.isEmpty ||
         cpfController.text.isEmpty ||
         rgController.text.isEmpty ||
@@ -105,8 +150,7 @@ class AtualizarColaboradorController {
         ctpsController.text.isEmpty ||
         nisController.text.isEmpty ||
         cargaHorariaController.text.isEmpty ||
-        cargoController.text.isEmpty ||
-        senhaController.text.isEmpty) {
+        cargoController.text.isEmpty ) {
       throw Exception('Todos os campos obrigatórios devem ser preenchidos.');
     }
 
@@ -119,22 +163,30 @@ class AtualizarColaboradorController {
         rg: rgController.text.replaceAll(RegExp(r'[^0-9]'), ''),
         dataNascimento: dateUtils.formatarDataParaISO(dataNascimentoController.text),
         dataAdmissao: dateUtils.formatarDataParaISO(dataAdmissaoController.text),
-        cargaHoraria: int.parse(cargaHorariaController.text),
+        cargaHoraria: dateUtils.formatarCargaHoraria(cargaHorariaController.text),
         ctps: ctpsController.text,
         cargo: cargoController.text,
         nis: nisController.text,
-        senha: senhaController.text,
-        isAdm: _isAdm,
-        imagem: kIsWeb ? _imagemSelecionadaWeb : _imagemSelecionada,
+       imagem: kIsWeb ? _imagemSelecionadaWeb : _imagemSelecionada,
       );
-
-      if (!response) {
-        throw Exception('Erro ao atualizar colaborador');
+       if (response) {
+        _mostrarSnackBar(context, 'Colaborador cadastrado com sucesso!');
+        _limparCampos();
+      } else {
+        _mostrarSnackBar(context, 'Erro ao cadastrar colaborador');
       }
-    } catch (e) {
-      throw Exception('Erro ao atualizar: $e');
+    } catch (error) {
+      _mostrarSnackBar(context, 'Erro ao conectar com a API: $error');
     }
+     
   }
+
+  void _mostrarSnackBar(BuildContext context, String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensagem), duration: Duration(seconds: 2)),
+    );
+  }
+
 
   Future<void> selecionarData(BuildContext context, TextEditingController controller) async {
     final dataSelecionada = await dateUtils.selecionarData(context);

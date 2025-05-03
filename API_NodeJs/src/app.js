@@ -1,20 +1,31 @@
+const prisma = require('./config/prisma');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
+const multer = require('multer');
 
-// Importe os controllers e verifique se cada um exporta todos os métodos necessários
-const EmpresaController = require('./controllers/EmpresaController');
 const ColaboradorController = require('./controllers/ColaboradorController');
+const EmpresaController = require('./controllers/EmpresaController');
 const UsuarioController = require('./controllers/UsuarioController');
 const RegistroPontoController = require('./controllers/RegistroPontoController');
 
+
 const app = express();
 
-// Middlewares - ORDEM CORRETA
-app.use(bodyParser.urlencoded({ extended: true })); // Para form-data - DEVE VIR PRIMEIRO
+app.use(cors());
+
+// Middleware para JSON
 app.use(express.json());
-app.use(cors()); // Configuração simplificada do CORS
+
+// Middleware para URL encoded
+app.use(express.urlencoded({ extended: true }));
+
+const upload = multer({
+  storage: multer.memoryStorage(), // Usa memória para armazenamento temporário
+  limits: {
+    fileSize: 5 * 1024 * 1024 // Limite de 5MB
+  }});
+
 
 // Rotas de Empresa
 app.post('/empresas', EmpresaController.criar);
@@ -24,9 +35,9 @@ app.delete('/empresas/:cnpj', EmpresaController.deletar);
 app.get('/empresas', EmpresaController.listar);
 
 // Rotas de Colaborador
-app.post('/colaboradores', ColaboradorController.uploadMiddleware, ColaboradorController.criar);
-app.get('/colaboradores/:cnpjEmpresa/:matricula', ColaboradorController.buscar);
-app.put('/colaboradores/:cnpjEmpresa/:matricula', ColaboradorController.atualizar);
+app.post('/colaboradores', upload.single('IMAGEM'), ColaboradorController.criar);
+app.get('/colaboradores/:cnpj/:matricula', ColaboradorController.buscar);
+app.put('/colaboradores/:cnpjEmpresa/:matricula', upload.single('IMAGEM'), ColaboradorController.atualizar);
 app.delete('/colaboradores/:cnpjEmpresa/:matricula', ColaboradorController.deletar);
 app.get('/colaboradores/:cnpjEmpresa', ColaboradorController.listarPorEmpresa);
 
@@ -40,9 +51,9 @@ app.post('/loginEmpresa', UsuarioController.loginEmpresa);
 app.post('/loginColaborador', UsuarioController.loginColaborador);
 
 // Rotas de Registro de Ponto
-app.post('/registros-ponto', RegistroPontoController.criar);
-app.get('/registros-ponto/:cnpjEmpresa/:matricula/:data', RegistroPontoController.buscar);
-app.delete('/registros-ponto', RegistroPontoController.deletar);
+app.post('/registros-ponto',upload.single('IMAGEM'), RegistroPontoController.criar);
+app.get('/registros-ponto/:cnpjEmpresa/:matricula/:data' , RegistroPontoController.buscar);
+app.delete('/registros-ponto/:cnpjEmpresa/:matricula/:data', RegistroPontoController.deletar); // ARRUMAR
 app.get('/registros-ponto/:cnpjEmpresa/:matricula', RegistroPontoController.listarPorColaborador);
 
 // Tratamento de erros
@@ -54,6 +65,7 @@ app.use((err, req, res, next) => {
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
+
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;

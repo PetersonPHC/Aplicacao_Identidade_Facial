@@ -67,27 +67,38 @@ double _convertHorasToDouble(String horaString) {
 }
 
 
-  Future<void> excluirColaborador(String matricula, BuildContext context) async {
-    try {
-      await _colaboradorService.excluirColaborador(matricula);
-      await fetchColaboradores(cnpj: matricula);
+Future<void> excluirColaborador(String cnpj, String matricula, BuildContext context,  bool mounted,) async {
+  print('DADOS FINAL METODO ');
+  print('Status: {$cnpj/$matricula}');
+  
+  try {
+    await _colaboradorService.excluirColaborador(cnpj, matricula);
+    await fetchColaboradores(cnpj: matricula);
+    
+    // Verifica se o widget ainda está montado antes de mostrar o SnackBar
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Colaborador excluído com sucesso!')),
       );
-    } catch (error) {
+    }
+  } catch (error) {
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao excluir colaborador: $error')),
       );
     }
   }
+}
 
   Future<void> resetarSenha(
+     String cnpj,
     String matricula, 
     String novaSenha, 
-    BuildContext context
+    BuildContext context,
+   
   ) async {
     try {
-      await _colaboradorService.resetarSenha(matricula, novaSenha);
+      await _colaboradorService.resetarSenha(cnpj ,matricula, novaSenha);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Senha atualizada com sucesso!')),
       );

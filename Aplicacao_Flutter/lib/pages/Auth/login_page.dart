@@ -18,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController matriculaController = TextEditingController();
   bool isObscureText = true;
+  
 
   // Removemos os FocusNodes e usaremos o gerenciamento automático de foco
 
@@ -27,12 +28,11 @@ class _LoginPageState extends State<LoginPage> {
     senhaController.dispose();
     super.dispose();
   }
+  Future<void> loginColaborador(String login, String senha, BuildContext context) async {
+  final url = Uri.parse("http://localhost:3000/loginColaborador");
+  final body = {'USUARIO_ID': login, 'SENHA': senha};
 
-Future<void> loginColaborador(String login, String senha, BuildContext context) async {
-  final url = Uri.parse("http://localhost:3000/colaborador/login"); // Use o IP correto
-  final body = {'login': login, 'senha': senha};
-
-  print("Corpo da requisição de login (colaborador): ${jsonEncode(body)}"); // Log do corpo da requisição
+  print("Corpo da requisição de login (colaborador): ${jsonEncode(body)}");
 
   try {
     final response = await http.post(
@@ -41,22 +41,34 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
       body: jsonEncode(body),
     );
 
-    print("Resposta do servidor (colaborador): ${response.statusCode}, ${response.body}"); // Log da resposta
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data['success']) {
+      
+      // Considerando que o login é bem-sucedido se recebermos os dados do colaborador
+      if (data['colaborador'] != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Login efetuado com sucesso")),
         );
+        
+        // Extraindo os dados da estrutura correta
+        final colaborador = data['colaborador'];
+        final String cnpjEmpresa = colaborador['CNPJ_EMPRESA']?.toString() ?? '';
+        final String matricula = colaborador['MATRICULA']?.toString() ?? login;
+        final bool isAdm = data['ADM'] ?? false;
+        
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => MainPage(isAdm: data['isAdm']),
+            builder: (context) => MainPage(
+              cnpjEmpresa: cnpjEmpresa,
+              matricula: matricula,
+              isAdm: isAdm,
+            ),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'])),
+          const SnackBar(content: Text("Credenciais inválidas ou usuário não encontrado")),
         );
       }
     } else {
@@ -65,9 +77,9 @@ Future<void> loginColaborador(String login, String senha, BuildContext context) 
       );
     }
   } catch (e) {
-    print("Erro durante a requisição (colaborador): $e"); // Log de erro
+    print("Erro durante a requisição (colaborador): $e");
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Erro durante a requisição")),
+      SnackBar(content: Text("Erro durante a requisição: ${e.toString()}")),
     );
   }
 }

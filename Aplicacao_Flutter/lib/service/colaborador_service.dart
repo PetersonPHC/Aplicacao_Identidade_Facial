@@ -20,7 +20,7 @@ class ColaboradorService {
     required String matricula,
     required String ctps,
     required String nis,
-    required int cargaHoraria,
+    required String cargaHoraria,
     required String cargo,
     required String senha,
     required bool isAdm,
@@ -151,30 +151,55 @@ class ColaboradorService {
     required String rg,
     required String dataNascimento,
     required String dataAdmissao,
-    required int cargaHoraria,
+    required String cargaHoraria,
     required String ctps,
     required String cargo,
     required String nis,
-    required String senha,
-    required bool isAdm,
+  
     dynamic imagem,
   }) async {
-    try {
-      var request = http.MultipartRequest('PUT', Uri.parse(_baseUrlColaboradores));
+print('Dados recebidos pelo service:');
+  print('Nome: $nome');
+  print('NIS: $nis');
+  print('CTPS: $ctps');
+  print('Cargo: $cargo');
 
-      request.fields['Matricula'] = matricula;
-      request.fields['Nome'] = nome;
-      request.fields['CPF'] = cpf;
-      request.fields['RG'] = rg;
-      request.fields['DataNascimento'] = dataNascimento;
-      request.fields['DataAdmissao'] = dataAdmissao;
-      request.fields['NIS'] = nis;
-      request.fields['CTPS'] = ctps;
-      request.fields['CargaHoraria'] = cargaHoraria.toString();
-      request.fields['Cargo'] = cargo;
-      request.fields['CNPJ'] = cnpj;
-      request.fields['Senha'] = senha;
-      request.fields['IsAdm'] = isAdm.toString();
+
+  
+ try {
+    var request = http.MultipartRequest(
+      'PUT', 
+      Uri.parse('$_baseUrlColaboradores/$cnpj/$matricula')
+    );
+
+    // Adicione os campos como form-data
+    request.fields.addAll({
+      'MATRICULA': matricula,
+      'NOME': nome,
+      'CPF': cpf,
+      'RG': rg,
+      'DATA_NASCIMENTO': dataNascimento,
+      'DATA_ADMISSAO': dataAdmissao,
+      'NIS': nis,
+      'CTPS': ctps,
+      'CARGA_HORARIA': cargaHoraria,
+      'CARGO': cargo,
+      'CNPJ': cnpj,
+    });
+      print('Dados sendo enviados para atualização:');
+print('MATRICULA: $matricula');
+print('NOME: $nome');
+print('CPF: $cpf');
+print('RG: $rg');
+print('DATA_NASCIMENTO: $dataNascimento');
+print('DATA_ADMISSAO: $dataAdmissao');
+print('CARGA_HORARIA: $cargaHoraria');
+print('CTPS: $ctps');
+print('CARGO: $cargo');
+print('NIS: $nis');
+print('CNPJ: $cnpj');
+
+
 
       if (imagem != null) {
         if (imagem is File) {
@@ -195,7 +220,7 @@ class ColaboradorService {
           request.files.add(imagemBytes);
         }
       }
-
+        print('request: {$request}');
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
 
@@ -235,23 +260,25 @@ Future<List<Map<String, dynamic>>?> buscarTodosColaboradores({required String cn
     throw Exception('Erro ao buscar colaboradores: $e');
   }
 }
-  Future<void> excluirColaborador(String matricula) async {
+  Future<void> excluirColaborador(String cnpj, String matricula) async {
+    
+    print('DADOS FINAL METODO ');
+     print('Status: {$_baseUrlColaboradores/$cnpj/$matricula}');
     final response = await http.delete(
-      Uri.parse('$_baseUrlColaboradores/$matricula'),
+      Uri.parse('$_baseUrlColaboradores/$cnpj/$matricula'),
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 204) {
       throw Exception('Erro ao excluir colaborador');
     }
   }
 
-  Future<void> resetarSenha(String matricula, String novaSenha) async {
+  Future<void> resetarSenha(String cnpj, String matricula, String novaSenha) async {
     final response = await http.put(
-      Uri.parse('$_baseUrlColaboradores/$matricula/senha'),
+      Uri.parse('$_baseUrlUsuarios/$cnpj/$matricula'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'senhaAtual': '', // Ajuste conforme sua API
-        'novaSenha': novaSenha,
+        'SENHA': novaSenha,
       }),
     );
 

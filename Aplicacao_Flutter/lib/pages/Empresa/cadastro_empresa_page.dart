@@ -61,7 +61,7 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
         ],
       ),
       child: const Text(
-        "Venha conhecer o PONTO-VIEW a ferramenta que vai simplificar o seu registro de ponto",
+        "Venha conhecer o IDENTIDADE-FACIAL a ferramenta que vai simplificar o seu registro de ponto",
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Color.fromARGB(255, 0, 0, 0),

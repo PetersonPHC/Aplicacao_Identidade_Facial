@@ -81,7 +81,7 @@ class ColaboradorController {
         matricula: matriculaController.text,
         ctps: ctpsController.text,
         nis: nisController.text,
-        cargaHoraria: int.parse(cargaHorariaController.text),
+        cargaHoraria: dateUtils.formatarCargaHoraria(cargaHorariaController.text),
         cargo: cargoController.text,
         senha: senhaController.text,
         isAdm: _isAdm,
@@ -110,6 +110,7 @@ class ColaboradorController {
     nisController.clear();
     cargoController.clear();
     senhaController.clear();
+    cargaHorariaController.clear();
     _imagemSelecionada = null;
     _imagemSelecionadaWeb = null;
     _isAdm = false;

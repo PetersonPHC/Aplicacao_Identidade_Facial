@@ -141,25 +141,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                    
 
                       if (widget.isAdm) SizedBox(height: 15),
-                      if (widget.isAdm)
-                        ListTile(
-                          leading: const Icon(Icons.access_time_filled_sharp,
-                              color: Color.fromARGB(255, 0, 0, 0)),
-                          title: Text(
-                            "Registro de ponto",
-                            style: GoogleFonts.roboto(
-                                color: const Color.fromARGB(255, 0, 0, 0)),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    RegistroPonto(),
-                              ),
-                            );
-                          },
-                        ),
-                      SizedBox(height: 15),
+                      
                       
                       ListTile(
                         leading: const Icon(Icons.exit_to_app_sharp,
@@ -190,7 +172,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               const SizedBox(height: 20),
               Text(
-                "PONTO-VIEW o seu sistema de ponto",
+                "IDENTIDADE-FACIAL o seu sistema de ponto",
                 style: GoogleFonts.roboto(
                   color: const Color.fromARGB(255, 0, 0, 0),
                   fontSize: 20,
@@ -245,7 +227,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Transforme sua jornada de trabalho em algo simples e ágil com Work-Time",
+                          "Transforme sua jornada de trabalho em algo simples e ágil com IDENTIDADE-FACIAL",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: 15,

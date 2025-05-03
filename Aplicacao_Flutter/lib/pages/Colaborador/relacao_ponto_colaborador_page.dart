@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:reconhecimento/widgets/modals.dart';
-class CalendarPage extends StatefulWidget {
-    final String matricula;
-  
-  const CalendarPage({required this.matricula});
-  
-  @override
+class relacaoPontoPage extends StatefulWidget {
+  final String matricula;
+  final String cnpj;
 
-  relacaoPontoColaborador createState() => relacaoPontoColaborador();
+  const relacaoPontoPage({
+    required this.matricula,
+    required this.cnpj,
+    super.key,
+  });
+
+  @override
+  _RelacaoPontoColaboradorState createState() => _RelacaoPontoColaboradorState();
 }
 
-class relacaoPontoColaborador extends State<CalendarPage> {
+// Classe do State (privada, com _ no início)
+class _RelacaoPontoColaboradorState extends State<relacaoPontoPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;

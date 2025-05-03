@@ -52,16 +52,35 @@ class ColaboradorService {
     // Verifica se existe
     await this.buscarColaborador(matricula, cnpjEmpresa);
     
-    // Formatação dos campos de tempo
+    if (colaboradorData.DATA_ADMISSAO) {
+      colaboradorData.DATA_ADMISSAO = new Date(colaboradorData.DATA_ADMISSAO + 'T00:00:00.000Z');
+    }
+  
+    // Formatação da carga horária (corrigida)
     if (colaboradorData.CARGA_HORARIA) {
-      colaboradorData.CARGA_HORARIA = new Date(`1970-01-01T${colaboradorData.CARGA_HORARIA}`);
+      console.log('[ColaboradorService] Formatando CARGA_HORARIA:', colaboradorData.CARGA_HORARIA);
+      
+      // Garante o formato HH:mm:ss
+      const timeParts = colaboradorData.CARGA_HORARIA.split(':');
+      if (timeParts.length < 2 || timeParts.length > 3) {
+        throw new Error('Formato de CARGA_HORARIA inválido. Use HH:mm ou HH:mm:ss');
+      }
+      
+      // Completa com segundos se necessário
+      const formattedTime = timeParts.length === 2 
+        ? `${colaboradorData.CARGA_HORARIA}:00` 
+        : colaboradorData.CARGA_HORARIA;
+      
+      const dateObj = new Date(`1970-01-01T${formattedTime}`);
+      
+      if (isNaN(dateObj.getTime())) {
+        throw new Error(`Falha ao converter CARGA_HORARIA: ${colaboradorData.CARGA_HORARIA}`);
+      }
+      
+      colaboradorData.CARGA_HORARIA = dateObj;
     }
-    
-    if (colaboradorData.BANCO_DE_HORAS) {
-      colaboradorData.BANCO_DE_HORAS = new Date(`1970-01-01T${colaboradorData.BANCO_DE_HORAS}`);
-    }
-    
-    // Remove campos que não devem ser atualizados
+  
+    // Filtra campos permitidos
     const camposPermitidos = [
       'NOME', 'CPF', 'RG', 'DATA_NASCIMENTO', 'DATA_ADMISSAO',
       'NIS', 'CTPS', 'CARGA_HORARIA', 'CARGO', 'IMAGEM', 'BANCO_DE_HORAS'

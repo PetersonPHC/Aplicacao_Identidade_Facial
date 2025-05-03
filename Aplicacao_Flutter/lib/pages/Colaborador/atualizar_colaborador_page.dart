@@ -104,15 +104,12 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
           SizedBox(height: 8),
           _buildTextFieldRow("NIS: ", _controller.nisController, isNumber: true),
           SizedBox(height: 8),
-          _buildTextFieldRow("Carga Horaria: ", _controller.cargaHorariaController, isNumber: true),
+          _buildCargaHorariaRow("Carga Horaria: ", _controller.cargaHorariaController),
           SizedBox(height: 8),
           _buildTextFieldRow("Cargo: ", _controller.cargoController, maxLength: 50),
           SizedBox(height: 8),
           _buildDateFieldRow("Data de Admissão: ", _controller.dataAdmissaoController),
-          SizedBox(height: 8),
-          _buildTextFieldRow("Senha: ", _controller.senhaController, maxLength: 50, isPassword: true),
-          SizedBox(height: 8),
-          _buildAdminCheckbox(),
+         
         ],
       ),
     );
@@ -125,63 +122,91 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
         Expanded(
           flex: 8,
           child: Column(
-            children: [
-              GestureDetector(
-                onTap: _controller.selecionarImagem,
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    shape: BoxShape.circle,
-                  ),
-                  child: _controller.imagemBytes != null
-                      ? ClipOval(
-                          child: Image.memory(
-                            _controller.imagemBytes!,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 200,
-                          ),
-                        )
-                      : _controller.imagemSelecionada != null
-                          ? ClipOval(
-                              child: Image.file(
-                                _controller.imagemSelecionada!,
-                                fit: BoxFit.cover,
-                                width: 200,
-                                height: 200,
-                              ),
-                            )
-                          : _controller.imagemSelecionadaWeb != null
-                              ? ClipOval(
-                                  child: Image.memory(
-                                    _controller.imagemSelecionadaWeb!,
-                                    fit: BoxFit.cover,
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                )
-                              : Icon(
-                                  Icons.add_a_photo,
-                                  color: Colors.black,
-                                  size: 50,
-                                ),
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                "Clique para adicionar uma imagem",
-                style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
-              ),
-            ],
-          ),
+  children: [
+    GestureDetector(
+      onTap: _controller.selecionarImagem,
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          shape: BoxShape.circle,
+        ),
+        child: _buildImageWidget(),
+      ),
+    ),
+    SizedBox(height: 8),
+    Text(
+      "Clique para adicionar uma imagem",
+      style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+    ),
+  ],
+),
         ),
         Expanded(child: Container()),
       ],
     );
   }
 
+
+
+Widget _buildImageWidget() {
+  // 1. Verifica se tem imagem da API (bytes)
+  if (_controller.imagemBytes != null) {
+    try {
+      return ClipOval(
+        child: Image.memory(
+          _controller.imagemBytes!,
+          fit: BoxFit.cover,
+          width: 200,
+          height: 200,
+          errorBuilder: (context, error, stackTrace) {
+            // Se houver erro ao carregar os bytes, mostra ícone padrão
+            return _buildDefaultIcon();
+          },
+        ),
+      );
+    } catch (e) {
+      print('Erro ao carregar imagem da API: $e');
+      return _buildDefaultIcon();
+    }
+  }
+  
+  // 2. Verifica se tem imagem selecionada do dispositivo
+  if (_controller.imagemSelecionada != null) {
+    return ClipOval(
+      child: Image.file(
+        _controller.imagemSelecionada!,
+        fit: BoxFit.cover,
+        width: 200,
+        height: 200,
+      ),
+    );
+  }
+  
+  // 3. Verifica se tem imagem da web
+  if (_controller.imagemSelecionadaWeb != null) {
+    return ClipOval(
+      child: Image.memory(
+        _controller.imagemSelecionadaWeb!,
+        fit: BoxFit.cover,
+        width: 200,
+        height: 200,
+      ),
+    );
+  }
+  
+  // 4. Caso padrão (nenhuma imagem disponível)
+  return _buildDefaultIcon();
+}
+
+Widget _buildDefaultIcon() {
+  return Icon(
+    Icons.add_a_photo,
+    color: Colors.black,
+    size: 50,
+  );
+}
   Widget _buildTextFieldRow(String label, TextEditingController controller, {
     bool isNumber = false, 
     int? maxLength, 
@@ -220,6 +245,73 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
       ],
     );
   }
+Widget _buildCargaHorariaRow(
+  String label,
+  TextEditingController controller,
+) {
+  // Função interna para formatar o texto enquanto digita
+  void _formatarInput(String value) {
+    final text = value.replaceAll(RegExp(r'[^0-9]'), '');
+    var formatted = '';
+
+    if (text.length >= 2) {
+      formatted = '${text.substring(0, 2)}';
+      if (text.length >= 4) {
+        formatted += ':${text.substring(2, 4)}';
+        if (text.length >= 6) {
+          formatted += ':${text.substring(4, 6)}';
+        } else if (text.length > 4) {
+          formatted += ':${text.substring(4)}';
+        }
+      } else if (text.length > 2) {
+        formatted += ':${text.substring(2)}';
+      }
+    } else {
+      formatted = text;
+    }
+
+    // Atualiza o controlador apenas se o texto foi modificado
+    if (controller.text != formatted) {
+      controller.value = controller.value.copyWith(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+        composing: TextRange.empty,
+      );
+    }
+  }
+
+  return Row(
+    children: [
+      Text(label,style: GoogleFonts.roboto(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w700)),
+      Expanded(
+        child: TextFormField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: 'HH:MM:SS',
+            border: OutlineInputBorder(),
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
+          ],
+          onChanged: _formatarInput,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, insira a carga horária';
+            }
+            if (!RegExp(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$').hasMatch(value)) {
+              return 'Formato inválido (use HH:MM:SS)';
+            }
+            return null;
+          },
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildDateFieldRow(String label, TextEditingController controller) {
     return Row(
@@ -252,30 +344,7 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
     );
   }
 
-  Widget _buildAdminCheckbox() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          "Administrador: ",
-          style: GoogleFonts.roboto(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        Checkbox(
-          value: _controller.isAdm,
-          onChanged: (bool? value) {
-            setState(() {
-              _controller.isAdm = value ?? false;
-            });
-          },
-        ),
-        Text(_controller.isAdm ? "Sim" : "Não"),
-      ],
-    );
-  }
+
 
   Widget _buildUpdateButton() {
     return Padding(
@@ -284,12 +353,7 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
         onPressed: () async {
           try {
             await _controller.atualizar(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Colaborador atualizado com sucesso!'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -314,4 +378,7 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
       ),
     );
   }
+
+  
 }
+  

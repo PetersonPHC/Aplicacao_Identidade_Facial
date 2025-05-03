@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reconhecimento/pages/colaborador/relacao_ponto_colaborador_page.dart';
+import 'package:reconhecimento/pages/Colaborador/relacao_ponto_colaborador_page.dart';
 import 'package:reconhecimento/pages/colaborador/atualizar_colaborador_page.dart';
 import 'package:reconhecimento/pages/colaborador/perfil_page.dart';
 import 'package:reconhecimento/widgets/colaborador_card.dart';
@@ -37,25 +37,28 @@ class _RelacaoPageState extends State<RelacaoPage> {
     }
   }
 
-  void _redirecionarPonto(String matricula) {
+  void _redirecionarPonto(String matricula, String cnpj) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CalendarPage(matricula: matricula),
+        builder: (context) => relacaoPontoPage( matricula: matricula, cnpj: cnpj),
       ),
     );
   }
 
   void _redirecionarPerfil(String matricula, String cnpj) {
-    //Navigator.push(
-     // context,
-      //MaterialPageRoute(
-        //builder: (context) => PerfilPage(matricula: matricula, cnpj: cnpj),
-    //  ),
-    //);
+    Navigator.push(
+     context,
+    MaterialPageRoute(
+    builder: (context) => PerfilPage(matricula: matricula, cnpj: cnpj),
+      ),
+    );
   }
 
   void _redirecionarCadastro(String matricula, String cnpj) {
+    
+    print('DADOS FINAL METODO ' '$matricula' '$cnpj' );
+    
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -77,8 +80,11 @@ class _RelacaoPageState extends State<RelacaoPage> {
               builder: (context) => ExclusaoDialog(
                 matricula: colaborador['matricula'],
                 onConfirm: () => _controller.excluirColaborador(
+                  
+                  colaborador['cnpj'],
                   colaborador['matricula'], 
                   context,
+                  mounted,
                 ).then((_) => _carregarColaboradores()),
               ),
             );
@@ -87,8 +93,10 @@ class _RelacaoPageState extends State<RelacaoPage> {
             showModalBottomSheet(
               context: context,
               builder: (context) => ResetSenhaDialog(
+                
                 matricula: colaborador['matricula'],
                 onConfirm: (novaSenha) => _controller.resetarSenha(
+                  colaborador['cnpj'],
                   colaborador['matricula'], 
                   novaSenha, 
                   context,
@@ -97,7 +105,7 @@ class _RelacaoPageState extends State<RelacaoPage> {
             );
             break;
           case 'Relacao_Ponto':
-            _redirecionarPonto(colaborador['matricula']);
+            _redirecionarPonto(colaborador['matricula'], colaborador['cnpj']);
             break;
           case 'Alterar_Dados':
             _redirecionarCadastro(colaborador['matricula'], colaborador['cnpj']);

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:reconhecimento/service/colaborador_service.dart';
@@ -14,15 +13,17 @@ class PerfilController {
 
   final ColaboradorService _colaboradorService = ColaboradorService();
 
+  // Variáveis para armazenar os dados
   String nome = '';
   String cpf = '';
   String rg = '';
   String dataNascimento = '';
+  String dataAdmissao = '';
+  String cargaHoraria = '';
   String ctps = '';
   String matriculaColab = '';
   String cargo = '';
   String nis = '';
-  String dataAdmissao = '';
   Uint8List? imagemBytes;
   bool isLoading = true;
 
@@ -30,22 +31,39 @@ class PerfilController {
     try {
       final colaboradorData = await _colaboradorService.buscarColaborador(cnpj, matricula);
 
-      nome = colaboradorData['Nome'] ?? '';
-      cpf = colaboradorData['CPF'] ?? '';
-      rg = colaboradorData['RG'] ?? '';
-      dataNascimento = colaboradorData['DataNascimento'] != null
-          ? DateFormat('dd/MM/yyyy').format(DateTime.parse(colaboradorData['DataNascimento']))
+      // Acessando os campos com os nomes corretos que vieram da API
+      final data = colaboradorData['data']; // Acessando o objeto dentro de 'data'
+      
+      nome = data['NOME'] ?? '';
+      cpf = data['CPF'] ?? '';
+      rg = data['RG'] ?? '';
+      dataNascimento = data['DATA_NASCIMENTO'] != null
+          ? DateFormat('dd/MM/yyyy').format(DateTime.parse(data['DATA_NASCIMENTO']))
           : '';
-      dataAdmissao = colaboradorData['DataAdmissao'] != null
-          ? DateFormat('dd/MM/yyyy').format(DateTime.parse(colaboradorData['DataAdmissao']))
+      dataAdmissao = data['DATA_ADMISSAO'] != null
+          ? DateFormat('dd/MM/yyyy').format(DateTime.parse(data['DATA_ADMISSAO']))
           : '';
-      ctps = colaboradorData['CTPS'] ?? '';
-      matriculaColab = colaboradorData['Matricula'] ?? '';
-      cargo = colaboradorData['Cargo'] ?? '';
-      nis = colaboradorData['NIS'] ?? '';
+      cargaHoraria = data['CARGA_HORARIA'] ?? '';
+      ctps = data['CTPS'] ?? '';
+      matriculaColab = data['MATRICULA'] ?? '';
+      cargo = data['CARGO'] ?? '';
+      nis = data['NIS'] ?? '';
 
-      if (colaboradorData['imagem'] != null && colaboradorData['imagem'] is String) {
-        imagemBytes = base64Decode(colaboradorData['imagem']);
+      // Tratamento da imagem igual ao da AtualizarColaboradorController
+      if (data['IMAGEM'] != null) {
+        if (data['IMAGEM'] is String) {
+          // Se for string de bytes separados por vírgulas (como no Postman)
+          final bytesString = data['IMAGEM'] as String;
+          final bytesList = bytesString.split(',').map((e) => int.parse(e.trim())).toList();
+          imagemBytes = Uint8List.fromList(bytesList);
+        } else if (data['IMAGEM'] is List) {
+          // Se for uma lista de bytes diretamente
+          imagemBytes = Uint8List.fromList(data['IMAGEM'].cast<int>());
+        } else if (data['IMAGEM'].runtimeType.toString().contains('Buffer')) {
+          // Se for um objeto Buffer (Node.js)
+          final bufferData = data['IMAGEM']['data'] as List<dynamic>;
+          imagemBytes = Uint8List.fromList(bufferData.cast<int>());
+        }
       }
 
       isLoading = false;

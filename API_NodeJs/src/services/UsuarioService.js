@@ -63,10 +63,10 @@ class UsuarioService {
   }
 
 
-  async autenticarColaborador(matricula, senha) {
-    const colaborador = await UsuarioRepository.findByMatricula(matricula);
+  async autenticarColaborador(USUARIO_ID, senha) {
+    const colaborador = await UsuarioRepository.findByMatricula(USUARIO_ID);
     if (!colaborador) {
-      throw new Error('colaborador não encontrada');
+      throw new Error('colaborador não encontrado');
     }
     if (colaborador.SENHA !== senha) {
       throw new Error('Senha incorreta');
