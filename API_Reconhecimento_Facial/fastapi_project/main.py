@@ -40,15 +40,17 @@ async def comparar_faces(imagem_cadastrada: UploadFile = File(...), imagem_regis
     imagem_cadastrada_array = np.array(imagem_cadastrada_pil)
     imagem_registro_ponto_array = np.array(imagem_registro_ponto_pil)
 
-    if(verificar_face(imagem_registro_ponto_encode) == False):
+    # Tenta codificar as faces
+    try:
+        imagem_cadastrada_encode = fr.face_encodings(imagem_cadastrada_array)[0]
+        imagem_registro_ponto_encode = fr.face_encodings(imagem_registro_ponto_array)[0]
+    # Caso não seja possível codificar a face (ex: Face não humana)
+    except Exception as e:
         return {
             "face_detectada": False,
             "faces_iguais": False
         }
-    
-    # Codifica as faces
-    imagem_cadastrada_encode = fr.face_encodings(imagem_cadastrada_array)[0]
-    imagem_registro_ponto_encode = fr.face_encodings(imagem_registro_ponto_array)[0]
+
 
     # Compara as faces
     resultado = fr.compare_faces([imagem_cadastrada_encode], imagem_registro_ponto_encode)
