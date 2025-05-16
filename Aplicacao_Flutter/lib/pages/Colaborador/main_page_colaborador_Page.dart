@@ -18,8 +18,8 @@ class MainPage extends StatefulWidget {
   const MainPage(
       {super.key,
       required this.isAdm,
-      required String this.cnpjEmpresa,
-      required String this.matricula});
+      required  this.cnpjEmpresa,
+      required  this.matricula});
 
   @override
   State<MainPage> createState() => MainPageState();
@@ -82,6 +82,7 @@ class MainPageState extends State<MainPage> {
                               color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                          Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (context) => MainPage(
@@ -101,16 +102,16 @@ class MainPageState extends State<MainPage> {
                               color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                          Navigator.of(context).pop();
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => RegistroPontoPage(
-                                    
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegistroPontoPage(
                                 cnpj: widget.cnpjEmpresa,
                                 matricula: widget.matricula,
-                                  ),
-                                ),
-                            );
+                              ),
+                            ),
+                          );
                         },
                       ),
                       SizedBox(height: 15),
@@ -123,10 +124,10 @@ class MainPageState extends State<MainPage> {
                               color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                          Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => relacaoPontoPage(
-                                // Correto: usa a classe do Widget
+                              builder: (context) => RelacaoPontoPage(
                                 cnpj: widget.cnpjEmpresa,
                                 matricula: widget.matricula,
                               ),
@@ -144,6 +145,7 @@ class MainPageState extends State<MainPage> {
                               color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                          Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => PerfilPage(
@@ -164,6 +166,7 @@ class MainPageState extends State<MainPage> {
                                 color: const Color.fromARGB(255, 0, 0, 0)),
                           ),
                           onTap: () {
+                            Navigator.of(context).pop();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
@@ -182,6 +185,7 @@ class MainPageState extends State<MainPage> {
                               color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                          Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const LoginPage(),
@@ -205,7 +209,7 @@ class MainPageState extends State<MainPage> {
                 "IDENTIDADE-FACIAL o seu sistema de ponto",
                 style: GoogleFonts.roboto(
                   color: const Color.fromARGB(255, 0, 0, 0),
-                  fontSize: 20,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
@@ -225,8 +229,8 @@ class MainPageState extends State<MainPage> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(255, 0, 22, 57)
-                              .withOpacity(0.8),
+                          color: Color.fromRGBO(2, 44, 79,
+                              0.8), // Using RGBO constructor which takes opacity directly
                           offset: const Offset(0, 6),
                           blurRadius: 15,
                         ),
@@ -242,7 +246,7 @@ class MainPageState extends State<MainPage> {
                               "Registre seu ponto",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 19,
+                                fontSize: 17,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -283,16 +287,15 @@ class MainPageState extends State<MainPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RegistroPontoPage(
-                                    
-                                cnpj: widget.cnpjEmpresa,
-                                matricula: widget.matricula,
-                                  ),
+                                builder: (context) => RegistroPontoPage(
+                                  cnpj: widget.cnpjEmpresa,
+                                  matricula: widget.matricula,
                                 ),
+                              ),
                             );
                           },
                           child: Text(
-                            "Acessar Ponto",
+                            "Registrar Ponto",
                             style: GoogleFonts.roboto(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -315,8 +318,8 @@ class MainPageState extends State<MainPage> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(255, 0, 22, 57)
-                              .withOpacity(0.8),
+                          color: Color.fromRGBO(2, 44, 79,
+                              0.8), // Using RGBO constructor which takes opacity directly
                           offset: const Offset(0, 6),
                           blurRadius: 15,
                         ),
@@ -332,7 +335,7 @@ class MainPageState extends State<MainPage> {
                               "Histórico de ponto",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 19,
+                                fontSize: 17,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -371,14 +374,13 @@ class MainPageState extends State<MainPage> {
                           ),
                           onPressed: () {
                             Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => relacaoPontoPage(
-                                
-                                cnpj: widget.cnpjEmpresa,
-                                matricula: widget.matricula,
+                              MaterialPageRoute(
+                                builder: (context) => RelacaoPontoPage(
+                                  cnpj: widget.cnpjEmpresa,
+                                  matricula: widget.matricula,
+                                ),
                               ),
-                            ),
-                          );
+                            );
                           },
                           child: Text(
                             "Histórico de Ponto",
@@ -391,7 +393,7 @@ class MainPageState extends State<MainPage> {
                       ],
                     ),
                   ),
-                   Container(
+                  Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(8.0),
                     padding: const EdgeInsets.all(16.0),
@@ -404,8 +406,8 @@ class MainPageState extends State<MainPage> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(255, 0, 22, 57)
-                              .withOpacity(0.8),
+                          color: Color.fromRGBO(2, 44, 79,
+                              0.8), // Using RGBO constructor which takes opacity directly
                           offset: const Offset(0, 6),
                           blurRadius: 15,
                         ),
@@ -421,7 +423,7 @@ class MainPageState extends State<MainPage> {
                               "Acesse seu perfil",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 19,
+                                fontSize: 17,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -459,13 +461,13 @@ class MainPageState extends State<MainPage> {
                             ),
                           ),
                           onPressed: () {
-                               Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PerfilPage(
-                                  cnpj: widget.cnpjEmpresa,
-                                  matricula: widget.matricula),
-                            ),
-                          );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PerfilPage(
+                                    cnpj: widget.cnpjEmpresa,
+                                    matricula: widget.matricula),
+                              ),
+                            );
                           },
                           child: Text(
                             "Perfil",

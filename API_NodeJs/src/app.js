@@ -42,7 +42,9 @@ app.delete('/colaboradores/:cnpjEmpresa/:matricula', ColaboradorController.delet
 app.get('/colaboradores/:cnpjEmpresa', ColaboradorController.listarPorEmpresa);
 
 // Rotas de Usuário
-app.post('/usuarios', UsuarioController.criar);
+
+app.post('/usuarios/empresa', UsuarioController.criarEmpresa);
+app.post('/usuarios/colaborador', UsuarioController.criarColaborador);
 app.get('/usuarios/:cnpjEmpresa/:matricula', UsuarioController.buscar);
 app.put('/usuarios/:cnpjEmpresa/:matricula', UsuarioController.atualizar);
 app.delete('/usuarios/:cnpjEmpresa/:matricula', UsuarioController.deletar);
@@ -52,6 +54,8 @@ app.post('/loginColaborador', UsuarioController.loginColaborador);
 
 // Rotas de Registro de Ponto
 app.post('/registros-ponto',upload.single('IMAGEM'), RegistroPontoController.criar);
+
+app.post('/registros-ponto/incluir' , RegistroPontoController.incluirPonto);
 app.get('/registros-ponto/:cnpjEmpresa/:matricula/:data' , RegistroPontoController.buscar);
 app.delete('/registros-ponto/:cnpjEmpresa/:matricula/:data', RegistroPontoController.deletar); // ARRUMAR
 app.get('/registros-ponto/:cnpjEmpresa/:matricula', RegistroPontoController.listarPorColaborador);

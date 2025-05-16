@@ -21,6 +21,21 @@ class UsuarioRepository {
     });
   }
 
+  
+
+  async createEmpresa(usuarioData) {
+    return await prisma.uSUARIO_EMPRESA.create({
+      data: {
+        USUARIO_ID: usuarioData.USUARIO_ID,
+        SENHA: usuarioData.SENHA,
+        ADM : usuarioData.ADM
+      },
+      include: {
+        empresa : true
+      }
+    });
+  }
+
   async findByMatricula(matricula) {
     console.log('Dados normalizados para criação:', matricula);
     return await this.prisma.uSUARIO_COLABORADOR.findFirst({
@@ -35,7 +50,7 @@ class UsuarioRepository {
 
   // Busca empresa APENAS por CNPJ (para login de empresa)
   async findByCnpj(id) {
-    return await this.prisma.USUARIO_EMPRESA.findFirst({
+    return await this.prisma.uSUARIO_EMPRESA.findFirst({
       where: {
         USUARIO_ID: id,
       },

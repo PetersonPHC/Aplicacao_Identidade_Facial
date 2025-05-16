@@ -54,7 +54,6 @@ class RelacaoController {
   }
 }
 
-// Função auxiliar para converter "HH:MM:SS" para horas decimais
 double _convertHorasToDouble(String horaString) {
   try {
     final parts = horaString.split(':');
@@ -68,9 +67,7 @@ double _convertHorasToDouble(String horaString) {
 
 
 Future<void> excluirColaborador(String cnpj, String matricula, BuildContext context,  bool mounted,) async {
-  print('DADOS FINAL METODO ');
-  print('Status: {$cnpj/$matricula}');
-  
+ 
   try {
     await _colaboradorService.excluirColaborador(cnpj, matricula);
     await fetchColaboradores(cnpj: matricula);
@@ -108,4 +105,26 @@ Future<void> excluirColaborador(String cnpj, String matricula, BuildContext cont
       );
     }
   }
+
+  
+
+  Future<void> tornarAdministrador(
+     String cnpj,
+     String matricula, 
+     bool adm,
+     BuildContext context,
+   
+  ) async {
+    try {
+      await _colaboradorService.darAdmin(cnpj ,matricula,  adm);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A permissão de adminstrador foi alterada')),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao atualizar senha: $error')),
+      );
+    }
+  }
+    
 }

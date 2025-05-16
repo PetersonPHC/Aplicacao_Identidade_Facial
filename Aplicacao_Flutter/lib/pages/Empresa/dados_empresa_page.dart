@@ -94,13 +94,13 @@ class _DadosEmpresaPageState extends State<DadosEmpresaPage> {
           color: const Color.fromARGB(255, 4, 47, 115),
           width: 2.0,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(255, 2, 44, 79).withOpacity(0.8),
-            offset: const Offset(0, 6),
-            blurRadius: 15,
-          ),
-        ],
+       boxShadow: [
+  BoxShadow(
+    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
+    offset: const Offset(0, 6),
+    blurRadius: 15,
+  ),
+],
       ),
       child: Column(
         children: [
@@ -108,19 +108,23 @@ class _DadosEmpresaPageState extends State<DadosEmpresaPage> {
           const SizedBox(height: 8),
           _buildMaskedTextFieldRow("CNPJ:", _controller.cnpjController, enabled: false),
           const SizedBox(height: 8),
+           _buildCodigoTextFieldRow("CODIGO_EMPRESA:", _controller.codigoEmpresaController, enabled: false),
+          const SizedBox(height: 8),
           _buildMaskedTextFieldRow("CEP:", _controller.cepController),
           const SizedBox(height: 8),
           _buildTextFieldRow("UF:", _controller.UFController),
           const SizedBox(height: 8),
-          _buildTextFieldRow("Cidade:", _controller.estadoCidadeController),
+          _buildTextFieldRow("Cidade:", _controller.cidadeController),
           const SizedBox(height: 8),
           _buildTextFieldRow("Bairro:", _controller.bairroController),
           const SizedBox(height: 8),
-          _buildTextFieldRow("Rua / Avenida:", _controller.ruaAvenidaController),
+          _buildTextFieldRow("logradouro:", _controller.logradouroController),
           const SizedBox(height: 8),
           _buildTextFieldRow("Numero:", _controller.numeroController),
           const SizedBox(height: 8),
           _buildTextFieldRow("Complemento:", _controller.complementoController),
+          const SizedBox(height: 8),
+          _buildTextFieldRow("Email:", _controller.emailController),
           const SizedBox(height: 8),
           _buildDateFieldRow("Data de Criação:", _controller.dataCriacaoController),
         ],
@@ -158,6 +162,35 @@ class _DadosEmpresaPageState extends State<DadosEmpresaPage> {
   }
 
   Widget _buildMaskedTextFieldRow(String label, MaskedTextController controller, {bool enabled = true}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(label,
+            style: GoogleFonts.roboto(
+                color: const Color.fromARGB(255, 0, 0, 0),
+                fontSize: 16,
+                fontWeight: FontWeight.w700)),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            enabled: enabled,
+            style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelStyle: const TextStyle(color: Colors.black87),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black87),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+   Widget _buildCodigoTextFieldRow(String label, TextEditingController controller, {bool enabled = true}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

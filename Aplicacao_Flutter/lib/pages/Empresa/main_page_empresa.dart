@@ -4,7 +4,6 @@ import 'package:reconhecimento/pages/Colaborador/cadastro_colaborador_page.dart'
 import 'package:reconhecimento/pages/Empresa/Dados_Empresa_Page.dart';
 import 'package:reconhecimento/pages/Auth/login_page.dart';
 import 'package:reconhecimento/pages/Colaborador/relacao_page.dart';
-import 'package:reconhecimento/pages/RegistroPonto/registro_ponto_page.dart';
 
 class MainPageEmpresa extends StatefulWidget {
   final bool isAdm;
@@ -72,6 +71,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                               color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                          Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => MainPageEmpresa(
@@ -91,6 +91,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                                 color: const Color.fromARGB(255, 0, 0, 0)),
                           ),
                           onTap: () {
+                            
+                          Navigator.of(context).pop();
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -111,6 +113,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                                 color: const Color.fromARGB(255, 0, 0, 0)),
                           ),
                           onTap: () {
+                            
+                          Navigator.of(context).pop();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
@@ -130,6 +134,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                                 color: const Color.fromARGB(255, 0, 0, 0)),
                           ),
                           onTap: () {
+                            
+                          Navigator.of(context).pop();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
@@ -152,6 +158,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                               color: const Color.fromARGB(255, 0, 0, 0)),
                         ),
                         onTap: () {
+                          
+                          Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const LoginPage(),
@@ -194,13 +202,12 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         width: 2.0,
                       ),
                       boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(255, 0, 22, 57)
-                              .withOpacity(0.8),
-                          offset: const Offset(0, 6),
-                          blurRadius: 15,
-                        ),
-                      ],
+  BoxShadow(
+    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
+    offset: const Offset(0, 6),
+    blurRadius: 15,
+  ),
+],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -281,14 +288,13 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         color: const Color.fromARGB(255, 0, 22, 57),
                         width: 2.0,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(255, 0, 22, 57)
-                              .withOpacity(0.8),
-                          offset: const Offset(0, 6),
-                          blurRadius: 15,
-                        ),
-                      ],
+                     boxShadow: [
+  BoxShadow(
+    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
+    offset: const Offset(0, 6),
+    blurRadius: 15,
+  ),
+],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -315,7 +321,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Work-Time, a ferramenta que mudará sua concepção de registro de ponto",
+                          "IDENTIDADE-FACIAL, a ferramenta que mudará sua concepção de registro de ponto",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: 15,
@@ -367,14 +373,13 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         color: const Color.fromARGB(255, 0, 22, 57),
                         width: 2.0,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(255, 0, 22, 57)
-                              .withOpacity(0.8),
-                          offset: const Offset(0, 6),
-                          blurRadius: 15,
-                        ),
-                      ],
+                     boxShadow: [
+  BoxShadow(
+    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
+    offset: const Offset(0, 6),
+    blurRadius: 15,
+  ),
+],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -401,7 +406,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Atualize, Corrija e siga aumentando a perfomance com o Work-Time",
+                          "Atualize, Corrija e siga aumentando a perfomance com o IDENTIDADE-FACIAL",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: 15,

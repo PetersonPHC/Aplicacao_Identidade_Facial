@@ -1,6 +1,6 @@
 const UsuarioRepository = require('../repositories/UsuarioRepository');
 const ColaboradorRepository = require('../repositories/ColaboradorRepository');
-
+const EmpresaRepository = require('../repositories/EmpresaRepository');
 
 class UsuarioService {
  
@@ -17,6 +17,17 @@ class UsuarioService {
       }
       
       return await UsuarioRepository.create(usuarioData);
+    } catch (error) {
+      console.error('[UsuarioService] Erro ao criar usuário:', error);
+      throw error;
+    }
+  }
+
+  async criarEmpresa(empresaData) {
+    try {
+         
+     
+      return await UsuarioRepository.createEmpresa(empresaData);
     } catch (error) {
       console.error('[UsuarioService] Erro ao criar usuário:', error);
       throw error;

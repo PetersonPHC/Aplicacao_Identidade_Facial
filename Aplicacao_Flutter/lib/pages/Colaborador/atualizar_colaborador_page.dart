@@ -13,7 +13,8 @@ class AtualizarColaboradorPage extends StatefulWidget {
   });
 
   @override
-  State<AtualizarColaboradorPage> createState() => _AtualizarColaboradorPageState();
+  State<AtualizarColaboradorPage> createState() =>
+      _AtualizarColaboradorPageState();
 }
 
 class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
@@ -80,7 +81,8 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 2, 44, 79).withOpacity(0.8),
+            color: Color.fromRGBO(2, 44, 79,
+                0.8), // Using RGBO constructor which takes opacity directly
             offset: const Offset(0, 6),
             blurRadius: 15,
           ),
@@ -90,26 +92,31 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
         children: [
           _buildImageSelector(),
           SizedBox(height: 20),
-          _buildTextFieldRow("Nome: ", _controller.nomeController, maxLength: 50),
+          _buildTextFieldRow("Nome: ", _controller.nomeController,
+              maxLength: 50),
           const SizedBox(height: 8),
-          _buildTextFieldRow("CPF: ", _controller.cpfController, isNumber: true),
+          _buildTextFieldRow("CPF: ", _controller.cpfController,
+              isNumber: true),
           SizedBox(height: 8),
-          _buildDateFieldRow("Data Nasc: ", _controller.dataNascimentoController),
+          _buildDateFieldRow(
+              "Data Nasc: ", _controller.dataNascimentoController),
           const SizedBox(height: 8),
           _buildTextFieldRow("RG: ", _controller.rgController),
           SizedBox(height: 8),
-          _buildTextFieldRow("Matricula: ", _controller.matriculaController, isNumber: true),
+          _buildTextFieldRow("CTPS: ", _controller.ctpsController,
+              isNumber: true),
           SizedBox(height: 8),
-          _buildTextFieldRow("CTPS: ", _controller.ctpsController, isNumber: true),
+          _buildTextFieldRow("NIS: ", _controller.nisController,
+              isNumber: true),
           SizedBox(height: 8),
-          _buildTextFieldRow("NIS: ", _controller.nisController, isNumber: true),
+          _buildCargaHorariaRow(
+              "Carga Horaria: ", _controller.cargaHorariaController),
           SizedBox(height: 8),
-          _buildCargaHorariaRow("Carga Horaria: ", _controller.cargaHorariaController),
+          _buildTextFieldRow("Cargo: ", _controller.cargoController,
+              maxLength: 50),
           SizedBox(height: 8),
-          _buildTextFieldRow("Cargo: ", _controller.cargoController, maxLength: 50),
-          SizedBox(height: 8),
-          _buildDateFieldRow("Data de Admissão: ", _controller.dataAdmissaoController),
-         
+          _buildDateFieldRow(
+              "Data de Admissão: ", _controller.dataAdmissaoController),
         ],
       ),
     );
@@ -122,96 +129,91 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
         Expanded(
           flex: 8,
           child: Column(
-  children: [
-    GestureDetector(
-      onTap: _controller.selecionarImagem,
-      child: Container(
-        width: 200,
-        height: 200,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          shape: BoxShape.circle,
-        ),
-        child: _buildImageWidget(),
-      ),
-    ),
-    SizedBox(height: 8),
-    Text(
-      "Clique para adicionar uma imagem",
-      style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
-    ),
-  ],
-),
+            children: [
+              GestureDetector(
+                onTap: _controller.selecionarImagem,
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                  child: _buildImageWidget(),
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                "Clique para adicionar uma imagem",
+                style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+              ),
+            ],
+          ),
         ),
         Expanded(child: Container()),
       ],
     );
   }
 
+  Widget _buildImageWidget() {
+    // 1. Verifica se tem imagem da API (bytes)
+    if (_controller.imagemBytes != null) {
+      try {
+        return ClipOval(
+          child: Image.memory(
+            _controller.imagemBytes!,
+            fit: BoxFit.cover,
+            width: 200,
+            height: 200,
+            errorBuilder: (context, error, stackTrace) {
+              // Se houver erro ao carregar os bytes, mostra ícone padrão
+              return _buildDefaultIcon();
+            },
+          ),
+        );
+      } catch (e) {
+        return _buildDefaultIcon();
+      }
+    }
 
-
-Widget _buildImageWidget() {
-  // 1. Verifica se tem imagem da API (bytes)
-  if (_controller.imagemBytes != null) {
-    try {
+    // 2. Verifica se tem imagem selecionada do dispositivo
+    if (_controller.imagemSelecionada != null) {
       return ClipOval(
-        child: Image.memory(
-          _controller.imagemBytes!,
+        child: Image.file(
+          _controller.imagemSelecionada!,
           fit: BoxFit.cover,
           width: 200,
           height: 200,
-          errorBuilder: (context, error, stackTrace) {
-            // Se houver erro ao carregar os bytes, mostra ícone padrão
-            return _buildDefaultIcon();
-          },
         ),
       );
-    } catch (e) {
-      print('Erro ao carregar imagem da API: $e');
-      return _buildDefaultIcon();
     }
-  }
-  
-  // 2. Verifica se tem imagem selecionada do dispositivo
-  if (_controller.imagemSelecionada != null) {
-    return ClipOval(
-      child: Image.file(
-        _controller.imagemSelecionada!,
-        fit: BoxFit.cover,
-        width: 200,
-        height: 200,
-      ),
-    );
-  }
-  
-  // 3. Verifica se tem imagem da web
-  if (_controller.imagemSelecionadaWeb != null) {
-    return ClipOval(
-      child: Image.memory(
-        _controller.imagemSelecionadaWeb!,
-        fit: BoxFit.cover,
-        width: 200,
-        height: 200,
-      ),
-    );
-  }
-  
-  // 4. Caso padrão (nenhuma imagem disponível)
-  return _buildDefaultIcon();
-}
 
-Widget _buildDefaultIcon() {
-  return Icon(
-    Icons.add_a_photo,
-    color: Colors.black,
-    size: 50,
-  );
-}
-  Widget _buildTextFieldRow(String label, TextEditingController controller, {
-    bool isNumber = false, 
-    int? maxLength, 
-    bool isPassword = false
-  }) {
+    // 3. Verifica se tem imagem da web
+    if (_controller.imagemSelecionadaWeb != null) {
+      return ClipOval(
+        child: Image.memory(
+          _controller.imagemSelecionadaWeb!,
+          fit: BoxFit.cover,
+          width: 200,
+          height: 200,
+        ),
+      );
+    }
+
+    // 4. Caso padrão (nenhuma imagem disponível)
+    return _buildDefaultIcon();
+  }
+
+  Widget _buildDefaultIcon() {
+    return Icon(
+      Icons.add_a_photo,
+      color: Colors.black,
+      size: 50,
+    );
+  }
+
+  Widget _buildTextFieldRow(String label, TextEditingController controller,
+      {bool isNumber = false, int? maxLength, bool isPassword = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -228,7 +230,8 @@ Widget _buildDefaultIcon() {
             keyboardType: isNumber ? TextInputType.number : TextInputType.text,
             inputFormatters: [
               if (isNumber) FilteringTextInputFormatter.digitsOnly,
-              if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
+              if (maxLength != null)
+                LengthLimitingTextInputFormatter(maxLength),
             ],
             decoration: InputDecoration(
               labelText: label.replaceAll(':', '').trim(),
@@ -245,73 +248,76 @@ Widget _buildDefaultIcon() {
       ],
     );
   }
-Widget _buildCargaHorariaRow(
-  String label,
-  TextEditingController controller,
-) {
-  // Função interna para formatar o texto enquanto digita
-  void _formatarInput(String value) {
-    final text = value.replaceAll(RegExp(r'[^0-9]'), '');
-    var formatted = '';
 
-    if (text.length >= 2) {
-      formatted = '${text.substring(0, 2)}';
-      if (text.length >= 4) {
-        formatted += ':${text.substring(2, 4)}';
-        if (text.length >= 6) {
-          formatted += ':${text.substring(4, 6)}';
-        } else if (text.length > 4) {
-          formatted += ':${text.substring(4)}';
+  Widget _buildCargaHorariaRow(
+    String label,
+    TextEditingController controller,
+  ) {
+    // Função interna para formatar o texto enquanto digita
+    void _formatarInput(String value) {
+      final text = value.replaceAll(RegExp(r'[^0-9]'), '');
+      var formatted = '';
+
+      if (text.length >= 2) {
+        formatted = '${text.substring(0, 2)}';
+        if (text.length >= 4) {
+          formatted += ':${text.substring(2, 4)}';
+          if (text.length >= 6) {
+            formatted += ':${text.substring(4, 6)}';
+          } else if (text.length > 4) {
+            formatted += ':${text.substring(4)}';
+          }
+        } else if (text.length > 2) {
+          formatted += ':${text.substring(2)}';
         }
-      } else if (text.length > 2) {
-        formatted += ':${text.substring(2)}';
+      } else {
+        formatted = text;
       }
-    } else {
-      formatted = text;
+
+      // Atualiza o controlador apenas se o texto foi modificado
+      if (controller.text != formatted) {
+        controller.value = controller.value.copyWith(
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
+          composing: TextRange.empty,
+        );
+      }
     }
 
-    // Atualiza o controlador apenas se o texto foi modificado
-    if (controller.text != formatted) {
-      controller.value = controller.value.copyWith(
-        text: formatted,
-        selection: TextSelection.collapsed(offset: formatted.length),
-        composing: TextRange.empty,
-      );
-    }
-  }
-
-  return Row(
-    children: [
-      Text(label,style: GoogleFonts.roboto(
+    return Row(
+      children: [
+        Text(label,
+            style: GoogleFonts.roboto(
                 color: Colors.black,
                 fontSize: 16,
                 fontWeight: FontWeight.w700)),
-      Expanded(
-        child: TextFormField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            hintText: 'HH:MM:SS',
-            border: OutlineInputBorder(),
+        Expanded(
+          child: TextFormField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: 'HH:MM:SS',
+              border: OutlineInputBorder(),
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
+            ],
+            onChanged: _formatarInput,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, insira a carga horária';
+              }
+              if (!RegExp(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
+                  .hasMatch(value)) {
+                return 'Formato inválido (use HH:MM:SS)';
+              }
+              return null;
+            },
           ),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
-          ],
-          onChanged: _formatarInput,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Por favor, insira a carga horária';
-            }
-            if (!RegExp(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$').hasMatch(value)) {
-              return 'Formato inválido (use HH:MM:SS)';
-            }
-            return null;
-          },
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget _buildDateFieldRow(String label, TextEditingController controller) {
     return Row(
@@ -344,8 +350,6 @@ Widget _buildCargaHorariaRow(
     );
   }
 
-
-
   Widget _buildUpdateButton() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -353,7 +357,6 @@ Widget _buildCargaHorariaRow(
         onPressed: () async {
           try {
             await _controller.atualizar(context);
-
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -378,7 +381,4 @@ Widget _buildCargaHorariaRow(
       ),
     );
   }
-
-  
 }
-  

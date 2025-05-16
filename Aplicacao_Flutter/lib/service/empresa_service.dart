@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+
 import 'dart:convert';
 
 class EmpresaService {
@@ -8,13 +8,15 @@ class EmpresaService {
     required String nomeFantasia,
     required String cnpj,
     required String cep,
-    required String estadoCidade,
+    required String cidade,
     required String bairro,
-    required String ruaAvenida,
+    required String logradouro,
     required String numero,
     required String complemento,
-    required String responsavel,
+    required String UF,
     required String dataCriacao,
+    required String senha,
+    required String email,
     required BuildContext context,
   }) async {
     final senha = await _mostrarDialogoSenha(context);
@@ -22,36 +24,20 @@ class EmpresaService {
       throw Exception("Senha é obrigatória!");
     }
 
-    String? dataFormatada;
-    if (dataCriacao.isNotEmpty) {
-      try {
-        List<String> partes = dataCriacao.split("/");
-        if (partes.length == 3) {
-          DateTime data = DateTime(
-            int.parse(partes[2]),
-            int.parse(partes[1]),
-            int.parse(partes[0])
-          );
-          dataFormatada = DateFormat('yyyy-MM-dd').format(data);
-        }
-      } catch (e) {
-        print("Erro ao formatar data: $e");
-      }
-    }
+    final formattedDate = formatDateStringToIso8601WithMillis(dataCriacao);
 
     var body = {
-      "NomeFantasia": nomeFantasia,
       "CNPJ": cnpj,
-      "CEP": cep,
-      "EstadoCidade": estadoCidade,
-      "Bairro": bairro,
-      "RuaAvenida": ruaAvenida,
-      "Numero": numero,
-      "Complemento": complemento,
-      "Responsavel": responsavel,
-      "DataCriacao": dataFormatada,
-      "IsAdm": true,
-      "Senha": senha,
+      "NOMEFANTASIA": nomeFantasia,
+      "CEP": int.parse(cep),
+      "UF": UF,
+      "CIDADE": cidade,
+      "BAIRRO": bairro,
+      "LOGRADOURO": logradouro,
+      "NUMERO": int.parse(numero),
+      "COMPLEMENTO": complemento,
+      "EMAIL": email,
+      "DATACRIACAO": formattedDate,
     };
 
     var response = await http.post(
@@ -64,7 +50,49 @@ class EmpresaService {
       throw Exception("Erro ao cadastrar: ${response.body}");
     }
 
+    if (response.statusCode != 201) {
+      throw Exception('Falha ao cadastrar colaborador: ${response.body}');
+    }
+
+    // 3. Cadastro do usuário associado
+    var responseUser = await http.post(
+      Uri.parse("http://localhost:3000/usuarios/empresa"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body:
+          jsonEncode({'USUARIO_ID': cnpj.trim(), 'SENHA': senha, 'ADM': true}),
+    );
+
+    if (responseUser.statusCode != 201) {
+      throw Exception('Falha ao cadastrar usuário: ${responseUser.body}');
+    }
+
     return true;
+  }
+
+  String formatDateStringToIso8601WithMillis(String dateStr) {
+    DateTime date;
+
+    if (dateStr.contains('-')) {
+      final parts = dateStr.split('-');
+      final year = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final day = int.parse(parts[2]);
+      date = DateTime(year, month, day);
+    } else {
+      throw FormatException(
+          'Formato de data inválido. Use DD/MM/YYYY ou YYYY-MM-DD.');
+    }
+
+    // 2. Formata como ISO 8601 com .000Z (UTC à meia-noite)
+    final isoString = '${date.year.toString().padLeft(4, '0')}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}'
+        'T00:00:00.000Z';
+
+    return isoString;
   }
 
   Future<String?> _mostrarDialogoSenha(BuildContext context) async {
@@ -103,7 +131,8 @@ class EmpresaService {
                       Navigator.pop(context, senhaController.text);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("As senhas não coincidem!")),
+                        const SnackBar(
+                            content: Text("As senhas não coincidem!")),
                       );
                     }
                   },
@@ -117,16 +146,58 @@ class EmpresaService {
     );
   }
 
-Future<Map<String, dynamic>> buscarEmpresa(String cnpj) async {
-  final url = Uri.parse("http://localhost:3000/empresas/$cnpj");
-  final response = await http.get(url);
+  Future<Map<String, dynamic>> buscarEmpresa(String cnpj) async {
+    final url = Uri.parse("http://localhost:3000/empresas/$cnpj");
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    return json.decode(response.body); // Retorna todo o JSON
-  } else if (response.statusCode == 404) {
-    throw Exception('Empresa não encontrada');
-  } else {
-    throw Exception('Erro ao buscar empresa');
+    if (response.statusCode == 200) {
+      return json.decode(response.body); // Retorna todo o JSON
+    } else if (response.statusCode == 404) {
+      throw Exception('Empresa não encontrada');
+    } else {
+      throw Exception('Erro ao buscar empresa');
+    }
   }
-}
+
+  Future<bool> atualizarEmpresa({
+    required String cnpj,
+    required String nomeFantasia,
+    required String CEP,
+    required String UF,
+    required String cidade,
+    required String bairro,
+    required String logradouro,
+    required String numero,
+    required String complemento,
+    required String email,
+    required String dataCriacao,
+  }) async {
+    try {
+      final formattedDate = formatDateStringToIso8601WithMillis(dataCriacao);
+      final response = await http.put(
+        Uri.parse("http://localhost:3000/empresas/$cnpj"),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'NOMEFANTASIA': nomeFantasia,
+          'CEP': int.parse(CEP),
+          'UF': UF,
+          'CIDADE': cidade,
+          'BAIRRO': bairro,
+          'LOGRADOURO': logradouro,
+          'NUMERO': int.parse(numero),
+          'COMPLEMENTO': complemento,
+          'EMAIL': email,
+          'DATACRIACAO': formattedDate,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Falha na atualização: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Erro ao atualizar empresa: $e');
+    }
+  }
 }

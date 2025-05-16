@@ -53,12 +53,12 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
           width: 2.0,
         ),
         boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(255, 2, 44, 79).withOpacity(0.8),
-            offset: const Offset(0, 6),
-            blurRadius: 15,
-          ),
-        ],
+  BoxShadow(
+    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
+    offset: const Offset(0, 6),
+    blurRadius: 15,
+  ),
+],
       ),
       child: const Text(
         "Venha conhecer o IDENTIDADE-FACIAL a ferramenta que vai simplificar o seu registro de ponto",
@@ -84,33 +84,37 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
           width: 2.0,
         ),
         boxShadow: [
-          BoxShadow(
-            color: const Color.fromARGB(255, 2, 44, 79).withOpacity(0.8),
-            offset: const Offset(0, 6),
-            blurRadius: 15,
-          ),
-        ],
+  BoxShadow(
+    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
+    offset: const Offset(0, 6),
+    blurRadius: 15,
+  ),
+],
       ),
       child: Column(
         children: [
-          _buildTextFieldRow("Nome Fantasia:", _controller.nomeFantasiaController),
-          const SizedBox(height: 8),
+          
           _buildMaskedTextFieldRow("CNPJ:", _controller.cnpjController),
+          const SizedBox(height: 8),
+          _buildTextFieldRow("Nome Fantasia:", _controller.nomeFantasiaController),
           const SizedBox(height: 8),
           _buildMaskedTextFieldRow("CEP:", _controller.cepController),
           const SizedBox(height: 8),
-          _buildTextFieldRow("Estado / Cidade:", _controller.estadoCidadeController),
+          _buildTextFieldRow("UF:", _controller.UFController),
+          const SizedBox(height: 8),
+          _buildTextFieldRow("Cidade:", _controller.cidadeController),
           const SizedBox(height: 8),
           _buildTextFieldRow("Bairro:", _controller.bairroController),
           const SizedBox(height: 8),
-          _buildTextFieldRow("Rua / Avenida:", _controller.ruaAvenidaController),
+          _buildTextFieldRow("Logradouro:", _controller.logradouroController),
           const SizedBox(height: 8),
           _buildTextFieldRow("Numero:", _controller.numeroController),
           const SizedBox(height: 8),
           _buildTextFieldRow("Complemento:", _controller.complementoController),
           const SizedBox(height: 8),
-          _buildTextFieldRow("Responsavel:", _controller.responsavelController),
+          _buildTextFieldRow("Email:", _controller.emailController),
           const SizedBox(height: 8),
+          
           _buildDateFieldRow("Data de Criação:", _controller.dataCriacaoController),
         ],
       ),

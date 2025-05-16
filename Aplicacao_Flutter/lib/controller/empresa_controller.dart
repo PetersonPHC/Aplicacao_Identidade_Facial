@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:reconhecimento/service/empresa_service.dart';
-
+import 'package:reconhecimento/utils/date_utils.dart';
 class EmpresaController {
   final MaskedTextController cnpjController = MaskedTextController(mask: '00.000.000/0000-00');
   final MaskedTextController cepController = MaskedTextController(mask: '00000-000');
   final TextEditingController dataCriacaoController = TextEditingController();
-  final TextEditingController responsavelController = TextEditingController();
+  final TextEditingController UFController = TextEditingController();
   final TextEditingController nomeFantasiaController = TextEditingController();
-  final TextEditingController estadoCidadeController = TextEditingController();
+  final TextEditingController cidadeController = TextEditingController();
   final TextEditingController bairroController = TextEditingController();
-  final TextEditingController ruaAvenidaController = TextEditingController();
+  final TextEditingController logradouroController = TextEditingController();
   final TextEditingController numeroController = TextEditingController();
   final TextEditingController complementoController = TextEditingController();
-
+  
+  final TextEditingController emailController = TextEditingController();
+final TextEditingController senhaController = TextEditingController();
   final EmpresaService _empresaService = EmpresaService();
 
   Future<void> selecionarData(BuildContext context) async {
@@ -44,13 +46,15 @@ class EmpresaController {
         nomeFantasia: nomeFantasiaController.text,
         cnpj: cnpjController.text.replaceAll(RegExp(r'\D'), ''),
         cep: cepController.text.replaceAll(RegExp(r'[^0-9]'), ''),
-        estadoCidade: estadoCidadeController.text,
+        cidade: cidadeController.text,
         bairro: bairroController.text,
-        ruaAvenida: ruaAvenidaController.text,
+        logradouro: logradouroController.text,
         numero: numeroController.text,
         complemento: complementoController.text,
-        responsavel: responsavelController.text,
-        dataCriacao: dataCriacaoController.text,
+        UF: UFController.text,
+        senha: senhaController.text,
+        email: emailController.text,
+        dataCriacao: dateUtils.formatarDataParaISO(dataCriacaoController.text),
         context: context,
       );
 
@@ -71,12 +75,12 @@ class EmpresaController {
     nomeFantasiaController.clear();
     cnpjController.clear();
     cepController.clear();
-    estadoCidadeController.clear();
+    cidadeController.clear();
     bairroController.clear();
-    ruaAvenidaController.clear();
+   logradouroController.clear();
     numeroController.clear();
     complementoController.clear();
-    responsavelController.clear();
+    UFController.clear();
     dataCriacaoController.clear();
   }
 }

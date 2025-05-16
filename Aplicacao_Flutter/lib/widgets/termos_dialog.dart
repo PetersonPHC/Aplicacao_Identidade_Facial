@@ -45,7 +45,7 @@ class TermosDialog extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: "Este termo tem como objetivo informar ao usuário sobre a coleta, uso, armazenamento e proteção de seus dados pessoais e biométricos (imagem facial) pelo aplicativo Work-Time, em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 – LGPD).\n\n",
+                          text: "Este termo tem como objetivo informar ao usuário sobre a coleta, uso, armazenamento e proteção de seus dados pessoais e biométricos (imagem facial) pelo aplicativo IDENTIDADE-FACIAL, em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 – LGPD).\n\n",
                         ),
                         TextSpan(
                           text: "2. DADOS COLETADOS\n",
@@ -55,7 +55,7 @@ class TermosDialog extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: "Ao utilizar o Work-Time, o usuário autoriza a coleta e o processamento de sua imagem facial para fins exclusivos de registro de ponto eletrônico e controle de acesso.\n\n",
+                          text: "Ao utilizar o IDENTIDADE-FACIAL, o usuário autoriza a coleta e o processamento de sua imagem facial para fins exclusivos de registro de ponto eletrônico e controle de acesso.\n\n",
                         ),
                         TextSpan(
                           text: "3. FINALIDADE DO TRATAMENTO DOS DADOS\n",
@@ -109,7 +109,7 @@ class TermosDialog extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: "Ao prosseguir com o uso do Work-Time, declaro estar ciente e de acordo com a coleta e o uso da minha imagem facial para os fins mencionados neste termo.\n",
+                          text: "Ao prosseguir com o uso do IDENTIDADE-FACIAL, declaro estar ciente e de acordo com a coleta e o uso da minha imagem facial para os fins mencionados neste termo.\n",
                         ),
                       ],
                     ),

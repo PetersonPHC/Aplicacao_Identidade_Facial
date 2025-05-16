@@ -116,6 +116,21 @@ class RegistroPontoService {
     }
   }
 
+  
+  async incluir(cnpj, matricula, data) {
+    console.log('[ColaboradorService] Buscando colaborador com:');
+    console.log('→ MATRICULA:', matricula, 'Tipo:', typeof matricula);
+    console.log('→ CNPJ:', cnpj, 'Tipo:', typeof cnpj);
+    console.log('→ DATA:', data, 'Tipo:', typeof data);
+    
+    const Registro = await RegistroPontoRepository.include(cnpj, matricula, data);
+    if (!Registro) throw new Error('Colaborador não encontrado');
+    
+  
+      return Registro;
+    
+    
+  }
 
   async buscar(cnpj, matricula, data) {
     console.log('[ColaboradorService] Buscando colaborador com:');
@@ -157,15 +172,14 @@ class RegistroPontoService {
   }
 
 
+  async deletarRegistro(cnpj, matricula, data) {
+    console.log('---------------Service ---------------' );
+    console.log('→ cnpj:', cnpj);
+    console.log('→ matricula:', matricula);
+    console.log('→ cnpj:', data);
+    return await RegistroPontoRepository.delete(cnpj,matricula,data);
+   };
   
-  //Alteração -> CNPJ Removido
-  async deletarRegistro(matricula, data) {
-    await this.buscarRegistro(matricula, data); // Verifica se existe
-    return await RegistroPontoRepository.delete(
-      matricula, 
-      new Date(data)
-    );
-  }
 
   //Alteração -> CNPJ Removido
   async listarRegistrosPorColaborador(matricula) {
@@ -174,5 +188,4 @@ class RegistroPontoService {
   }
 }
 
-// Exporta uma instância Singleton (recomendado para serviços stateless)
 module.exports = new RegistroPontoService();

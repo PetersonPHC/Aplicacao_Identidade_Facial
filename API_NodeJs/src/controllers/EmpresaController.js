@@ -1,42 +1,36 @@
 const EmpresaService = require('../services/EmpresaService');
-
-// Classe de erro personalizado
+// Classe de erro personalizado para empresas
 class EmpresaError extends Error {
-  constructor(message, statusCode, details = {}) {
+  constructor(message, statusCode = 400, details = {}) {
     super(message);
-    this.name = this.constructor.name;
+    this.name = 'EmpresaError';
     this.statusCode = statusCode;
     this.details = details;
-    Error.captureStackTrace(this, this.constructor);
   }
 }
 
+// Classe de tratamento de erros
+class EmpresaErrorHandler {
+  static handle(error, res) {
+    console.error('[EmpresaController] Erro:', error);
+    
+    const statusCode = error.statusCode || 
+                      (error.message === 'Usuário não encontrado' ? 404 : 
+                       error.message === 'Não autorizado' ? 401 : 
+                       500);
+    
+    res.status(statusCode).json({ 
+      error: error.message,
+      ...(process.env.NODE_ENV === 'development' && { details: error.stack })
+    });
+  }
+}
+  
+
 class EmpresaController {
-  constructor() {
-    // Centraliza o tratamento de erros
-    this._handleError = this._handleError.bind(this);
-  }
-
-  // Método privado para tratamento de erros
-  _handleError(error, res) {
-    console.error(`[EmpresaController] ${error.name}:`, error.message);
-
-    const statusCode = error.statusCode || 500;
-    const response = {
-      success: false,
-      message: error.message,
-    };
-
-    if (process.env.NODE_ENV === 'development') {
-      response.details = {
-        stack: error.stack,
-        ...error.details
-      };
-    }
-
-    res.status(statusCode).json(response);
-  }
-
+ 
+  // 
+  
   // Valida e formata a data de criação
   _processarDataCriacao(dataString) {
     try {
@@ -72,31 +66,22 @@ class EmpresaController {
 
   //Alteração -> Pegar o objeto empresa do banco e retornar ao Front, junto com o código da empresa
   async criar(req, res) {
+    console.log('[EmpresaController] Requisição recebida com body:', req.body);
     try {
       // Validação e formatação da data
-      const dataCriacao = this._processarDataCriacao(req.body.DATACRIACAO);
+     
 
-      const dadosEmpresa = {
-        ...req.body,
-        DATACRIACAO: dataCriacao
-      };
-
-      const empresa = await EmpresaService.criarEmpresa(dadosEmpresa)
-        .catch(err => {
-          throw new EmpresaError(
-            `Falha ao criar empresa: ${err.message}`,
-            400,
-            { originalError: err.message }
-          );
-        });
-
+      
+       
+      const empresa = await EmpresaService.criarEmpresa(req.body);
+        
       res.status(201).json({
         success: true,
         data: empresa,
         message: 'Empresa criada com sucesso'
       });
     } catch (error) {
-      this._handleError(error, res);
+      EmpresaErrorHandler.handle(error, res);
     }
   }
 
@@ -119,11 +104,12 @@ class EmpresaController {
         data: empresa
       });
     } catch (error) {
-      this._handleError(error, res);
+      EmpresaErrorHandler.handle(error, res);
     }
   }
 
   async atualizar(req, res) {
+    console.log('[EmpresaController] Requisição recebida com body:', req.body);
     try {
       if (!req.params.cnpj) {
         throw new EmpresaError('CNPJ é obrigatório', 400);
@@ -145,7 +131,7 @@ class EmpresaController {
         message: 'Empresa atualizada com sucesso'
       });
     } catch (error) {
-      this._handleError(error, res);
+      EmpresaErrorHandler.handle(error, res);
     }
   }
 
@@ -168,7 +154,7 @@ class EmpresaController {
         message: 'Empresa deletada com sucesso'
       });
     } catch (error) {
-      this._handleError(error, res);
+      EmpresaErrorHandler.handle(error, res);
     }
   }
 
@@ -188,7 +174,7 @@ class EmpresaController {
         data: empresas
       });
     } catch (error) {
-      this._handleError(error, res);
+      EmpresaErrorHandler.handle(error, res);
     }
   }
 }

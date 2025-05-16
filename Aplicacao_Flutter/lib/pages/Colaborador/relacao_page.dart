@@ -6,6 +6,8 @@ import 'package:reconhecimento/widgets/colaborador_card.dart';
 import 'package:reconhecimento/widgets/exclusao_dialog.dart';
 import 'package:reconhecimento/widgets/reset_senha_dialog.dart';
 import 'package:reconhecimento/controller/relacao_controller.dart';
+import 'package:reconhecimento/widgets/confirma_admin_dialog.dart';
+import 'package:reconhecimento/widgets/retira_admin_dialog.dart';
 
 class RelacaoPage extends StatefulWidget {
   final String cnpj;
@@ -41,7 +43,7 @@ class _RelacaoPageState extends State<RelacaoPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => relacaoPontoPage( matricula: matricula, cnpj: cnpj),
+        builder: (context) => RelacaoPontoPage( matricula: matricula, cnpj: cnpj),
       ),
     );
   }
@@ -57,7 +59,6 @@ class _RelacaoPageState extends State<RelacaoPage> {
 
   void _redirecionarCadastro(String matricula, String cnpj) {
     
-    print('DADOS FINAL METODO ' '$matricula' '$cnpj' );
     
     Navigator.push(
       context,
@@ -104,6 +105,36 @@ class _RelacaoPageState extends State<RelacaoPage> {
               ),
             );
             break;
+            case 'AdminTrue':
+            showDialog(
+              context: context,
+              builder: (context) => ConfirmarAdminDialog(
+                matricula: colaborador['matricula'],
+                onConfirm: () => _controller.tornarAdministrador(
+                  colaborador['cnpj'],
+                  colaborador['matricula'],
+                  true,
+                  context,
+                ),
+              ),
+            );
+            break;
+             case 'AdminFalse':
+            showDialog(
+              context: context,
+              builder: (context) => RetiraAdminDialog(
+                matricula: colaborador['matricula'],
+                onConfirm: () => _controller.tornarAdministrador(
+                  colaborador['cnpj'],
+                  colaborador['matricula'],
+                  false,
+                  context,
+                ),
+              ),
+            );
+            break;
+
+
           case 'Relacao_Ponto':
             _redirecionarPonto(colaborador['matricula'], colaborador['cnpj']);
             break;
@@ -119,6 +150,8 @@ class _RelacaoPageState extends State<RelacaoPage> {
         return const [
           PopupMenuItem(value: 'excluir', child: Text("Excluir Colaborador")),
           PopupMenuItem(value: 'reset_de_senha', child: Text("Configurar nova senha")),
+          PopupMenuItem(value: 'AdminTrue', child: Text("Fazer o usuario Admin")),
+          PopupMenuItem(value: 'AdminFalse', child: Text("Retirar o Admin do usuario")),
           PopupMenuItem(value: 'Relacao_Ponto', child: Text("Relação de ponto")),
           PopupMenuItem(value: 'Alterar_Dados', child: Text("Alterar dados")),
           PopupMenuItem(value: 'Perfil_Colaborador', child: Text("Perfil do colaborador")),

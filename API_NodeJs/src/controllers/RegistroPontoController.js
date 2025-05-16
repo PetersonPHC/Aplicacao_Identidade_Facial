@@ -27,6 +27,30 @@ class RegistroPontoController {
     }
   }
 
+
+    //Alteração -> CNPJ Removido
+    async incluirPonto(req, res) {
+      try {
+        const { MATRICULA, DATA_PONTO, CNPJ_EMPRESA } = req.body;
+        console.log('→ MATRICULA:', MATRICULA);
+        console.log('→ DATA:', DATA_PONTO);
+        
+        if (!MATRICULA) {
+          throw new Error('Parâmetros obrigatórios não fornecidos');
+        }
+  
+        const registro = await RegistroPontoService.incluir(CNPJ_EMPRESA, MATRICULA, DATA_PONTO);
+        res.json(registro);
+      } catch (error) {
+        console.error('Erro ao buscar registro:', error);
+        const statusCode = error.message === 'Registro não encontrado' ? 404 : 500;
+        res.status(statusCode).json({ 
+          error: error.message || 'Erro ao inserir registro de ponto',
+          details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+      }
+    }
+  
   //Alteração -> CNPJ Removido
   async buscar(req, res) {
     try {
@@ -51,15 +75,18 @@ class RegistroPontoController {
   }
 
   //Alteração -> CNPJ Removido
-  async deletar(req, res) {
+   deletar =  async (req, res) => {
+   
+    const { matricula, data, cnpjEmpresa } = req.params;
+    console.log('→ MATRICULA:', matricula);
+    console.log('→ cnpj:', cnpjEmpresa);
+    console.log('→ data:', data);
     try {
-      
-       const data = req.body.DATA;
       if (!matricula || !data) {
-        throw new Error('Parâmetros obrigatórios não fornecidos');
+      throw new Error('Parâmetros obrigatórios não fornecidos');
       }
 
-      await this.registroPontoService.deletarRegistro(matricula, data);
+      const registro = await RegistroPontoService.deletarRegistro(cnpjEmpresa, matricula, data);
       res.json({ message: 'Registro deletado com sucesso' });
     } catch (error) {
       console.error('Erro ao deletar registro:', error);

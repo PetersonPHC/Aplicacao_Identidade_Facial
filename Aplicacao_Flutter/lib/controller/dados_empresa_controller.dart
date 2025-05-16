@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
 import 'package:reconhecimento/service/empresa_service.dart';
-
+import 'package:reconhecimento/utils/date_utils.dart';
 class DadosEmpresaController {
   final String cnpj;
   final MaskedTextController cnpjController;
   final MaskedTextController cepController;
+  
+  final TextEditingController emailController;
   final TextEditingController dataCriacaoController;
   final TextEditingController nomeFantasiaController;
-  final TextEditingController estadoCidadeController;
+  final TextEditingController cidadeController;
   final TextEditingController bairroController;
-  final TextEditingController ruaAvenidaController;
+  final TextEditingController codigoEmpresaController;
+  final TextEditingController logradouroController;
   final TextEditingController numeroController;
   final TextEditingController complementoController;
   final TextEditingController UFController;
@@ -23,10 +26,12 @@ class DadosEmpresaController {
     : cnpjController = MaskedTextController(mask: '00.000.000/0000-00'),
       cepController = MaskedTextController(mask: '00000-000'),
       dataCriacaoController = TextEditingController(),
+      emailController = TextEditingController(),
       nomeFantasiaController = TextEditingController(),
-      estadoCidadeController = TextEditingController(),
+      codigoEmpresaController = TextEditingController(),
+      cidadeController = TextEditingController(),
       bairroController = TextEditingController(),
-      ruaAvenidaController = TextEditingController(),
+      logradouroController = TextEditingController(),
       numeroController = TextEditingController(),
       complementoController = TextEditingController(),
       UFController = TextEditingController() {
@@ -40,13 +45,13 @@ Future<void> carregarDadosEmpresa() async {
     nomeFantasiaController.text = empresaData['NOMEFANTASIA'] ?? '';
     cepController.text = empresaData['CEP']?.toString() ?? ''; // Converte número para string
     UFController.text = empresaData['UF'] ?? '';
-    // Juntando UF e CIDADE para o campo estadoCidade
-    estadoCidadeController.text = empresaData['CIDADE'] ?? '';
+    codigoEmpresaController.text = empresaData['CODIGO_EMPRESA']?.toString() ?? '';
+    cidadeController.text = empresaData['CIDADE'] ?? '';
     bairroController.text = empresaData['BAIRRO'] ?? '';
-    ruaAvenidaController.text = empresaData['LOGRADOURO'] ?? '';
+    logradouroController.text = empresaData['LOGRADOURO'] ?? '';
     numeroController.text = empresaData['NUMERO']?.toString() ?? ''; // Converte número para string
     complementoController.text = empresaData['COMPLEMENTO'] ?? '';
-    
+    emailController.text = empresaData['EMAIL'] ?? '';
     // Tratamento da data
     dataCriacaoController.text = empresaData['DATACRIACAO'] != null
         ? DateFormat('dd/MM/yyyy').format(DateTime.parse(empresaData['DATACRIACAO']))
@@ -58,7 +63,25 @@ Future<void> carregarDadosEmpresa() async {
     throw Exception('Erro ao carregar dados: $e');
   }
 }
-
+Future<String> carregarCodigoEmpresa() async {
+  try {
+    final response = await _empresaService.buscarEmpresa(cnpj);
+    final empresaData = response['data'];
+    String codigo = empresaData['CODIGO_EMPRESA']?.toString() ?? '';
+    
+    // Formatação específica conforme o número de dígitos
+    if (codigo.length == 1) {
+      codigo = '00$codigo';  // Adiciona dois zeros se tiver apenas 1 dígito
+    } else if (codigo.length == 2) {
+      codigo = '0$codigo';   // Adiciona um zero se tiver 2 dígitos
+    }
+    // Se tiver 3 dígitos, mantém como está
+    
+    return codigo;
+  } catch (e) {
+    throw Exception('Erro ao carregar código da empresa: $e');
+  }
+}
   Future<void> selecionarData(BuildContext context) async {
     final dataSelecionada = await showDatePicker(
       context: context,
@@ -81,16 +104,40 @@ Future<void> carregarDadosEmpresa() async {
     }
   }
 
-  void atualizar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Dados atualizados com sucesso'),
-        duration: Duration(seconds: 2),
-      ),
+ Future<void> atualizar(BuildContext context) async {
+  // DEBUG: Mostrar valores atuais
+  
+  try {
+    final response = await _empresaService.atualizarEmpresa(
+      nomeFantasia: nomeFantasiaController.text,
+      cnpj: cnpjController.text.replaceAll(RegExp(r'\D'), ''),
+      CEP: cepController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+      cidade: cidadeController.text,
+      bairro: bairroController.text,
+      logradouro: logradouroController.text,
+      numero: numeroController.text,
+      complemento: complementoController.text,
+      UF: UFController.text,
+      email: emailController.text,
+      dataCriacao: dateUtils.formatarDataParaISO(dataCriacaoController.text), // Experimente enviar sem formatação
+
     );
 
-    limparCampos();
+    if (response) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Atualização realizada com sucesso!")),
+      );
+      // Opcional: Recarregar os dados após atualização
+      await carregarDadosEmpresa();
+    }
+  } catch (e) {
+    debugPrint('Erro na atualização: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Erro ao atualizar: ${e.toString()}")),
+    );
   }
+}
+
 
   void limparCampos() {
     nomeFantasiaController.clear();

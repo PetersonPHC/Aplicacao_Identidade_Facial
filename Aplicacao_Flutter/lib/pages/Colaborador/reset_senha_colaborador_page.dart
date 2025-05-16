@@ -44,14 +44,13 @@ class _ResetpageState extends State<Resetpage> {
                 color: const Color.fromARGB(255, 237, 198, 42),
                 width: 2.0,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromARGB(255, 237, 198, 42)
-                      .withOpacity(0.8),
-                  offset: const Offset(0, 6),
-                  blurRadius: 15,
-                ),
-              ],
+             boxShadow: [
+  BoxShadow(
+    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
+    offset: const Offset(0, 6),
+    blurRadius: 15,
+  ),
+],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min, // Mantém apenas o necessário de altura
@@ -68,7 +67,7 @@ class _ResetpageState extends State<Resetpage> {
 
                 // Texto
                 Text(
-                  "Entre em contato com o seu RH e peça o reset da sua senha",
+                  "Entre em contato com o seu RH e peça o reset da sua senha \n \n No caso da sua empresa ter perdido a senha entre em contato por email identidade.facial@suporte.com.br",
                   textAlign: TextAlign.center, // Centraliza o texto
                   style: GoogleFonts.roboto(
                     color: Colors.white,
@@ -78,6 +77,7 @@ class _ResetpageState extends State<Resetpage> {
                 ),
               ],
             ),
+            
           ),
         ),
       ),

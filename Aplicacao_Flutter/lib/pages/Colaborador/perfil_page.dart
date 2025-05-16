@@ -79,7 +79,8 @@ class _PerfilPageState extends State<PerfilPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 0, 22, 57).withOpacity(0.8),
+            color: Color.fromRGBO(2, 44, 79,
+                0.8), // Using RGBO constructor which takes opacity directly
             offset: const Offset(0, 6),
             blurRadius: 15,
           ),
@@ -91,7 +92,8 @@ class _PerfilPageState extends State<PerfilPage> {
           const SizedBox(height: 20),
           _buildInfoRow(Icons.emoji_people_rounded, "Nome:", _controller.nome),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.today, "Data de Nascimento:", _controller.dataNascimento),
+          _buildInfoRow(
+              Icons.today, "Data de Nascimento:", _controller.dataNascimento),
           const SizedBox(height: 8),
           _buildInfoRow(Icons.wallet_sharp, "CPF:", _controller.cpf),
           const SizedBox(height: 8),
@@ -101,11 +103,13 @@ class _PerfilPageState extends State<PerfilPage> {
           const SizedBox(height: 8),
           _buildInfoRow(Icons.badge_rounded, "NIS:", _controller.nis),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.receipt, "Matricula:", _controller.matriculaColab),
+          _buildInfoRow(
+              Icons.receipt, "Matricula:", _controller.matriculaColab),
           const SizedBox(height: 8),
           _buildInfoRow(Icons.diversity_3_sharp, "Cargo:", _controller.cargo),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.calendar_today_outlined, "Data de Admissão:", _controller.dataAdmissao),
+          _buildInfoRow(Icons.calendar_today_outlined, "Data de Admissão:",
+              _controller.dataAdmissao),
         ],
       ),
     );
@@ -193,7 +197,8 @@ class _PerfilPageState extends State<PerfilPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 0, 22, 57).withOpacity(0.8),
+            color: Color.fromRGBO(2, 44, 79,
+                0.8), // Using RGBO constructor which takes opacity directly
             offset: const Offset(0, 6),
             blurRadius: 15,
           ),

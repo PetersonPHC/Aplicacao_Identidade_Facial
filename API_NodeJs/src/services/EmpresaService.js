@@ -5,9 +5,8 @@ class EmpresaService {
   async criarEmpresa(empresaData) {
     const empresaExistente = await EmpresaRepository.findByCNPJ(empresaData.CNPJ);
     
-    // Validações (mantidas idênticas)
-    if (!empresaData.CNPJ) throw new Error('CNPJ é obrigatório');
-    if (!empresaData.NOMEFANTASIA) throw new Error('Nome fantasia é obrigatório');
+    console.log('[EmpresaService] Requisição recebida com body:', empresaData.CNPJ);
+   
     if (empresaExistente) {
       throw new Error('Já existe uma empresa cadastrada com este CNPJ');
     }

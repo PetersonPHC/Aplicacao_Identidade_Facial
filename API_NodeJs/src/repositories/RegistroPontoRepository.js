@@ -32,6 +32,29 @@ class RegistroPontoRepository {
   }
   
   
+  async include(CNPJ, MATRICULA, DATA) {
+    try {
+      // Converter DATA_HORA string para Date, ou usar a data atual se não for fornecida
+      
+
+      return await prisma.rEGISTRO_PONTO.create({
+        data: {
+          MATRICULA: MATRICULA,
+          CNPJ_EMPRESA:CNPJ,
+          DATA_PONTO: DATA
+        }
+      });
+    } catch (error) {
+      console.error('Erro detalhado ao criar registro:', {
+        message: error.message,
+        stack: error.stack,
+        dataRecebida: registroData
+      });
+      throw new Error(`Falha ao criar registro: ${error.message}`);
+    }
+  }
+  
+
   async find(cnpj, matricula, dataInicio) {
     // Cria a data inicial (início do dia)
     const startDate = new Date(dataInicio);
@@ -66,19 +89,17 @@ async findAll(cnpj, matricula) {
   });
 }
 
-
-  async delete(matricula, data) {
-    return await this.prisma.rEGISTRO_PONTO.delete({
-      where: {
-        //MATRICULA_COLABORADOR_CNPJ_EMPRESA_DATA: {
-        MATRICULA_COLABORADOR_DATA: {
-          MATRICULA_COLABORADOR: matricula,
-          //CNPJ_EMPRESA: cnpjEmpresa,
-          DATA: data
-        }
+async delete(cnpj, matricula, data) {
+  return await this.prisma.rEGISTRO_PONTO.delete({
+    where: {
+      MATRICULA_CNPJ_EMPRESA_DATA_PONTO: {
+        CNPJ_EMPRESA: cnpj,
+        MATRICULA: matricula,
+        DATA_PONTO: data
       }
-    });
-  }
+    }
+  });
+}
 
   async findAllByColaborador(matricula) {
     return await this.prisma.rEGISTRO_PONTO.findMany({

@@ -5,10 +5,10 @@ class EmpresaRepository {
 
   async create(empresa) {
     try {
-      return await this.prisma.empresa.create({
+      return await prisma.eMPRESA.create({
         data: {
-          ...empresa,
-          DATACRIACAO: empresa.DATACRIACAO.toISOString() // Converte para string ISO
+          ...empresa
+         
         }
       });
     } catch (error) {
@@ -22,7 +22,7 @@ class EmpresaRepository {
       throw new Error('CNPJ não fornecido');
     }
 
-    return await prisma.EMPRESA.findUnique({
+    return await prisma.eMPRESA.findUnique({
       where: {
         CNPJ: cnpj 
       }
@@ -30,18 +30,18 @@ class EmpresaRepository {
   }
 
   async update(cnpj, empresaData) {
-    return await this.prisma.empresa.update({
+    return await prisma.eMPRESA.update({
       where: { CNPJ: cnpj },
       data: empresaData
     });
   }
 
   async delete(cnpj) {
-    return await this.prisma.empresa.delete({ where: { CNPJ: cnpj } });
+    return await this.prisma.eMPRESA.delete({ where: { CNPJ: cnpj } });
   }
 
   async findAll() {
-    return await this.prisma.empresa.findMany({
+    return await this.prisma.eMPRESA.findMany({
       include: {
         COLABORADORES: true,
         USUARIOS: true

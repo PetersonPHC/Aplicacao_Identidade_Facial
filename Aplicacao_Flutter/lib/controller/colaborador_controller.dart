@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -22,6 +22,7 @@ class ColaboradorController {
   final TextEditingController cargaHorariaController = TextEditingController();
   final TextEditingController ctpsController = TextEditingController();
   final TextEditingController matriculaController = TextEditingController();
+  final TextEditingController codigoEmpresaController = TextEditingController();
   final TextEditingController cargoController = TextEditingController();
   final TextEditingController nisController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
@@ -78,7 +79,7 @@ class ColaboradorController {
         rg: rgController.text.replaceAll(RegExp(r'[^0-9]'), ''),
         dataNascimento: dateUtils.formatarDataParaISO(dataNascimentoController.text),
         dataAdmissao: dateUtils.formatarDataParaISO(dataAdmissaoController.text),
-        matricula: matriculaController.text,
+        matricula: '${codigoEmpresaController.text}${matriculaController.text}',
         ctps: ctpsController.text,
         nis: nisController.text,
         cargaHoraria: dateUtils.formatarCargaHoraria(cargaHorariaController.text),

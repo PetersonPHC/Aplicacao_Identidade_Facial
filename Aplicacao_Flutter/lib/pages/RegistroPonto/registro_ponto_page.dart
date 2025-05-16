@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:reconhecimento/controller/registro_ponto_controller';
+import 'package:reconhecimento/controller/registro_ponto_controller.dart';
+import 'package:reconhecimento/service/registro_ponto_service.dart';
 
 class RegistroPontoPage extends StatefulWidget {
   final String matricula;
@@ -62,21 +63,93 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     setState(() => _isLoading = true);
 
     try {
-      await _controller.capturarFoto();
-      final sucesso = await _controller.registrarPonto();
-
-      if (sucesso) {
-        _showSnackBar('Ponto registrado com sucesso!');
-        Navigator.pop(context);
-      } else {
-        _showSnackBar('Falha ao registrar ponto');
-      }
-    } catch (e) {
-      _showSnackBar('Erro: $e');
-    } finally {
-      setState(() => _isLoading = false);
+    await _controller.capturarFoto();
+    final sucesso = await _controller.registrarPonto();
+    
+    if (sucesso) {
+      _showSuccessDialog('Ponto registrado com sucesso!');
     }
+  } on FacialRecognitionException catch (e) {
+    _showFaceErrorDialog(
+      e.message,
+      isDetectionError: e.isFaceDetectionError,
+      isMismatchError: e.isFaceMismatchError,
+    );
+  } on RegistrarPontoException catch (e) {
+    _showErrorDialog(e.toString());
+  } catch (e) {
+    _showErrorDialog('Erro inesperado: ${e.toString()}');
+  } finally {
+    setState(() => _isLoading = false);
   }
+}
+
+void _showFaceErrorDialog(
+  String message, {
+  bool isDetectionError = false,
+  bool isMismatchError = false,
+}) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        isDetectionError ? 'Rosto não detectado' : 'Rosto não corresponde',
+        style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+      ),
+      content: Text(
+        message,
+        style: TextStyle(color: Colors.red),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            'OK',
+            style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Erro', style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
+      content: Text(message, style: TextStyle(color: Colors.red)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('OK', style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
+        ),
+      ],
+    ),
+  );
+}
+
+
+void _showSuccessDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Sucesso'),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context); // Fecha o dialog
+            Navigator.pop(context); // Fecha a tela da câmera
+          },
+          child: Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -89,47 +162,48 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     _controller.dispose();
     super.dispose();
   }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Registrar Ponto'),
+    ),
+    body: Stack(
+      children: [
+        // Exibe a câmera se estiver pronta, senão mostra erro ou loading
+        if (_errorMessage != null)
+          Center(
+            child: Text(_errorMessage!, style: TextStyle(color: Colors.red)),
+          )
+        else if (!_cameraInitialized)
+          Center(child: CircularProgressIndicator())
+        else
+          Positioned.fill( // Esta é a chave para preencher todo o espaço
+            child: CameraPreview(_controller.cameraController),
+          ),
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Registrar Ponto'),
-      ),
-      body: Stack(
-        children: [
-          // Exibe a câmera se estiver pronta, senão mostra erro ou loading
-          if (_errorMessage != null)
-            Center(
-                child:
-                    Text(_errorMessage!, style: TextStyle(color: Colors.red)))
-          else if (!_cameraInitialized)
-            Center(child: CircularProgressIndicator())
-          else
-            CameraPreview(_controller.cameraController),
-
-          // Botão de registro (desabilitado se a câmera não estiver pronta)
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: ElevatedButton(
-                onPressed:
-                    (_isLoading || !_cameraInitialized || _errorMessage != null)
-                        ? null
-                        : _capturarERegistrar,
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: _isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text('REGISTRAR PONTO'),
+        // Botão de registro (desabilitado se a câmera não estiver pronta)
+        Positioned(
+          bottom: 20,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: ElevatedButton(
+              onPressed:
+                  (_isLoading || !_cameraInitialized || _errorMessage != null)
+                      ? null
+                      : _capturarERegistrar,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
+              child: _isLoading
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : Text('REGISTRAR PONTO'),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'dart:convert';
@@ -27,11 +26,6 @@ class ColaboradorService {
     dynamic imagem,
   }) async {
     try {
-      // Log dos dados básicos
-      print('=== INICIANDO CADASTRO ===');
-      print('Matrícula: $matricula');
-      print('CNPJ: $cnpj');
-      print('Nome: $nome');
 
       // 1. Preparação da requisição para o colaborador
       var requestColab = http.MultipartRequest('POST', Uri.parse(_baseUrlColaboradores));
@@ -66,7 +60,6 @@ class ColaboradorService {
             filename: fileName,
             contentType: MediaType('image', 'jpeg'),
           ));
-          print('Imagem (File) adicionada: $fileName');
         } else if (imagem is Uint8List) {
           // Para bytes em memória
           requestColab.files.add(http.MultipartFile.fromBytes(
@@ -75,25 +68,13 @@ class ColaboradorService {
             filename: fileName,
             contentType: MediaType('image', 'jpeg'),
           ));
-          print('Imagem (Uint8List) adicionada: $fileName');
+          
         }
       }
-
-      // Log dos dados que serão enviados
-      print('\nDados que serão enviados:');
-      print('URL: ${requestColab.url}');
-      print('Headers: ${requestColab.headers}');
-      print('Campos:');
-      requestColab.fields.forEach((key, value) => print('  $key: $value'));
-      print('Arquivos: ${requestColab.files.map((f) => f.filename).toList()}');
 
       // 2. Envio da requisição e tratamento da resposta
       var streamedResponse = await requestColab.send();
       var response = await http.Response.fromStream(streamedResponse);
-
-      print('\nResposta do servidor (Colaborador):');
-      print('Status: ${response.statusCode}');
-      print('Body: ${response.body}');
 
       if (response.statusCode != 201) {
         throw Exception('Falha ao cadastrar colaborador: ${response.body}');
@@ -101,7 +82,7 @@ class ColaboradorService {
 
       // 3. Cadastro do usuário associado
       var responseUser = await http.post(
-        Uri.parse(_baseUrlUsuarios),
+        Uri.parse("$_baseUrlUsuarios/colaborador"),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -113,9 +94,6 @@ class ColaboradorService {
         }),
       );
 
-      print('\nResposta do servidor (Usuário):');
-      print('Status: ${responseUser.statusCode}');
-      print('Body: ${responseUser.body}');
 
       if (responseUser.statusCode != 201) {
         throw Exception('Falha ao cadastrar usuário: ${responseUser.body}');
@@ -123,8 +101,6 @@ class ColaboradorService {
 
       return true;
     } catch (e) {
-      print('\nERRO NO CADASTRO: $e');
-      print('Stack trace: ${e is Error ? e.stackTrace : ''}');
       rethrow;
     }
   }
@@ -157,12 +133,6 @@ class ColaboradorService {
   
     dynamic imagem,
   }) async {
-print('Dados recebidos pelo service:');
-  print('Nome: $nome');
-  print('NIS: $nis');
-  print('CTPS: $ctps');
-  print('Cargo: $cargo');
-
 
   
  try {
@@ -185,20 +155,6 @@ print('Dados recebidos pelo service:');
       'CARGO': cargo,
       'CNPJ': cnpj,
     });
-      print('Dados sendo enviados para atualização:');
-print('MATRICULA: $matricula');
-print('NOME: $nome');
-print('CPF: $cpf');
-print('RG: $rg');
-print('DATA_NASCIMENTO: $dataNascimento');
-print('DATA_ADMISSAO: $dataAdmissao');
-print('CARGA_HORARIA: $cargaHoraria');
-print('CTPS: $ctps');
-print('CARGO: $cargo');
-print('NIS: $nis');
-print('CNPJ: $cnpj');
-
-
 
       if (imagem != null) {
         if (imagem is File) {
@@ -219,9 +175,7 @@ print('CNPJ: $cnpj');
           request.files.add(imagemBytes);
         }
       }
-        print('request: {$request}');
-      var response = await request.send();
-      var responseBody = await response.stream.bytesToString();
+       var response = await request.send();
 
       return response.statusCode == 200;
     } catch (e) {
@@ -261,8 +215,6 @@ Future<List<Map<String, dynamic>>?> buscarTodosColaboradores({required String cn
 }
   Future<void> excluirColaborador(String cnpj, String matricula) async {
     
-    print('DADOS FINAL METODO ');
-     print('Status: {$_baseUrlColaboradores/$cnpj/$matricula}');
     final response = await http.delete(
       Uri.parse('$_baseUrlColaboradores/$cnpj/$matricula'),
     );
@@ -278,6 +230,22 @@ Future<List<Map<String, dynamic>>?> buscarTodosColaboradores({required String cn
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'SENHA': novaSenha,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao atualizar senha');
+    }
+  }
+
+  
+
+  Future<void> darAdmin(String cnpj, String matricula, bool adm ) async {
+    final response = await http.put(
+      Uri.parse('$_baseUrlUsuarios/$cnpj/$matricula'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'ADM': adm,
       }),
     );
 

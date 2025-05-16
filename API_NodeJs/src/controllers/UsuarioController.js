@@ -19,7 +19,7 @@ class UsuarioErrorHandler {
 
 
 class UsuarioController {
-  criar = async (req, res) => {
+  criarColaborador = async (req, res) => {
     try {
       console.log('[UsuarioController] Requisição recebida com body:', req.body);
       
@@ -30,6 +30,20 @@ class UsuarioController {
       UsuarioErrorHandler.handle(error, res);
     }
   }
+
+
+  criarEmpresa = async (req, res) => {
+    try {
+      console.log('[UsuarioController] Requisição recebida com body:', req.body);
+      
+      const empresa = await UsuarioService.criarEmpresa(req.body);
+      
+      res.status(201).json(empresa);
+    } catch (error) {
+      UsuarioErrorHandler.handle(error, res);
+    }
+  }
+
 
   buscar = async (req, res) => {
     try {

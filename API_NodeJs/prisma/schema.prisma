@@ -18,6 +18,7 @@ model EMPRESA {
   CIDADE          String               @db.VarChar(35)
   BAIRRO          String               @db.VarChar(35)
   LOGRADOURO      String               @db.VarChar(100)
+  EMAIL           String               @db.VarChar(55)
   NUMERO          Int
   COMPLEMENTO     String?              @db.VarChar(50)
   DATACRIACAO     DateTime             @db.Date

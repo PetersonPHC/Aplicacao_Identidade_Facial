@@ -3,7 +3,6 @@ import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:reconhecimento/service/colaborador_service.dart';
 
@@ -30,10 +29,8 @@ class AtualizarColaboradorController {
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController cargaHorariaController = TextEditingController();
   final TextEditingController ctpsController = TextEditingController();
-  final TextEditingController matriculaController = TextEditingController();
   final TextEditingController cargoController = TextEditingController();
   final TextEditingController nisController = TextEditingController();
-  
 
   File? _imagemSelecionada;
   Uint8List? _imagemSelecionadaWeb;
@@ -51,16 +48,11 @@ class AtualizarColaboradorController {
   final ImageService _imageService = ImageService();
 
 Future<void> carregarDadosColaborador() async {
-  print('DADOS FINAL METODO carregar');
-  print('Status: {/$cnpj/$matricula}');
   
   try {
     final colaboradorData = await _colaboradorService.buscarColaborador(cnpj, matricula);
 
-    print('DADOS FINAL METODO');
-  
     
-    // Acessando os campos com os nomes corretos que vieram da API
     final data = colaboradorData['data']; // Acessando o objeto dentro de 'data'
     
     nomeController.text = data['NOME'] ?? '';
@@ -77,10 +69,9 @@ Future<void> carregarDadosColaborador() async {
       cargaHorariaController.text = data['CARGA_HORARIA'] ?? '';
     
     ctpsController.text = data['CTPS'] ?? '';
-    matriculaController.text = data['MATRICULA'] ?? '';
     cargoController.text = data['CARGO'] ?? '';
     nisController.text = data['NIS'] ?? '';
-   
+
 
    if (data['IMAGEM'] != null) {
       if (data['IMAGEM'] is String) {
@@ -111,14 +102,13 @@ Future<void> carregarDadosColaborador() async {
     nomeController.clear();
     cpfController.clear();
     rgController.clear();
-    matriculaController.clear();
     ctpsController.clear();
     dataNascimentoController.clear();
     dataAdmissaoController.clear();
     nisController.clear();
     cargoController.clear();
     cargaHorariaController.clear();
-    _imagemSelecionada = null;
+     _imagemSelecionada = null;
     _imagemSelecionadaWeb = null;
    
   }
@@ -136,17 +126,11 @@ Future<void> carregarDadosColaborador() async {
   }
 
   Future<void> atualizar(BuildContext context) async {
-     print('Valores ANTES de enviar controller:');
-  print('Nome: ${nomeController.text}');
-  print('NIS: ${nisController.text}');
-  print('CTPS: ${ctpsController.text}');
-  print('Cargo: ${cargoController.text}');
-    if (nomeController.text.isEmpty ||
+     if (nomeController.text.isEmpty ||
         cpfController.text.isEmpty ||
         rgController.text.isEmpty ||
         dataNascimentoController.text.isEmpty ||
         dataAdmissaoController.text.isEmpty ||
-        matriculaController.text.isEmpty ||
         ctpsController.text.isEmpty ||
         nisController.text.isEmpty ||
         cargaHorariaController.text.isEmpty ||
