@@ -143,7 +143,7 @@ class ColaboradorService {
 
     // Adicione os campos como form-data
     request.fields.addAll({
-      'MATRICULA': matricula,
+     
       'NOME': nome,
       'CPF': cpf,
       'RG': rg,
@@ -159,7 +159,7 @@ class ColaboradorService {
       if (imagem != null) {
         if (imagem is File) {
           var imagemFile = await http.MultipartFile.fromPath(
-            'imagem',
+            'IMAGEM',
             imagem.path,
             filename: 'imagem.jpg',
             contentType: MediaType('image', 'jpeg'),
@@ -167,7 +167,7 @@ class ColaboradorService {
           request.files.add(imagemFile);
         } else if (imagem is Uint8List) {
           var imagemBytes = http.MultipartFile.fromBytes(
-            'imagem',
+            'IMAGEM',
             imagem,
             filename: 'imagem.jpg',
             contentType: MediaType('image', 'jpeg'),

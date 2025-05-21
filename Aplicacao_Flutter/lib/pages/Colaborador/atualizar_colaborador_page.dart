@@ -7,7 +7,7 @@ class AtualizarColaboradorPage extends StatefulWidget {
   final String cnpj;
   final String matricula;
 
-  const AtualizarColaboradorPage({
+  const AtualizarColaboradorPage({super.key, 
     required this.cnpj,
     required this.matricula,
   });
@@ -19,6 +19,8 @@ class AtualizarColaboradorPage extends StatefulWidget {
 
 class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
   late AtualizarColaboradorController _controller;
+  Uint8List? _imagemSelecionada;
+
 
   @override
   void initState() {
@@ -131,8 +133,15 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: _controller.selecionarImagem,
-                child: Container(
+              onTap: () async {
+  await _controller.selecionarImagem();
+  if (mounted) {
+    setState(() {
+      _imagemSelecionada = _controller.imagemSelecionadaWeb;
+    });
+  }
+},
+  child: Container(
                   width: 200,
                   height: 200,
                   decoration: BoxDecoration(
@@ -154,55 +163,37 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
       ],
     );
   }
-
-  Widget _buildImageWidget() {
-    // 1. Verifica se tem imagem da API (bytes)
-    if (_controller.imagemBytes != null) {
-      try {
-        return ClipOval(
-          child: Image.memory(
-            _controller.imagemBytes!,
-            fit: BoxFit.cover,
-            width: 200,
-            height: 200,
-            errorBuilder: (context, error, stackTrace) {
-              // Se houver erro ao carregar os bytes, mostra ícone padrão
-              return _buildDefaultIcon();
-            },
-          ),
-        );
-      } catch (e) {
-        return _buildDefaultIcon();
-      }
-    }
-
-    // 2. Verifica se tem imagem selecionada do dispositivo
-    if (_controller.imagemSelecionada != null) {
-      return ClipOval(
-        child: Image.file(
-          _controller.imagemSelecionada!,
-          fit: BoxFit.cover,
-          width: 200,
-          height: 200,
-        ),
-      );
-    }
-
-    // 3. Verifica se tem imagem da web
-    if (_controller.imagemSelecionadaWeb != null) {
-      return ClipOval(
-        child: Image.memory(
-          _controller.imagemSelecionadaWeb!,
-          fit: BoxFit.cover,
-          width: 200,
-          height: 200,
-        ),
-      );
-    }
-
-    // 4. Caso padrão (nenhuma imagem disponível)
-    return _buildDefaultIcon();
+Widget _buildImageWidget() {
+  if (_imagemSelecionada != null) {
+    return ClipOval(
+      child: Image.memory(
+        _imagemSelecionada!,
+        fit: BoxFit.cover,
+        width: 200,
+        height: 200,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildDefaultIcon();
+        },
+      ),
+    );
   }
+
+  if (_controller.imagemBytes != null) {
+    return ClipOval(
+      child: Image.memory(
+        _controller.imagemBytes!,
+        fit: BoxFit.cover,
+        width: 200,
+        height: 200,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildDefaultIcon();
+        },
+      ),
+    );
+  }
+
+  return _buildDefaultIcon();
+}
 
   Widget _buildDefaultIcon() {
     return Icon(

@@ -4,11 +4,9 @@ import 'package:reconhecimento/pages/Colaborador/Relacao_Ponto_Colaborador_Page.
 import 'package:reconhecimento/pages/Colaborador/perfil_page.dart';
 import 'package:reconhecimento/pages/Colaborador/relacao_page.dart';
 
-// import 'package:reconhecimento/pages/Colaborador/perfil_page.dart';
 import 'package:reconhecimento/pages/RegistroPonto/registro_ponto_page.dart';
 import 'package:reconhecimento/pages/Auth/login_page.dart';
 
-//import 'package:reconhecimento/pages/PerfilPage.dart';
 
 class MainPage extends StatefulWidget {
   final bool isAdm;

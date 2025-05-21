@@ -113,17 +113,24 @@ Future<void> carregarDadosColaborador() async {
    
   }
 
-
-  Future<void> selecionarImagem() async {
-    final result = await _imageService.selecionarImagem();
-    if (result != null) {
-      if (kIsWeb) {
-        _imagemSelecionadaWeb = result.webImage;
-      } else {
-        _imagemSelecionada = result.fileImage;
-      }
+Future<void> selecionarImagem() async {
+  print("Iniciando seleção de imagem...");
+  final result = await _imageService.selecionarImagem();
+  print("Resultado recebido: $result");
+  
+  if (result != null) {
+    if (kIsWeb) {
+      print("Imagem web selecionada");
+      _imagemSelecionadaWeb = result.webImage;
+    } else {
+      print("Imagem file selecionada");
+      _imagemSelecionada = result.fileImage;
     }
+    print("Imagem atribuída com sucesso");
+  } else {
+    print("Nenhuma imagem selecionada");
   }
+}
 
   Future<void> atualizar(BuildContext context) async {
      if (nomeController.text.isEmpty ||

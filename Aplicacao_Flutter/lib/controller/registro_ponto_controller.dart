@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:intl/intl.dart';
 import 'package:reconhecimento/service/registro_ponto_service.dart';
-import 'package:reconhecimento/controller/localizacao_controller.dart';
 
 class RegistroPontoController {
   final String matricula;
@@ -57,7 +56,7 @@ Future<bool> registrarPonto() async {
   }
 
   final dataHoraAtual = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-
+/*
  try {
       final isNear = await LocationVerifier.isNearCompany(cnpj);
       if (!isNear) {
@@ -71,7 +70,7 @@ Future<bool> registrarPonto() async {
       throw RegistrarPontoException(e.toString());
     }
 
-
+*/
 
   try {
     return await _service.registrarPonto(
