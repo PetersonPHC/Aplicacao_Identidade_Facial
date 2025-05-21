@@ -1,0 +1,2 @@
+C:/Users/geova/Documents/GitHub/Aplicacao_Identidade_Facial/Aplicacao_Flutter/android/app/.cxx/Debug/3j2h452z/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/geova/Documents/GitHub/Aplicacao_Identidade_Facial/Aplicacao_Flutter/android/app/.cxx/Debug/3j2h452z/armeabi-v7a/CMakeFiles/rebuild_cache.dir
