@@ -13,11 +13,7 @@ const RegistroPontoController = require('./controllers/RegistroPontoController')
 const app = express();
 
 app.use(cors());
-
-// Middleware para JSON
 app.use(express.json());
-
-// Middleware para URL encoded
 app.use(express.urlencoded({ extended: true }));
 
 const upload = multer({
@@ -54,7 +50,6 @@ app.post('/loginColaborador', UsuarioController.loginColaborador);
 
 // Rotas de Registro de Ponto
 app.post('/registros-ponto',upload.single('IMAGEM'), RegistroPontoController.criar);
-
 app.post('/registros-ponto/incluir' , RegistroPontoController.incluirPonto);
 app.get('/registros-ponto/:cnpjEmpresa/:matricula/:data' , RegistroPontoController.buscar);
 app.delete('/registros-ponto/:cnpjEmpresa/:matricula/:data', RegistroPontoController.deletar); // ARRUMAR
@@ -62,7 +57,6 @@ app.get('/registros-ponto/:cnpjEmpresa/:matricula', RegistroPontoController.list
 
 // Tratamento de erros
 app.use((err, req, res, next) => {
-  console.error('Erro não tratado:', err.stack);
   res.status(500).json({ 
     error: 'Erro interno no servidor',
     message: err.message,

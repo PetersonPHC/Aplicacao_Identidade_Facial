@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:reconhecimento/service/colaborador_service.dart';
 
-import 'package:reconhecimento/service/image_service.dart';
+import 'package:reconhecimento/utils/selecao_imagem.dart';
 import 'package:reconhecimento/utils/date_utils.dart';
 
 class ColaboradorController {

@@ -6,8 +6,13 @@ import 'package:http_parser/http_parser.dart';
 import 'dart:convert';
 
 class ColaboradorService {
-  static const String _baseUrlColaboradores = 'http://localhost:3000/colaboradores';
-  static const String _baseUrlUsuarios = 'http://localhost:3000/usuarios';
+
+  static const String _baseUrlColaboradores = 'http://10.0.2.2:3000/colaboradores';
+  static const String _baseUrlUsuarios =  'http://10.0.2.2:3000/usuarios';
+  // URL DE ANDROID
+  
+ //static const String _baseUrlColaboradores =   'http://localhost:3000/colaboradores';
+ //static const String _baseUrlUsuarios =   'http://localhost:3000/usuarios';
 
   Future<bool> cadastrarColaborador({
     required String cnpj,
@@ -185,7 +190,7 @@ class ColaboradorService {
 Future<List<Map<String, dynamic>>?> buscarTodosColaboradores({required String cnpj}) async {
   try {
     final response = await http.get(
-      Uri.parse('http://localhost:3000/colaboradores/$cnpj'),
+      Uri.parse("$_baseUrlColaboradores/$cnpj"),
       headers: {'Accept': 'application/json'},
     );
 

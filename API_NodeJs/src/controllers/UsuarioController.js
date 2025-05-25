@@ -2,7 +2,6 @@ const UsuarioService = require('../services/UsuarioService');
 
 class UsuarioErrorHandler {
   static handle(error, res) {
-    console.error('[UsuarioController] Erro:', error);
     
     const statusCode = error.message === 'Usuário não encontrado' ? 404 : 
                       error.message === 'Não autorizado' ? 401 : 
@@ -21,7 +20,7 @@ class UsuarioErrorHandler {
 class UsuarioController {
   criarColaborador = async (req, res) => {
     try {
-      console.log('[UsuarioController] Requisição recebida com body:', req.body);
+      
       
       const usuario = await UsuarioService.criarUsuario(req.body);
       
@@ -34,7 +33,7 @@ class UsuarioController {
 
   criarEmpresa = async (req, res) => {
     try {
-      console.log('[UsuarioController] Requisição recebida com body:', req.body);
+      
       
       const empresa = await UsuarioService.criarEmpresa(req.body);
       
@@ -90,8 +89,7 @@ class UsuarioController {
   loginEmpresa = async (req, res) => {
     try {
       const { USUARIO_ID, SENHA } = req.body;
-      console.log('→ pj:', USUARIO_ID);
-      console.log('→ senha:', SENHA);
+     
       const empresa = await UsuarioService.autenticarEmpresa(USUARIO_ID, SENHA);
       res.json(empresa);
     } catch (error) {
@@ -102,8 +100,7 @@ class UsuarioController {
   loginColaborador = async (req, res) => {
     try {
       const { USUARIO_ID, SENHA } = req.body;
-      console.log('→ matricula:', USUARIO_ID);
-      console.log('→ senha:', SENHA);
+     
       const matricula = req.body.MATRICULA;
       const colaborador = await UsuarioService.autenticarColaborador(
             USUARIO_ID, 

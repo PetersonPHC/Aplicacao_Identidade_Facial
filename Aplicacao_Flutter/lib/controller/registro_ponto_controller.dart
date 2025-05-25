@@ -21,12 +21,11 @@ class RegistroPontoController {
   CameraController get cameraController => _cameraController;
   bool get isCameraInitialized => _isCameraInitialized;
   Uint8List? get fotoCapturada => _fotoCapturada;
-
-  Future<void> initializeCamera(List<CameraDescription> cameras) async {
+  Future<void> initializeCamera(List<CameraDescription> cameras, int cameraIndex) async {
     try {
       _cameraController = CameraController(
-        cameras[0],
-        ResolutionPreset.medium,
+        cameras[cameraIndex],
+        ResolutionPreset.max,
         enableAudio: false,
       );
       await _cameraController.initialize();
@@ -35,6 +34,26 @@ class RegistroPontoController {
       throw Exception('Erro ao inicializar câmera: $e');
     }
   }
+
+  Future<void> switchCamera(List<CameraDescription> cameras, int cameraIndex) async {
+    if (cameraIndex < 0 || cameraIndex >= cameras.length) {
+      throw Exception('Índice de câmera inválido');
+    }
+
+    // Desativa a câmera atual
+    await _cameraController.dispose();
+
+    // Inicializa a nova câmera
+    _cameraController = CameraController(
+      cameras[cameraIndex],
+      ResolutionPreset.max,
+      enableAudio: false,
+    );
+
+    await _cameraController.initialize();
+    _isCameraInitialized = true;
+  }
+
 
   Future<void> capturarFoto() async {
     if (!_isCameraInitialized) {

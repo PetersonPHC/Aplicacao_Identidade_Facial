@@ -22,11 +22,7 @@ class RegistroPontoRepository {
         }
       });
     } catch (error) {
-      console.error('Erro detalhado ao criar registro:', {
-        message: error.message,
-        stack: error.stack,
-        dataRecebida: registroData
-      });
+      
       throw new Error(`Falha ao criar registro: ${error.message}`);
     }
   }
@@ -45,11 +41,7 @@ class RegistroPontoRepository {
         }
       });
     } catch (error) {
-      console.error('Erro detalhado ao criar registro:', {
-        message: error.message,
-        stack: error.stack,
-        dataRecebida: registroData
-      });
+    
       throw new Error(`Falha ao criar registro: ${error.message}`);
     }
   }

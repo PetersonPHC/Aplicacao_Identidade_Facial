@@ -37,7 +37,6 @@ class UsuarioRepository {
   }
 
   async findByMatricula(matricula) {
-    console.log('Dados normalizados para criação:', matricula);
     return await this.prisma.uSUARIO_COLABORADOR.findFirst({
       where: { USUARIO_ID : matricula },
       include: {
@@ -60,6 +59,8 @@ class UsuarioRepository {
     });
   }
 
+
+  
   // Mantenha este método se ainda for necessário em outros contextos
   async findByMatriculaAndCnpj(matricula, cnpj) {
     return await this.prisma.usuario.findUnique({
@@ -86,10 +87,8 @@ class UsuarioRepository {
   async delete(matricula) {
     return await this.prisma.usuario.delete({
       where: {
-        //MATRICULA_COLABORADOR_CNPJ_EMPRESA: {
           MATRICULA_COLABORADOR: matricula,
-          //CNPJ_EMPRESA: cnpjEmpresa
-        //}
+         
       }
     });
   }

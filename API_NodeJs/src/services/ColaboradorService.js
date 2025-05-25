@@ -15,7 +15,6 @@ async criarColaborador(dadosColaborador) {
     throw new Error('CNPJ não fornecido');
   }
 
-  console.log(`[ColaboradorService] Verificando colaborador matrícula ${dadosColaborador.MATRICULA} na empresa ${cnpj}`);
   const colaboradorExistente = await ColaboradorRepository.findByMatricula(
     dadosColaborador.MATRICULA,
     cnpj
@@ -29,7 +28,6 @@ async criarColaborador(dadosColaborador) {
 
   if (dadosColaborador.IMAGEM) {
     try {
-      console.log('[ColaboradorService] Processando imagem do colaborador...');
       
       // Processa a imagem (converte se necessário)
       const { buffer: imagemBuffer, nomeArquivo, converted } = await this.converterImagemJPG(
@@ -37,7 +35,6 @@ async criarColaborador(dadosColaborador) {
         'imagem_colaborador.jpg'
       );
 
-      console.log(`[ColaboradorService] Imagem preparada para envio: ${nomeArquivo} (${converted ? 'Convertida de PNG' : 'Formato original'})`);
 
       // Armazena a imagem processada para salvar no banco depois
       imagemProcessada = imagemBuffer;
@@ -46,7 +43,6 @@ async criarColaborador(dadosColaborador) {
       const form = new FormData();
       form.append('imagem', imagemBuffer, nomeArquivo);
 
-      console.log('[ColaboradorService] Enviando imagem para verificação facial...');
       const verificarFaceResponse = await axios.post(
         'http://127.0.0.1:8000/verificar-face/',
         form,
@@ -60,13 +56,10 @@ async criarColaborador(dadosColaborador) {
       );
 
       if (verificarFaceResponse.status !== 200) {
-        console.error('[ColaboradorService] Falha na verificação facial:', verificarFaceResponse.data);
         throw new Error('Falha na verificação facial: ' + (verificarFaceResponse.data.message || 'Resposta inválida da API'));
       }
       
-      console.log('[ColaboradorService] Verificação facial realizada com sucesso');
     } catch (error) {
-      console.error('[ColaboradorService] Erro no processo de verificação facial:', error);
       
       if (error.response && error.response.data) {
         const pythonError = error.response.data;
@@ -77,11 +70,7 @@ async criarColaborador(dadosColaborador) {
       
       throw new Error('Erro na verificação facial: ' + error.message);
     }
-  } else {
-    console.log('[ColaboradorService] Nenhuma imagem fornecida para verificação facial');
-  }
-  
-  console.log('[ColaboradorService] Criando novo colaborador no banco de dados');
+  } 
   
   // Cria o objeto do colaborador com a imagem processada (se existir)
   const dadosParaSalvar = {
@@ -98,15 +87,12 @@ async criarColaborador(dadosColaborador) {
 }
 
 async converterImagemJPG(imagemBuffer, nomeArquivo) {
-  console.log(`[ColaboradorService] Verificando necessidade de conversão para: ${nomeArquivo}`);
   
   // Verifica se o buffer começa com assinatura PNG (independente do nome do arquivo)
   const isPNG = imagemBuffer.slice(0, 8).toString('hex') === '89504e470d0a1a0a';
-  console.log(`[ColaboradorService] Conteúdo da imagem é PNG? ${isPNG}`);
 
   if (isPNG) {
     try {
-      console.log('[ColaboradorService] Iniciando conversão de PNG para JPG...');
       
       // Converte PNG para JPG
       const jpgBuffer = await sharp(imagemBuffer)
@@ -118,7 +104,6 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
       
       // Garante que o nome do arquivo termine com .jpg
       const newFilename = nomeArquivo.replace(/\.[^/.]+$/, '') + '.jpg';
-      console.log(`[ColaboradorService] Conversão concluída: ${nomeArquivo} -> ${newFilename}`);
       
       return {
         buffer: jpgBuffer,
@@ -126,12 +111,10 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
         converted: true
       };
     } catch (error) {
-      console.error('[ColaboradorService] Erro na conversão de imagem:', error);
       throw new Error('Falha ao converter imagem PNG para JPG: ' + error.message);
     }
   }
   
-  console.log('[ColaboradorService] Nenhuma conversão necessária - mantendo formato original');
   return {
     buffer: imagemBuffer,
     nomeArquivo: nomeArquivo,
@@ -141,8 +124,6 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
 
 
   async buscarColaboradorMatricula( matricula) {
-    console.log('[ColaboradorService] Buscando colaborador com metodo de matricula:');
-    console.log('→ MATRICULA:', matricula);
   
     
     const colaborador = await ColaboradorRepository.findByMatricula( matricula);
@@ -158,9 +139,6 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
 
 
   async buscarColaboradorMatriculaCnpj(cnpj, matricula) {
-    console.log('[ColaboradorService] Buscando colaborador com:');
-    console.log('→ MATRICULA:', matricula);
-    console.log('→ cnpj:', cnpj);
     
     const colaborador = await ColaboradorRepository.findByMatriculaAndCNPJ(cnpj, matricula);
     if (!colaborador) throw new Error('Colaborador não encontrado');
@@ -171,13 +149,9 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
     };
   }
   async atualizarColaborador(matricula, colaboradorData) {
-    console.log('[ColaboradorService] Iniciando atualização', {
-      matricula,
-      colaboradorData: { ...colaboradorData, IMAGEM: colaboradorData.IMAGEM ? 'Buffer presente' : 'Nenhuma imagem' }
-    });
+
   
     await this.buscarColaboradorMatricula(matricula);
-    console.log('[ColaboradorService] Colaborador encontrado, prosseguindo com atualização');
   
     if (colaboradorData.DATA_NASCIMENTO) {
       colaboradorData.DATA_NASCIMENTO = new Date(colaboradorData.DATA_NASCIMENTO + 'T00:00:00.000Z');
@@ -188,7 +162,6 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
     }
   
     if (colaboradorData.CARGA_HORARIA) {
-      console.log('[ColaboradorService] Formatando CARGA_HORARIA:', colaboradorData.CARGA_HORARIA);
       
       const timeParts = colaboradorData.CARGA_HORARIA.split(':');
       if (timeParts.length < 2 || timeParts.length > 3) {
@@ -212,14 +185,12 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
     let imagemProcessada = null;
     if (colaboradorData.IMAGEM) {
       try {
-        console.log('[ColaboradorService] Processando imagem do colaborador...');
         
-        const { buffer: imagemBuffer, nomeArquivo, converted } = await this.converterImagemSeNecessario(
+        const { buffer: imagemBuffer, nomeArquivo, converted } = await this.converterImagemJPG(
           colaboradorData.IMAGEM,
           'imagem_colaborador.jpg'
         );
 
-        console.log(`[ColaboradorService] Imagem preparada para envio: ${nomeArquivo} (${converted ? 'Convertida de PNG' : 'Formato original'})`);
 
         // Armazena a imagem processada para atualização
         imagemProcessada = imagemBuffer;
@@ -227,7 +198,6 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
         const form = new FormData();
         form.append('imagem', imagemBuffer, nomeArquivo);
 
-        console.log('[ColaboradorService] Enviando imagem para verificação facial...');
         const verificarFaceResponse = await axios.post(
           'http://127.0.0.1:8000/verificar-face/',
           form,
@@ -241,13 +211,10 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
         );
 
         if (verificarFaceResponse.status !== 200) {
-          console.error('[ColaboradorService] Falha na verificação facial:', verificarFaceResponse.data);
           throw new Error('Falha na verificação facial: ' + (verificarFaceResponse.data.message || 'Resposta inválida da API'));
         }
         
-        console.log('[ColaboradorService] Verificação facial realizada com sucesso');
       } catch (error) {
-        console.error('[ColaboradorService] Erro no processo de verificação facial:', error);
         
         if (error.response && error.response.data) {
           const pythonError = error.response.data;
@@ -259,10 +226,8 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
         throw new Error('Erro na verificação facial: ' + error.message);
       }
     } else {
-      console.log('[ColaboradorService] Nenhuma imagem fornecida para verificação facial');
     }
   
-    // Filtra campos permitidos
     const camposPermitidos = [
       'NOME', 'CPF', 'RG', 'DATA_NASCIMENTO', 'DATA_ADMISSAO',
       'NIS', 'CTPS', 'CARGA_HORARIA', 'CARGO', 'BANCO_DE_HORAS', 'IMAGEM'
@@ -279,14 +244,7 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
     if (imagemProcessada) {
       dadosParaAtualizar.IMAGEM = imagemProcessada;
     }
-  
-    console.log('[ColaboradorService] Dados filtrados para atualização:', { 
-      ...dadosParaAtualizar, 
-      IMAGEM: dadosParaAtualizar.IMAGEM ? 'Buffer presente' : 'Nenhuma imagem' 
-    });
-  
     const resultado = await ColaboradorRepository.update(matricula, dadosParaAtualizar);
-    console.log('[ColaboradorService] Atualização no repositório concluída:', resultado);
   
     return resultado;
   }
@@ -296,17 +254,10 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
 
     try {
       
-      console.log('SERVICE');
-      console.log('→ MATRICULA:', matricula);
-      console.log('→ cnpj:', cnpj);
       await this.buscarColaboradorMatriculaCnpj(cnpj, matricula);
       return await ColaboradorRepository.delete(matricula);
     } catch (error) {
-      console.error('[ColaboradorService] Erro ao deletar:', {
-        message: error.message,
-        stack: error.stack,
-        meta: error.meta || null
-      });
+      
       
       if (error.message.includes('Foreign key constraint')) {
         throw new Error('Não foi possível deletar: existem registros vinculados');

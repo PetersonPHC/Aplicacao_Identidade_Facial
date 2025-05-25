@@ -1,15 +1,7 @@
 const ColaboradorService = require('../services/ColaboradorService');
 const multer = require('multer');
 
-class AppError extends Error {
-  constructor(message, statusCode, details = null) {
-    super(message);
-    this.statusCode = statusCode;
-    this.details = details;
-    this.isOperational = true;
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
+
 
 class MulterConfig {
   constructor() {
@@ -35,12 +27,7 @@ class MulterConfig {
 
 class ErrorHandler {
   static handle(error, res) {
-    console.error('Erro no controller:', {
-      message: error.message,
-      statusCode: error.statusCode || 500,
-      stack: error.stack,
-      isOperational: error.isOperational || false
-    });
+  
 
     const statusCode = error.statusCode || 500;
     const response = {
@@ -68,8 +55,7 @@ class ColaboradorController {
   buscar = async (req, res) => {
     try {
       const { matricula, cnpj } = req.params;
-      console.log('→ MATRICULA:', matricula);
-      console.log('→ cnpj:', cnpj);
+      
       const Colaborador = await ColaboradorService.buscarColaboradorMatriculaCnpj(cnpj, matricula);
       
       res.json({
@@ -86,11 +72,6 @@ class ColaboradorController {
 
   criar = async (req, res) => {
     try {
-      console.log('Dados recebidos:', {
-        body: req.body,
-        file: req.file ? `Imagem (${req.file.size} bytes)` : null,
-        headers: req.headers
-      });
   
       // Corrigido: combina body e file corretamente
       const colaboradorData = {
@@ -98,7 +79,6 @@ class ColaboradorController {
         IMAGEM: req.file?.buffer
       };
       
-      console.log('Dados normalizados para criação:', colaboradorData);
   
       const colaborador = await ColaboradorService.criarColaborador(colaboradorData);
       
@@ -111,7 +91,6 @@ class ColaboradorController {
     }
   }
   atualizar = async (req, res) => {
-    console.log('Dados recebidos (raw):', req.body); // Agora deve mostrar os campos
     
     try {
       const { matricula } = req.params;
@@ -120,7 +99,6 @@ class ColaboradorController {
         IMAGEM: req.file?.buffer // Arquivo se existir
       };
   
-      console.log('Dados preparados:', dadosAtualizacao);
       
       const colaborador = await ColaboradorService.atualizarColaborador(
         matricula,
@@ -136,8 +114,6 @@ class ColaboradorController {
     try {
       const { cnpjEmpresa } = req.params;
       const { matricula } = req.params;
-      console.log('→ MATRICULA:', matricula);
-      console.log('→ cnpj:', cnpjEmpresa);
       const colaboradores = await ColaboradorService.deletarColaborador(cnpjEmpresa, matricula);
       res.status(204).end();
     } catch (error) {

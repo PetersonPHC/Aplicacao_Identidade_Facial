@@ -56,28 +56,36 @@ class MainPageState extends State<MainPage> {
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         "Menu",
+                        
                         style: GoogleFonts.roboto(
                           color: Colors.white,
-                          fontSize: 24,
+                          fontSize: 28,
                         ),
+                        
                       ),
+                      
                     ),
+                    SizedBox(height: 15),
                   ],
                 ),
               ),
+             
               Expanded(
+                
                 child: Container(
-                  color: Color.fromARGB(255, 215, 221, 231),
+                  color: Color.fromARGB(255, 255, 255, 255),
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
                       ListTile(
                         leading: const Icon(Icons.home,
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            size:28 ),
                         title: Text(
                           "Home",
                           style: GoogleFonts.roboto(
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                               fontSize: 20,),
                         ),
                         onTap: () {
                           Navigator.of(context).pop();
@@ -93,11 +101,13 @@ class MainPageState extends State<MainPage> {
                       SizedBox(height: 15),
                       ListTile(
                         leading: const Icon(Icons.access_time_filled_sharp,
+                        size:28 ,
                             color: Color.fromARGB(255, 0, 0, 0)),
                         title: Text(
                           "Registre seu ponto",
                           style: GoogleFonts.roboto(
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20,),
                         ),
                         onTap: () {
                           Navigator.of(context).pop();
@@ -115,11 +125,12 @@ class MainPageState extends State<MainPage> {
                       SizedBox(height: 15),
                       ListTile(
                         leading: const Icon(Icons.calendar_month_outlined,
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                            color: Color.fromARGB(255, 0, 0, 0), size:28),
                         title: Text(
                           "Relação de Registros",
                           style: GoogleFonts.roboto(
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                               fontSize: 20, ),
                         ),
                         onTap: () {
                           Navigator.of(context).pop();
@@ -136,11 +147,13 @@ class MainPageState extends State<MainPage> {
                       SizedBox(height: 15),
                       ListTile(
                         leading: const Icon(Icons.supervised_user_circle,
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            size:28 ),
                         title: Text(
                           "Perfil",
                           style: GoogleFonts.roboto(
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                                fontSize: 20,),
                         ),
                         onTap: () {
                           Navigator.of(context).pop();
@@ -157,10 +170,12 @@ class MainPageState extends State<MainPage> {
                       if (widget.isAdm)
                         ListTile(
                           leading: const Icon(Icons.people,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                              color: Color.fromARGB(255, 0, 0, 0), size:28 ),
                           title: Text(
                             "Relacao de colaboradores",
+                            
                             style: GoogleFonts.roboto(
+                               fontSize: 20,
                                 color: const Color.fromARGB(255, 0, 0, 0)),
                           ),
                           onTap: () {
@@ -176,11 +191,13 @@ class MainPageState extends State<MainPage> {
                       SizedBox(height: 15),
                       ListTile(
                         leading: const Icon(Icons.exit_to_app_sharp,
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                            color: Color.fromARGB(255, 0, 0, 0),
+                             size:28 ),
                         title: Text(
                           "Sair",
                           style: GoogleFonts.roboto(
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20, ),
                         ),
                         onTap: () {
                           Navigator.of(context).pop();
@@ -202,16 +219,17 @@ class MainPageState extends State<MainPage> {
           child: Center(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               Text(
                 "IDENTIDADE-FACIAL o seu sistema de ponto",
                 style: GoogleFonts.roboto(
                   color: const Color.fromARGB(255, 0, 0, 0),
-                  fontSize: 17,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 20),
               Column(
                 children: [
                   Container(
@@ -222,13 +240,12 @@ class MainPageState extends State<MainPage> {
                       color: const Color.fromARGB(255, 215, 221, 231),
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 0, 22, 57),
+                        color: const Color.fromARGB(255, 68, 140, 255),
                         width: 2.0,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Color.fromRGBO(2, 44, 79,
-                              0.8), // Using RGBO constructor which takes opacity directly
+                          color: Color.fromRGBO(49, 162, 255, 0.8), // Using RGBO constructor which takes opacity directly
                           offset: const Offset(0, 6),
                           blurRadius: 15,
                         ),
@@ -244,7 +261,7 @@ class MainPageState extends State<MainPage> {
                               "Registre seu ponto",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 17,
+                                fontSize: 23,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -253,7 +270,7 @@ class MainPageState extends State<MainPage> {
                             Icon(
                               Icons.access_time_filled_sharp,
                               color: Color.fromARGB(255, 29, 80, 163),
-                              size: 22.0,
+                              size: 25.0,
                             ),
                           ],
                         ),
@@ -262,7 +279,7 @@ class MainPageState extends State<MainPage> {
                           "Transforme sua jornada de trabalho em algo simples e ágil com IDENTIDADE-FACIAL",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
                           textAlign: TextAlign.center,
@@ -295,7 +312,7 @@ class MainPageState extends State<MainPage> {
                           child: Text(
                             "Registrar Ponto",
                             style: GoogleFonts.roboto(
-                              fontSize: 14,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -303,6 +320,7 @@ class MainPageState extends State<MainPage> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 18),
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(8.0),
@@ -311,13 +329,12 @@ class MainPageState extends State<MainPage> {
                       color: const Color.fromARGB(255, 215, 221, 231),
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 0, 22, 57),
+                        color: const Color.fromARGB(255, 68, 140, 255),
                         width: 2.0,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Color.fromRGBO(2, 44, 79,
-                              0.8), // Using RGBO constructor which takes opacity directly
+                          color: Color.fromRGBO(49, 162, 255, 0.8), 
                           offset: const Offset(0, 6),
                           blurRadius: 15,
                         ),
@@ -333,7 +350,7 @@ class MainPageState extends State<MainPage> {
                               "Histórico de ponto",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 17,
+                                fontSize: 23,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -342,7 +359,7 @@ class MainPageState extends State<MainPage> {
                             Icon(
                               Icons.edit_calendar_rounded,
                               color: Color.fromARGB(255, 29, 80, 163),
-                              size: 22.0,
+                              size: 25.0,
                             ),
                           ],
                         ),
@@ -351,7 +368,7 @@ class MainPageState extends State<MainPage> {
                           "IDENTIDADE-FACIAL, a ferramenta que mudará sua concepção de registro de ponto",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
                           textAlign: TextAlign.center,
@@ -383,7 +400,7 @@ class MainPageState extends State<MainPage> {
                           child: Text(
                             "Histórico de Ponto",
                             style: GoogleFonts.roboto(
-                              fontSize: 14,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -391,6 +408,7 @@ class MainPageState extends State<MainPage> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 15),
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(8.0),
@@ -399,13 +417,12 @@ class MainPageState extends State<MainPage> {
                       color: const Color.fromARGB(255, 215, 221, 231),
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 0, 22, 57),
+                        color: const Color.fromARGB(255, 68, 140, 255),
                         width: 2.0,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Color.fromRGBO(2, 44, 79,
-                              0.8), // Using RGBO constructor which takes opacity directly
+                          color: Color.fromRGBO(49, 162, 255, 0.8), // Using RGBO constructor which takes opacity directly
                           offset: const Offset(0, 6),
                           blurRadius: 15,
                         ),
@@ -421,7 +438,7 @@ class MainPageState extends State<MainPage> {
                               "Acesse seu perfil",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 17,
+                                fontSize: 23,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -430,16 +447,16 @@ class MainPageState extends State<MainPage> {
                             Icon(
                               Icons.access_time_filled_sharp,
                               color: Color.fromARGB(255, 29, 80, 163),
-                              size: 22.0,
+                              size: 25.0,
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Veja e confira seus dados no IDENTIDADE-FACIAL",
+                          "Veja e confira seus dados no \n IDENTIDADE-FACIAL",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
                           textAlign: TextAlign.center,
@@ -470,7 +487,7 @@ class MainPageState extends State<MainPage> {
                           child: Text(
                             "Perfil",
                             style: GoogleFonts.roboto(
-                              fontSize: 14,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

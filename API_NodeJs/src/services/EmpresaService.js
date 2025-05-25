@@ -5,7 +5,6 @@ class EmpresaService {
   async criarEmpresa(empresaData) {
     const empresaExistente = await EmpresaRepository.findByCNPJ(empresaData.CNPJ);
     
-    console.log('[EmpresaService] Requisição recebida com body:', empresaData.CNPJ);
    
     if (empresaExistente) {
       throw new Error('Já existe uma empresa cadastrada com este CNPJ');

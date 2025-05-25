@@ -18,7 +18,6 @@ class UsuarioService {
       
       return await UsuarioRepository.create(usuarioData);
     } catch (error) {
-      console.error('[UsuarioService] Erro ao criar usuário:', error);
       throw error;
     }
   }
@@ -29,7 +28,6 @@ class UsuarioService {
      
       return await UsuarioRepository.createEmpresa(empresaData);
     } catch (error) {
-      console.error('[UsuarioService] Erro ao criar usuário:', error);
       throw error;
     }
   }
@@ -41,14 +39,13 @@ class UsuarioService {
     if (!usuario) throw new Error(' usuario não encontrado');
     return usuario;
   }
-  //Alteração -> CNPJ Removido
+  
   async buscarEmpresa(CNPJ) {
     const usuario = await UsuarioRepository.findByCnpj(CNPJ);
     if (!usuario) throw new Error(' usuario não encontrado');
     return usuario;
   }
 
-  //Alteração -> CNPJ Removido
   async atualizarUsuario( matricula, usuarioData) {
     const usuarioExistente = await UsuarioRepository.findByMatricula(matricula);
     if (!usuarioExistente) {
@@ -58,7 +55,6 @@ class UsuarioService {
   
   }
 
-  //Alteração -> CNPJ Removido
   async deletarUsuario(matricula, cnpj) {
     await UsuarioRepository.findByMatriculaAndCnpj(matricula, cnpj);
     return await UsuarioRepository.delete(matricula);

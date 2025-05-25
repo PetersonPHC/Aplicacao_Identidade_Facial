@@ -47,7 +47,7 @@ class _PerfilPageState extends State<PerfilPage> {
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 148, 177, 255),
         appBar: AppBar(
-          title: const Text("Perfil", style: TextStyle(color: Colors.white)),
+          title: const Text("Perfil", style: TextStyle(fontSize: 25,color: Colors.white)),
           backgroundColor: const Color.fromARGB(255, 30, 112, 243),
         ),
         body: _controller.isLoading
@@ -88,28 +88,30 @@ class _PerfilPageState extends State<PerfilPage> {
       ),
       child: Column(
         children: [
+          const SizedBox(height: 15),
           _buildProfileImage(),
-          const SizedBox(height: 20),
-          _buildInfoRow(Icons.emoji_people_rounded, "Nome:", _controller.nome),
+          const SizedBox(height: 50),
+          _buildInfoRow(Icons.emoji_people_rounded, "Nome: ", _controller.nome),
           const SizedBox(height: 8),
           _buildInfoRow(
-              Icons.today, "Data de Nascimento:", _controller.dataNascimento),
+              Icons.today, "Data nasc: ", _controller.dataNascimento),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.wallet_sharp, "CPF:", _controller.cpf),
+          _buildInfoRow(Icons.wallet_sharp, "CPF: ", _controller.cpf),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.featured_play_list_sharp, "RG:", _controller.rg),
+          _buildInfoRow(Icons.featured_play_list_sharp, "RG: ", _controller.rg),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.view_timeline, "CTPS:", _controller.ctps),
+          _buildInfoRow(Icons.view_timeline, "CTPS: ", _controller.ctps),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.badge_rounded, "NIS:", _controller.nis),
+          _buildInfoRow(Icons.badge_rounded, "NIS: ", _controller.nis),
           const SizedBox(height: 8),
           _buildInfoRow(
-              Icons.receipt, "Matricula:", _controller.matriculaColab),
+              Icons.receipt, "Matricula: ", _controller.matriculaColab),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.diversity_3_sharp, "Cargo:", _controller.cargo),
+          _buildInfoRow(Icons.diversity_3_sharp, "Cargo: ", _controller.cargo),
           const SizedBox(height: 8),
-          _buildInfoRow(Icons.calendar_today_outlined, "Data de Admissão:",
+          _buildInfoRow(Icons.calendar_today_outlined, "Data Admissão: ",
               _controller.dataAdmissao),
+          const SizedBox(height: 15),
         ],
       ),
     );
@@ -167,7 +169,7 @@ class _PerfilPageState extends State<PerfilPage> {
           label,
           style: GoogleFonts.roboto(
             color: const Color.fromARGB(255, 0, 0, 0),
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -176,7 +178,7 @@ class _PerfilPageState extends State<PerfilPage> {
             value,
             style: GoogleFonts.roboto(
               color: const Color.fromARGB(255, 0, 0, 0),
-              fontSize: 15,
+              fontSize: 18,
             ),
           ),
         ),
@@ -186,6 +188,7 @@ class _PerfilPageState extends State<PerfilPage> {
 
   Widget _buildTermsCard() {
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.all(8.0),
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -220,7 +223,7 @@ class _PerfilPageState extends State<PerfilPage> {
               style: GoogleFonts.roboto(
                 color: const Color.fromARGB(255, 0, 0, 0),
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 20,
               ),
             ),
           ),

@@ -12,7 +12,7 @@ class EmpresaRepository {
         }
       });
     } catch (error) {
-      console.error('Erro no repository:', error);
+     
       throw new Error(`Falha ao criar empresa: ${error.message}`);
     }
   }

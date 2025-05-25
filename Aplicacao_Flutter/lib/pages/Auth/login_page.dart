@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 50),
+              const SizedBox(height: 70),
               Row(
                 children: [
                   Expanded(child: Container()),
@@ -63,8 +63,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       children: [
                         Container(
-                          width: 180,
-                          height: 180,
+                          width: 220,
+                          height: 220,
                           child: Image.asset(
                             'assets/1231099.png',
                             fit: BoxFit.contain,
@@ -83,15 +83,15 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.w700,
                     color: Color.fromARGB(255, 0, 0, 0)),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 60),
               const Text(
                 "LOGIN",
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 0, 0, 0)),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               Container(
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -122,6 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: Icon(
                       Icons.person,
                       color: Color.fromARGB(255, 30, 112, 243),
+                      size:28
                     ),
                     counterText: "", // Remove o contador de caracteres
                   ),
@@ -155,6 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: const Icon(
                       Icons.lock,
                       color: Color.fromARGB(255, 30, 112, 243),
+                      size:28
                     ),
                     suffixIcon: InkWell(
                       onTap: () {
@@ -190,18 +192,18 @@ class _LoginPageState extends State<LoginPage> {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: const Text(
-                    "Entrar",
+                    "ENTRAR",
                     style: TextStyle(
                       
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 18,
                       
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 35),
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
@@ -217,12 +219,13 @@ class _LoginPageState extends State<LoginPage> {
                     "Esqueci minha senha",
                     style: TextStyle(
                       color: Color.fromARGB(255, 255, 0, 0),
+                      fontSize: 15.5,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 25),
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
@@ -239,6 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(
                       color: Color.fromARGB(223, 0, 0, 0),
                       fontWeight: FontWeight.bold,
+                        fontSize: 15.5,
                     ),
                   ),
                 ),

@@ -1,0 +1,1 @@
+C:\Users\Amos\Documents\vscode\reconhecimento facial\Aplicacao_Identidade_Facial\Aplicacao_Flutter\build\app\intermediates\cxx\Debug\6z5h6h6d\obj\arm64-v8a

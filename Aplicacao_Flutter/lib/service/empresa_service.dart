@@ -4,6 +4,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class EmpresaService {
+  
+  
+   static const String _baseUrlUsuarioEmpresa = 'http://10.0.2.2:3000/usuarios/empresa';
+   static const String _baseUrlEmpresa = 'http://10.0.2.2:3000/empresas';
+
+// URL DE ANDROID
+
+  
+  //static const String _baseUrlUsuarioEmpresa = 'http://localhost:3000/usuarios/empresa';
+  //static const String _baseUrlEmpresa = 'http://localhost:3000/empresas';
+
   Future<bool> cadastrarEmpresa({
     required String nomeFantasia,
     required String cnpj,
@@ -41,7 +52,7 @@ class EmpresaService {
     };
 
     var response = await http.post(
-      Uri.parse("http://localhost:3000/empresas"),
+      Uri.parse("$_baseUrlEmpresa"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(body),
     );
@@ -56,7 +67,7 @@ class EmpresaService {
 
     // 3. Cadastro do usuário associado
     var responseUser = await http.post(
-      Uri.parse("http://localhost:3000/usuarios/empresa"),
+      Uri.parse("$_baseUrlUsuarioEmpresa"),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -147,7 +158,7 @@ class EmpresaService {
   }
 
   Future<Map<String, dynamic>> buscarEmpresa(String cnpj) async {
-    final url = Uri.parse("http://localhost:3000/empresas/$cnpj");
+    final url = Uri.parse("$_baseUrlEmpresa/$cnpj");
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -175,7 +186,7 @@ class EmpresaService {
     try {
       final formattedDate = formatDateStringToIso8601WithMillis(dataCriacao);
       final response = await http.put(
-        Uri.parse("http://localhost:3000/empresas/$cnpj"),
+        Uri.parse("$_baseUrlEmpresa/$cnpj"),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'NOMEFANTASIA': nomeFantasia,

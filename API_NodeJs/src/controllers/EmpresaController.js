@@ -12,7 +12,7 @@ class EmpresaError extends Error {
 // Classe de tratamento de erros
 class EmpresaErrorHandler {
   static handle(error, res) {
-    console.error('[EmpresaController] Erro:', error);
+    
     
     const statusCode = error.statusCode || 
                       (error.message === 'Usuário não encontrado' ? 404 : 
@@ -29,9 +29,6 @@ class EmpresaErrorHandler {
 
 class EmpresaController {
  
-  // 
-  
-  // Valida e formata a data de criação
   _processarDataCriacao(dataString) {
     try {
       let data;
@@ -56,6 +53,7 @@ class EmpresaController {
       
       return data;
     } catch (error) {
+      
       throw new EmpresaError(
         error.message || 'Erro ao processar data de criação',
         error.statusCode || 400,
@@ -66,7 +64,7 @@ class EmpresaController {
 
   //Alteração -> Pegar o objeto empresa do banco e retornar ao Front, junto com o código da empresa
   async criar(req, res) {
-    console.log('[EmpresaController] Requisição recebida com body:', req.body);
+    
     try {
       // Validação e formatação da data
      
@@ -109,7 +107,7 @@ class EmpresaController {
   }
 
   async atualizar(req, res) {
-    console.log('[EmpresaController] Requisição recebida com body:', req.body);
+   
     try {
       if (!req.params.cnpj) {
         throw new EmpresaError('CNPJ é obrigatório', 400);

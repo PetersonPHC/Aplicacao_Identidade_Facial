@@ -22,6 +22,8 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
   bool _isLoading = false;
   bool _cameraInitialized = false;
   String? _errorMessage;
+  List<CameraDescription> _cameras = [];
+  int _currentCameraIndex = 0;
 
   @override
   void initState() {
@@ -35,16 +37,13 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
 
   Future<void> _initializeCamera() async {
     try {
-      // 1. Busca as câmeras disponíveis
-      final cameras = await availableCameras();
+      _cameras = await availableCameras();
 
-      // 2. Verifica se há câmeras disponíveis
-      if (cameras.isEmpty) {
+      if (_cameras.isEmpty) {
         throw Exception("Nenhuma câmera encontrada no dispositivo.");
       }
 
-      // 3. Inicializa a câmera
-      await _controller.initializeCamera(cameras);
+      await _controller.initializeCamera(_cameras, _currentCameraIndex);
 
       setState(() {
         _cameraInitialized = true;
@@ -57,99 +56,116 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     }
   }
 
+  Future<void> _toggleCamera() async {
+    if (_cameras.length < 2) return;
+
+    setState(() {
+      _cameraInitialized = false;
+    });
+
+    _currentCameraIndex = (_currentCameraIndex + 1) % _cameras.length;
+
+    try {
+      await _controller.switchCamera(_cameras, _currentCameraIndex);
+      setState(() {
+        _cameraInitialized = true;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = "Erro ao alternar câmera: $e";
+        _cameraInitialized = false;
+      });
+      _showSnackBar(_errorMessage!);
+    }
+  }
+
   Future<void> _capturarERegistrar() async {
     if (!_cameraInitialized || _isLoading) return;
 
     setState(() => _isLoading = true);
 
     try {
-    await _controller.capturarFoto();
-    final sucesso = await _controller.registrarPonto();
-    
-    if (sucesso) {
-      _showSuccessDialog('Ponto registrado com sucesso!');
+      await _controller.capturarFoto();
+      final sucesso = await _controller.registrarPonto();
+
+      if (sucesso) {
+        _showSuccessDialog('Ponto registrado com sucesso!');
+      }
+    } on FacialRecognitionException catch (e) {
+      _showFaceErrorDialog(
+        e.message,
+        isDetectionError: e.isFaceDetectionError,
+        isMismatchError: e.isFaceMismatchError,
+      );
+    } on RegistrarPontoException catch (e) {
+      _showErrorDialog(e.toString());
+    } catch (e) {
+      _showErrorDialog('Erro inesperado: ${e.toString()}');
+    } finally {
+      setState(() => _isLoading = false);
     }
-  } on FacialRecognitionException catch (e) {
-    _showFaceErrorDialog(
-      e.message,
-      isDetectionError: e.isFaceDetectionError,
-      isMismatchError: e.isFaceMismatchError,
-    );
-  } on RegistrarPontoException catch (e) {
-    _showErrorDialog(e.toString());
-  } catch (e) {
-    _showErrorDialog('Erro inesperado: ${e.toString()}');
-  } finally {
-    setState(() => _isLoading = false);
   }
-}
 
-void _showFaceErrorDialog(
-  String message, {
-  bool isDetectionError = false,
-  bool isMismatchError = false,
-}) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(
-        isDetectionError ? 'Rosto não detectado' : 'Rosto não corresponde',
-        style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
-      ),
-      content: Text(
-        message,
-        style: TextStyle(color: Colors.red),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            'OK',
-            style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+  void _showFaceErrorDialog(
+    String message, {
+    bool isDetectionError = false,
+    bool isMismatchError = false,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          isDetectionError ? 'Rosto não detectado' : 'Rosto não corresponde',
+          style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+        ),
+        content: Text(message, style: TextStyle(color: Colors.red)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK',
+                style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-void _showErrorDialog(String message) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('Erro', style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
-      content: Text(message, style: TextStyle(color: Colors.red)),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('OK', style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
-        ),
-      ],
-    ),
-  );
-}
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Erro',
+            style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
+        content: Text(message, style: TextStyle(color: Colors.red)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK',
+                style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
+          ),
+        ],
+      ),
+    );
+  }
 
-
-void _showSuccessDialog(String message) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('Sucesso'),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context); // Fecha o dialog
-            Navigator.pop(context); // Fecha a tela da câmera
-          },
-          child: Text('OK'),
-        ),
-      ],
-    ),
-  );
-}
-
-
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Sucesso'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -162,48 +178,75 @@ void _showSuccessDialog(String message) {
     _controller.dispose();
     super.dispose();
   }
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text('Registrar Ponto'),
-    ),
-    body: Stack(
-      children: [
-        // Exibe a câmera se estiver pronta, senão mostra erro ou loading
-        if (_errorMessage != null)
-          Center(
-            child: Text(_errorMessage!, style: TextStyle(color: Colors.red)),
-          )
-        else if (!_cameraInitialized)
-          Center(child: CircularProgressIndicator())
-        else
-          Positioned.fill( // Esta é a chave para preencher todo o espaço
-            child: CameraPreview(_controller.cameraController),
-          ),
 
-        // Botão de registro (desabilitado se a câmera não estiver pronta)
-        Positioned(
-          bottom: 20,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: ElevatedButton(
-              onPressed:
-                  (_isLoading || !_cameraInitialized || _errorMessage != null)
-                      ? null
-                      : _capturarERegistrar,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Registrar Ponto'),
+      ),
+      body: Stack(
+        children: [
+          // Exibe a câmera se estiver pronta, senão mostra erro ou loading
+          if (_errorMessage != null)
+            Center(
+              child: Text(_errorMessage!, style: TextStyle(color: Colors.red)),
+            )
+          else if (!_cameraInitialized)
+            Center(child: CircularProgressIndicator())
+          else
+            Positioned.fill(
+              child: CameraPreview(_controller.cameraController),
+            ),
+
+          // Botão para alternar câmera (se houver mais de uma)
+          if (_cameras.length > 1)
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: IconButton(
+                    icon:
+                        Icon(Icons.cameraswitch, size: 36, color: Colors.white),
+                    onPressed: _toggleCamera,
+                  ),
+                ),
               ),
-              child: _isLoading
-                  ? CircularProgressIndicator(color: Colors.white)
-                  : Text('REGISTRAR PONTO'),
+            ),
+
+          // Botão de registro
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed:
+                    (_isLoading || !_cameraInitialized || _errorMessage != null)
+                        ? null
+                        : _capturarERegistrar,
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  backgroundColor: Colors.blue, // Cor de fundo do botão
+                  disabledBackgroundColor:
+                      Colors.grey, // Cor quando desabilitado
+                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                        'REGISTRAR PONTO',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }

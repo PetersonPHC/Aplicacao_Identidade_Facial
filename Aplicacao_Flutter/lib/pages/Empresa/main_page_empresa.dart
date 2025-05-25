@@ -23,7 +23,8 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
         appBar: AppBar(
           title: Text(
             "Home",
-            style: TextStyle(color: Colors.white),
+            
+            style: TextStyle(fontSize:25 ,color: Colors.white), 
           ),
           backgroundColor: const Color.fromARGB(255, 30, 112, 243),
         ),
@@ -53,22 +54,24 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                         ),
                       ),
                     ),
+                      SizedBox(height: 15),
                   ],
                 ),
               ),
+            
               Expanded(
                 child: Container(
-                  color: Color.fromARGB(255, 215, 221, 231),
+                  color: Color.fromARGB(255, 255, 255, 255),
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
                       ListTile(
                         leading: const Icon(Icons.home,
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                            color: Color.fromARGB(255, 0, 0, 0),size:28),
                         title: Text(
                           "Home",
                           style: GoogleFonts.roboto(
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),    fontSize: 20,),
                         ),
                         onTap: () {
                           Navigator.of(context).pop();
@@ -84,15 +87,16 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       if (widget.isAdm)
                         ListTile(
                           leading: const Icon(Icons.business_outlined,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                              size: 28, color: Color.fromARGB(255, 0, 0, 0)),
                           title: Text(
                             "Dados da Empresa",
                             style: GoogleFonts.roboto(
-                                color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20,
+                            ),
                           ),
                           onTap: () {
-                            
-                          Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -106,15 +110,16 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       if (widget.isAdm)
                         ListTile(
                           leading: const Icon(Icons.assignment_outlined,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                              color: Color.fromARGB(255, 0, 0, 0), size: 28),
                           title: Text(
                             "Cadastro de colaboradores",
                             style: GoogleFonts.roboto(
-                                color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20,
+                            ),
                           ),
                           onTap: () {
-                            
-                          Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
@@ -127,15 +132,16 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       if (widget.isAdm)
                         ListTile(
                           leading: const Icon(Icons.people,
-                              color: Color.fromARGB(255, 0, 0, 0)),
+                              color: Color.fromARGB(255, 0, 0, 0), size: 28),
                           title: Text(
                             "Relação de colaboradores",
                             style: GoogleFonts.roboto(
-                                color: const Color.fromARGB(255, 0, 0, 0)),
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20,
+                            ),
                           ),
                           onTap: () {
-                            
-                          Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
@@ -144,21 +150,18 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                             );
                           },
                         ),
-                   
-
                       if (widget.isAdm) SizedBox(height: 15),
-                      
-                      
                       ListTile(
                         leading: const Icon(Icons.exit_to_app_sharp,
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                            size: 28, color: Color.fromARGB(255, 0, 0, 0)),
                         title: Text(
                           "Sair",
                           style: GoogleFonts.roboto(
-                              color: const Color.fromARGB(255, 0, 0, 0)),
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 20,
+                          ),
                         ),
                         onTap: () {
-                          
                           Navigator.of(context).pop();
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -188,6 +191,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                 ),
                 textAlign: TextAlign.center,
               ),
+                const SizedBox(height: 20),
               Column(
                 children: [
                   Container(
@@ -198,16 +202,16 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       color: const Color.fromARGB(255, 215, 221, 231),
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 0, 22, 57),
+                        color: const Color.fromARGB(255, 68, 140, 255),
                         width: 2.0,
                       ),
                       boxShadow: [
-  BoxShadow(
-    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
-    offset: const Offset(0, 6),
-    blurRadius: 15,
-  ),
-],
+                        BoxShadow(
+                          color: Color.fromRGBO(49, 162, 255, 0.8), // Using RGBO constructor which takes opacity directly
+                          offset: const Offset(0, 6),
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -219,7 +223,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                               "Cadastro de Colaboradores",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 19,
+                                fontSize: 23,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -228,7 +232,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                             Icon(
                               Icons.access_time_filled_sharp,
                               color: Color.fromARGB(255, 29, 80, 163),
-                              size: 22.0,
+                              size: 25.0,
                             ),
                           ],
                         ),
@@ -237,7 +241,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                           "Transforme sua jornada de trabalho em algo simples e ágil com IDENTIDADE-FACIAL",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
                           textAlign: TextAlign.center,
@@ -269,7 +273,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                           child: Text(
                             "Cadastro",
                             style: GoogleFonts.roboto(
-                              fontSize: 14,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -277,6 +281,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 18),
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(8.0),
@@ -285,16 +290,16 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       color: const Color.fromARGB(255, 215, 221, 231),
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 0, 22, 57),
+                        color: const Color.fromARGB(255, 68, 140, 255),
                         width: 2.0,
                       ),
-                     boxShadow: [
-  BoxShadow(
-    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
-    offset: const Offset(0, 6),
-    blurRadius: 15,
-  ),
-],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(49, 162, 255, 0.8), // Using RGBO constructor which takes opacity directly
+                          offset: const Offset(0, 6),
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -306,7 +311,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                               "Relacao de Colaboradores",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 19,
+                                fontSize: 23,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -315,7 +320,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                             Icon(
                               Icons.edit_calendar_rounded,
                               color: Color.fromARGB(255, 29, 80, 163),
-                              size: 22.0,
+                              size: 25.0,
                             ),
                           ],
                         ),
@@ -354,7 +359,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                           child: Text(
                             "Relação",
                             style: GoogleFonts.roboto(
-                              fontSize: 14,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -362,6 +367,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       ],
                     ),
                   ),
+                    SizedBox(height: 15),
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(8.0),
@@ -370,16 +376,16 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                       color: const Color.fromARGB(255, 215, 221, 231),
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
-                        color: const Color.fromARGB(255, 0, 22, 57),
+                        color: const Color.fromARGB(255, 68, 140, 255),
                         width: 2.0,
                       ),
-                     boxShadow: [
-  BoxShadow(
-    color: Color.fromRGBO(2, 44, 79, 0.8), // Using RGBO constructor which takes opacity directly
-    offset: const Offset(0, 6),
-    blurRadius: 15,
-  ),
-],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(49, 162, 255, 0.8), // Using RGBO constructor which takes opacity directly
+                          offset: const Offset(0, 6),
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -391,7 +397,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                               "Dados da Empresa",
                               style: GoogleFonts.roboto(
                                 color: const Color.fromARGB(255, 0, 0, 0),
-                                fontSize: 19,
+                                fontSize: 23,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -400,7 +406,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                             Icon(
                               Icons.donut_small_sharp,
                               color: Color.fromARGB(255, 29, 80, 163),
-                              size: 22.0,
+                              size: 25.0,
                             ),
                           ],
                         ),
@@ -409,7 +415,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                           "Atualize, Corrija e siga aumentando a perfomance com o IDENTIDADE-FACIAL",
                           style: GoogleFonts.roboto(
                             color: const Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
                           textAlign: TextAlign.center,
@@ -439,7 +445,7 @@ class MainPageEmpresaState extends State<MainPageEmpresa> {
                           child: Text(
                             "Dados da Empresa",
                             style: GoogleFonts.roboto(
-                              fontSize: 14,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
