@@ -67,7 +67,7 @@ model REGISTRO_PONTO {
   MATRICULA      String      @db.VarChar(14)
   CNPJ_EMPRESA   String      @db.VarChar(14)
   DATA_PONTO     DateTime
-  
+  LOCALIZACAO    String      @db.VarChar(50)
   colaborador    Colaborador @relation(fields: [MATRICULA, CNPJ_EMPRESA], references: [MATRICULA, CNPJ_EMPRESA])
   empresa        EMPRESA     @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
 

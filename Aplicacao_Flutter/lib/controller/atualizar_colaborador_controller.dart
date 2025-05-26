@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
@@ -161,10 +163,11 @@ Future<void> selecionarImagem() async {
        imagem: kIsWeb ? _imagemSelecionadaWeb : _imagemSelecionada,
       );
        if (response) {
-        _mostrarSnackBar(context, 'Colaborador cadastrado com sucesso!');
+        _mostrarSnackBar(context, 'Colaborador atualizado com sucesso!');
         _limparCampos();
       } else {
-        _mostrarSnackBar(context, 'Erro ao cadastrar colaborador');
+         print('Response body: ${response}');
+        _mostrarSnackBar(context, 'Erro ao atualizar colaborador');
       }
     } catch (error) {
       _mostrarSnackBar(context, 'Erro ao conectar com a API: $error');

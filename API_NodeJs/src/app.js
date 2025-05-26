@@ -52,7 +52,7 @@ app.post('/loginColaborador', UsuarioController.loginColaborador);
 app.post('/registros-ponto',upload.single('IMAGEM'), RegistroPontoController.criar);
 app.post('/registros-ponto/incluir' , RegistroPontoController.incluirPonto);
 app.get('/registros-ponto/:cnpjEmpresa/:matricula/:data' , RegistroPontoController.buscar);
-app.delete('/registros-ponto/:cnpjEmpresa/:matricula/:data', RegistroPontoController.deletar); // ARRUMAR
+app.delete('/registros-ponto/:cnpjEmpresa/:matricula/:data', RegistroPontoController.deletar); 
 app.get('/registros-ponto/:cnpjEmpresa/:matricula', RegistroPontoController.listarPorColaborador);
 
 // Tratamento de erros
@@ -65,10 +65,8 @@ app.use((err, req, res, next) => {
 });
 
 
-// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 
-  // Adicione outras rotas conforme necessário
 });

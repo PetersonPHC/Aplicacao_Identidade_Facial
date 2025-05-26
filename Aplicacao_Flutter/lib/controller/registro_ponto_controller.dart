@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:intl/intl.dart';
+import 'package:reconhecimento/controller/localizacao_controller.dart';
 import 'package:reconhecimento/service/registro_ponto_service.dart';
 
 class RegistroPontoController {
@@ -75,25 +76,13 @@ Future<bool> registrarPonto() async {
   }
 
   final dataHoraAtual = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-/*
- try {
-      final isNear = await LocationVerifier.isNearCompany(cnpj);
-      if (!isNear) {
-        throw RegistrarPontoException(
-          'Você não está próximo o suficiente da empresa (mínimo 10 metros). '
-          'Por favor, aproxime-se do local para registrar o ponto.'
-        );
-      }
-    } catch (e) {
-      // Transforma qualquer erro de localização em RegistrarPontoException
-      throw RegistrarPontoException(e.toString());
-    }
-
-*/
-
+ 
+ final loc = await LocationVerifier.obterLocalizacao();
+ final localizacaoStr = '${loc['latitude']},${loc['longitude']}';
   try {
     return await _service.registrarPonto(
       matricula: matricula,
+      localizacao : localizacaoStr,
       cnpj: cnpj,
       imagem: _fotoCapturada!,
       dataHora: dataHoraAtual,

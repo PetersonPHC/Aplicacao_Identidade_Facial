@@ -83,7 +83,8 @@ class ColaboradorRepository {
     
 
     async update(matricula, colaboradorData) {
-      
+      console.log(`chegou ao repository`);
+  
       // Validação adicional para CARGA_HORARIA
       if (colaboradorData.CARGA_HORARIA && isNaN(colaboradorData.CARGA_HORARIA.getTime())) {
         throw new Error('CARGA_HORARIA inválida - não é um objeto Date válido');

@@ -28,15 +28,16 @@ class FacialRecognitionException implements Exception {
 }
 
 class RegistroPontoService {
-  // static const String _baseUrl = 'http://localhost:3000/registros-ponto';
+ static const String _baseUrl = 'http://localhost:3000/registros-ponto';
   
   // URL DE ANDROID 
-   static const String _baseUrl = 'http://10.0.2.2:3000/registros-ponto';
+//   static const String _baseUrl = 'http://10.0.2.2:3000/registros-ponto';
 
   
 Future<bool> registrarPonto({
   required String matricula,
   required String cnpj,
+  required String localizacao,
   required Uint8List imagem,
   required String dataHora,
 }) async {
@@ -47,6 +48,7 @@ Future<bool> registrarPonto({
     request.fields.addAll({
       'MATRICULA': matricula,
       'CNPJ_EMPRESA': cnpj,
+      'LOCALIZACAO': localizacao,
       'DATA_HORA': dataHora,
     });
 

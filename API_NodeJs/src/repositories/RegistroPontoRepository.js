@@ -16,6 +16,7 @@ class RegistroPontoRepository {
 
       return await prisma.rEGISTRO_PONTO.create({
         data: {
+          LOCALIZACAO: registroData.LOCALIZACAO,
           MATRICULA: registroData.MATRICULA,
           CNPJ_EMPRESA: registroData.CNPJ_EMPRESA,
           DATA_PONTO: dataPonto
@@ -35,6 +36,7 @@ class RegistroPontoRepository {
 
       return await prisma.rEGISTRO_PONTO.create({
         data: {
+          LOCALIZACAO: 'NA',
           MATRICULA: MATRICULA,
           CNPJ_EMPRESA:CNPJ,
           DATA_PONTO: DATA

@@ -7,13 +7,13 @@ import 'package:reconhecimento/pages/Empresa/main_page_empresa.dart';
 class LoginService {
 
   // 
-   static const String _baseUrlColaborador = 'http://10.0.2.2:3000/loginColaborador';
-   static const String _baseUrlEmpresa = 'http://10.0.2.2:3000/loginEmpresa';
+//   static const String _baseUrlColaborador = 'http://10.0.2.2:3000/loginColaborador';
+  // static const String _baseUrlEmpresa = 'http://10.0.2.2:3000/loginEmpresa';
 
   //URL DE ANDROID
 
-  // static const String _baseUrlColaborador = 'http://localhost:3000/loginColaborador';
-  // static const String _baseUrlEmpresa = 'http://localhost:3000/loginEmpresa';
+   static const String _baseUrlColaborador = 'http://localhost:3000/loginColaborador';
+   static const String _baseUrlEmpresa = 'http://localhost:3000/loginEmpresa';
 
   Future<void> loginColaborador(
       String login, String senha, BuildContext context) async {

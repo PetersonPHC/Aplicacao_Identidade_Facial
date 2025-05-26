@@ -54,7 +54,11 @@ async criarColaborador(dadosColaborador) {
           timeout: 30000
         }
       );
-
+       
+      
+    if (verificarFaceResponse.data && verificarFaceResponse.data.face_detectada === false) {
+     throw new Error('Nenhuma face foi detectada na imagem fornecida.');
+    }
       if (verificarFaceResponse.status !== 200) {
         throw new Error('Falha na verificação facial: ' + (verificarFaceResponse.data.message || 'Resposta inválida da API'));
       }
@@ -148,8 +152,9 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
       CARGA_HORARIA: colaborador.CARGA_HORARIA?.toTimeString().substring(0, 8) || null
     };
   }
-  async atualizarColaborador(matricula, colaboradorData) {
 
+  async atualizarColaborador(matricula, colaboradorData) {
+console.log(`chegou ao service`);
   
     await this.buscarColaboradorMatricula(matricula);
   
@@ -175,6 +180,7 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
       const dateObj = new Date(`1970-01-01T${formattedTime}`);
       
       if (isNaN(dateObj.getTime())) {
+        console.log(`erro na carga horaria`);
         throw new Error(`Falha ao converter CARGA_HORARIA: ${colaboradorData.CARGA_HORARIA}`);
       }
       
@@ -210,7 +216,14 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
           }
         );
 
+       if (verificarFaceResponse.data && verificarFaceResponse.data.face_detectada === false) {
+        
+        console.log(`erro nenhuma face detectada`);
+        throw new Error('Nenhuma face foi detectada na imagem fornecida.');
+        }
+
         if (verificarFaceResponse.status !== 200) {
+          console.log(`verificação facial`);
           throw new Error('Falha na verificação facial: ' + (verificarFaceResponse.data.message || 'Resposta inválida da API'));
         }
         
@@ -219,11 +232,13 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
         if (error.response && error.response.data) {
           const pythonError = error.response.data;
           if (pythonError.includes('Unsupported image type')) {
+             console.log(`erro na conversão`);
             throw new Error('A API de reconhecimento facial só suporta imagens JPG/JPEG. Por favor, converta a imagem antes de enviar.');
           }
         }
         
         throw new Error('Erro na verificação facial: ' + error.message);
+        
       }
     } else {
     }

@@ -6,14 +6,14 @@ import 'dart:convert';
 class EmpresaService {
   
   
-   static const String _baseUrlUsuarioEmpresa = 'http://10.0.2.2:3000/usuarios/empresa';
-   static const String _baseUrlEmpresa = 'http://10.0.2.2:3000/empresas';
+  // static const String _baseUrlUsuarioEmpresa = 'http://10.0.2.2:3000/usuarios/empresa';
+  // static const String _baseUrlEmpresa = 'http://10.0.2.2:3000/empresas';
 
 // URL DE ANDROID
 
   
-  //static const String _baseUrlUsuarioEmpresa = 'http://localhost:3000/usuarios/empresa';
-  //static const String _baseUrlEmpresa = 'http://localhost:3000/empresas';
+  static const String _baseUrlUsuarioEmpresa = 'http://localhost:3000/usuarios/empresa';
+  static const String _baseUrlEmpresa = 'http://localhost:3000/empresas';
 
   Future<bool> cadastrarEmpresa({
     required String nomeFantasia,

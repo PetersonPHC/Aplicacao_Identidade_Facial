@@ -16,26 +16,6 @@ async criarRegistro(registroData) {
         throw new Error('Imagem não fornecida para verificação facial');
       }
 
-      // 1. Verificação facial
-      const form = new FormData();
-      form.append('imagem', registroData.IMAGEM, 'imagem_capturada.jpg');
-      
-      
-
-      const verificarFaceResponse = await axios.post(
-        'http://127.0.0.1:8000/verificar-face/',
-        form,
-        {
-          headers: {
-            ...form.getHeaders(),
-            'Accept': 'application/json'
-          }
-        }
-      );
-
- if (verificarFaceResponse.data && verificarFaceResponse.data.face_detectada === false) {
-    throw new Error('Nenhuma face foi detectada na imagem fornecida.');
-  }
 
       const colaboradorExistente = await UsuarioRepository.findByMatriculaAndCNPJ(
         registroData.CNPJ_EMPRESA, registroData.MATRICULA

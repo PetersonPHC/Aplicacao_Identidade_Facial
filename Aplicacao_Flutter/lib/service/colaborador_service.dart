@@ -7,12 +7,12 @@ import 'dart:convert';
 
 class ColaboradorService {
 
-  static const String _baseUrlColaboradores = 'http://10.0.2.2:3000/colaboradores';
-  static const String _baseUrlUsuarios =  'http://10.0.2.2:3000/usuarios';
+ // static const String _baseUrlColaboradores = 'http://10.0.2.2:3000/colaboradores';
+ // static const String _baseUrlUsuarios =  'http://10.0.2.2:3000/usuarios';
   // URL DE ANDROID
   
- //static const String _baseUrlColaboradores =   'http://localhost:3000/colaboradores';
- //static const String _baseUrlUsuarios =   'http://localhost:3000/usuarios';
+ static const String _baseUrlColaboradores =   'http://localhost:3000/colaboradores';
+ static const String _baseUrlUsuarios =   'http://localhost:3000/usuarios';
 
   Future<bool> cadastrarColaborador({
     required String cnpj,
@@ -122,8 +122,7 @@ class ColaboradorService {
       throw Exception('Erro ao buscar colaborador');
     }
   }
-
-  Future<bool> atualizarColaborador({
+Future<bool> atualizarColaborador({
     required String cnpj,
     required String matricula,
     required String nome,
@@ -135,58 +134,67 @@ class ColaboradorService {
     required String ctps,
     required String cargo,
     required String nis,
-  
     dynamic imagem,
-  }) async {
+}) async {
+    try {
+        var request = http.MultipartRequest(
+            'PUT', 
+            Uri.parse('$_baseUrlColaboradores/$cnpj/$matricula')
+        );
 
-  
- try {
-    var request = http.MultipartRequest(
-      'PUT', 
-      Uri.parse('$_baseUrlColaboradores/$cnpj/$matricula')
-    );
+        // Adicione os campos como form-data
+        request.fields.addAll({
+            'NOME': nome,
+            'CPF': cpf,
+            'RG': rg,
+            'DATA_NASCIMENTO': dataNascimento,
+            'DATA_ADMISSAO': dataAdmissao,
+            'NIS': nis,
+            'CTPS': ctps,
+            'CARGA_HORARIA': cargaHoraria,
+            'CARGO': cargo,
+            'CNPJ': cnpj,
+        });
 
-    // Adicione os campos como form-data
-    request.fields.addAll({
-     
-      'NOME': nome,
-      'CPF': cpf,
-      'RG': rg,
-      'DATA_NASCIMENTO': dataNascimento,
-      'DATA_ADMISSAO': dataAdmissao,
-      'NIS': nis,
-      'CTPS': ctps,
-      'CARGA_HORARIA': cargaHoraria,
-      'CARGO': cargo,
-      'CNPJ': cnpj,
-    });
-
-      if (imagem != null) {
-        if (imagem is File) {
-          var imagemFile = await http.MultipartFile.fromPath(
-            'IMAGEM',
-            imagem.path,
-            filename: 'imagem.jpg',
-            contentType: MediaType('image', 'jpeg'),
-          );
-          request.files.add(imagemFile);
-        } else if (imagem is Uint8List) {
-          var imagemBytes = http.MultipartFile.fromBytes(
-            'IMAGEM',
-            imagem,
-            filename: 'imagem.jpg',
-            contentType: MediaType('image', 'jpeg'),
-          );
-          request.files.add(imagemBytes);
+        if (imagem != null) {
+            if (imagem is File) {
+                var imagemFile = await http.MultipartFile.fromPath(
+                    'IMAGEM',
+                    imagem.path,
+                    filename: 'imagem.jpg',
+                    contentType: MediaType('image', 'jpeg'),
+                );
+                request.files.add(imagemFile);
+            } else if (imagem is Uint8List) {
+                var imagemBytes = http.MultipartFile.fromBytes(
+                    'IMAGEM',
+                    imagem,
+                    filename: 'imagem.jpg',
+                    contentType: MediaType('image', 'jpeg'),
+                );
+                request.files.add(imagemBytes);
+            }
         }
-      }
-       var response = await request.send();
 
-      return response.statusCode == 200;
+        // Envia a requisição
+        var response = await request.send();
+        
+        // Lê o corpo da resposta para incluir na mensagem de erro se necessário
+        final responseBody = await response.stream.bytesToString();
+
+       if (response.statusCode != 200) {
+            if (responseBody.contains('Nenhuma face foi detectada na imagem fornecida')) {
+                throw Exception('Erro: Nenhuma face detectada na imagem enviada');
+            }
+            throw Exception('Falha ao atualizar colaborador: ${response.statusCode}');
+        }
+
+        return true;
     } catch (e) {
-      throw Exception('Erro ao atualizar colaborador: $e');
+        throw Exception('Erro ao atualizar colaborador: $e');
     }
-  }
+}
+
 Future<List<Map<String, dynamic>>?> buscarTodosColaboradores({required String cnpj}) async {
   try {
     final response = await http.get(

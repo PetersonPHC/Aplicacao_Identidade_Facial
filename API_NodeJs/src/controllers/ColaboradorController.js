@@ -27,8 +27,7 @@ class MulterConfig {
 
 class ErrorHandler {
   static handle(error, res) {
-  
-
+    
     const statusCode = error.statusCode || 500;
     const response = {
       status: 'error',
@@ -90,16 +89,16 @@ class ColaboradorController {
       ErrorHandler.handle(error, res);
     }
   }
+
   atualizar = async (req, res) => {
-    
+   
     try {
       const { matricula } = req.params;
       const dadosAtualizacao = {
         ...req.body, // Campos do form-data
         IMAGEM: req.file?.buffer // Arquivo se existir
       };
-  
-      
+ ;
       const colaborador = await ColaboradorService.atualizarColaborador(
         matricula,
         dadosAtualizacao
