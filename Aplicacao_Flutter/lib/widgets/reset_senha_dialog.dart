@@ -17,6 +17,8 @@ class ResetSenhaDialog extends StatefulWidget {
 class _ResetSenhaDialogState extends State<ResetSenhaDialog> {
   final TextEditingController novaSenhaController = TextEditingController();
   final TextEditingController confirmarSenhaController = TextEditingController();
+  bool _obscureNovaSenha = true;
+  bool _obscureConfirmarSenha = true;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +31,38 @@ class _ResetSenhaDialogState extends State<ResetSenhaDialog> {
           const SizedBox(height: 16),
           TextField(
             controller: novaSenhaController,
-            decoration: const InputDecoration(labelText: 'Nova senha'),
-            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Nova senha',
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureNovaSenha ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureNovaSenha = !_obscureNovaSenha;
+                  });
+                },
+              ),
+            ),
+            obscureText: _obscureNovaSenha,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: confirmarSenhaController,
-            decoration: const InputDecoration(labelText: 'Repita a senha'),
-            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Repita a senha',
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureConfirmarSenha ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureConfirmarSenha = !_obscureConfirmarSenha;
+                  });
+                },
+              ),
+            ),
+            obscureText: _obscureConfirmarSenha,
           ),
           const SizedBox(height: 16),
           ElevatedButton(

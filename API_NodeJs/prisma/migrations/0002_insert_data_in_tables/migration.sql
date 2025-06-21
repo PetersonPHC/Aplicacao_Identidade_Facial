@@ -1,12 +1,13 @@
 -- Inserindo dados na tabela EMPRESA
+-- Inserindo dados na tabela EMPRESA (corrigido com E-MAIL)
 INSERT INTO
-    EMPRESA (CNPJ, NOMEFANTASIA, CEP, UF, CIDADE, BAIRRO, LOGRADOURO, NUMERO, COMPLEMENTO, DATACRIACAO)
+    EMPRESA (CNPJ, NOMEFANTASIA, CEP, UF, CIDADE, BAIRRO, LOGRADOURO, NUMERO, COMPLEMENTO, DATACRIACAO, EMAIL)
 VALUES
-    ('00000000000100', 'Tech Solutions', 12345678, 'SP', 'São Paulo', 'Centro', 'Av. Paulista', 1000, 'Conjunto 101', '2023-01-10'),
-    ('00000000000200', 'Health Corp', 87654321, 'RJ', 'Rio de Janeiro', 'Copacabana', 'Rua Atlântica', 500, NULL, '2023-02-15'),
-    ('00000000000300', 'Edu Prime', 22334455, 'MG', 'Belo Horizonte', 'Savassi', 'Rua da Bahia', 300, 'Sala 5', '2023-03-01'),
-    ('00000000000400', 'Food Lovers', 99887766, 'RS', 'Porto Alegre', 'Moinhos', 'Av. Independência', 750, 'Loja 02', '2023-04-20'),
-    ('00000000000500', 'Green Energy', 11223344, 'PR', 'Curitiba', 'Batel', 'Rua XV de Novembro', 200, NULL, '2023-05-05');
+    ('00000000000100', 'Tech Solutions', 12345678, 'SP', 'São Paulo', 'Centro', 'Av. Paulista', 1000, 'Conjunto 101', '2023-01-10', 'contato@techsolutions.com'),
+    ('00000000000200', 'Health Corp', 87654321, 'RJ', 'Rio de Janeiro', 'Copacabana', 'Rua Atlântica', 500, NULL, '2023-02-15', 'contato@healthcorp.com'),
+    ('00000000000300', 'Edu Prime', 22334455, 'MG', 'Belo Horizonte', 'Savassi', 'Rua da Bahia', 300, 'Sala 5', '2023-03-01', 'contato@eduprime.com'),
+    ('00000000000400', 'Food Lovers', 99887766, 'RS', 'Porto Alegre', 'Moinhos', 'Av. Independência', 750, 'Loja 02', '2023-04-20', 'contato@foodlovers.com'),
+    ('00000000000500', 'Green Energy', 11223344, 'PR', 'Curitiba', 'Batel', 'Rua XV de Novembro', 200, NULL, '2023-05-05', 'contato@greenenergy.com');
 
 -- Inserindo dados na tabela COLABORADOR
 INSERT INTO

@@ -25,7 +25,18 @@ class ColaboradorRepository {
   
   
   async create(colaborador) {
+
+    console.log('Data de Nascimento:', colaborador.DATA_NASCIMENTO);
+    console.log('Data formatada Nascimento:', this.formatDate(colaborador.DATA_NASCIMENTO));
+    
+    console.log('Data de Admissão:', colaborador.DATA_ADMISSAO);
+    console.log('Data formatada Admissão:', this.formatDate(colaborador.DATA_ADMISSAO));
+    
+    console.log('Carga Horária original:', colaborador.CARGA_HORARIA);
+    console.log('Carga Horária formatada:', this.formatarCargaHoraria(colaborador.CARGA_HORARIA));
     return await prisma.colaborador.create({
+
+      
       data: {
         MATRICULA: colaborador.MATRICULA,
         NOME: colaborador.NOME,
@@ -48,31 +59,40 @@ class ColaboradorRepository {
       }
           });
   }
+formatDate(date) {
+  if (!date) return null;
 
-  // Método para formatar a data (removendo a parte de tempo)
-  formatDate(date) {
-    if (!date) return null;
-    const d = new Date(date);
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const d = new Date(date);
+
+  // Corrigir: pegar os componentes de data, mas setar como UTC ZERO
+  const year = d.getUTCFullYear();
+  const month = d.getUTCMonth();
+  const day = d.getUTCDate();
+
+  // Criar Date no UTC com hora zero
+  return new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+}
+
+formatarCargaHoraria(cargaHoraria) {
+  if (!cargaHoraria) return null;
+
+  if (cargaHoraria instanceof Date) {
+    const h = cargaHoraria.getHours();
+    const m = cargaHoraria.getMinutes();
+    const s = cargaHoraria.getSeconds();
+    return new Date(Date.UTC(1970, 0, 1, h, m, s));
   }
-  formatarCargaHoraria(cargaHoraria) {
-    // Se já for um objeto Date válido
-    if (cargaHoraria instanceof Date) {
-      return cargaHoraria;
-    }
-  
-    // Se for string no formato HH:MM:SS
-    if (typeof cargaHoraria === 'string' && /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(cargaHoraria)) {
-      const [hours, minutes, seconds] = cargaHoraria.split(':');
-      return new Date(1970, 0, 1, hours, minutes, seconds);
-    }
-  
-    // Se for apenas um número (como '8')
-    const apenasNumeros = cargaHoraria.toString().replace(/\D/g, '');
-    const horas = apenasNumeros.slice(0, 2).padStart(2, '0');
-    
-    return new Date(1970, 0, 1, horas, 0, 0);
+
+  if (typeof cargaHoraria === 'string' && /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(cargaHoraria)) {
+    const [hours, minutes, seconds] = cargaHoraria.split(':').map(Number);
+    return new Date(Date.UTC(1970, 0, 1, hours, minutes, seconds));
   }
+
+  const apenasNumeros = cargaHoraria.toString().replace(/\D/g, '');
+  const horas = parseInt(apenasNumeros.slice(0, 2).padStart(2, '0'), 10);
+  return new Date(Date.UTC(1970, 0, 1, horas, 0, 0));
+}
+
 
     async findByMatricula(matricula) {
       return await this.prisma.colaborador.findFirst({

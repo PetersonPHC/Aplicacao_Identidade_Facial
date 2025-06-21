@@ -53,7 +53,7 @@ async def comparar_faces(imagem_cadastrada: UploadFile = File(...), imagem_regis
 
 
     # Compara as faces
-    resultado = fr.compare_faces([imagem_cadastrada_encode], imagem_registro_ponto_encode)
+    resultado = fr.compare_faces([imagem_cadastrada_encode], imagem_registro_ponto_encode, tolerance=0.5)
 
     # Converte o resultado de numpy.bool_ para bool nativo do Python
     if(bool(resultado[0]) == False):

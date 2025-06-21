@@ -31,7 +31,7 @@ class RegistroPontoService {
  static const String _baseUrl = 'http://localhost:3000/registros-ponto';
   
   // URL DE ANDROID 
-//   static const String _baseUrl = 'http://10.0.2.2:3000/registros-ponto';
+//   static const String _baseUrl = 'http://192.168.71.195:3000/registros-ponto';
 
   
 Future<bool> registrarPonto({

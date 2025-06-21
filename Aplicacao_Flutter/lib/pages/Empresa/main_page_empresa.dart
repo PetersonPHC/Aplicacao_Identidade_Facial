@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reconhecimento/pages/Colaborador/cadastro_colaborador_page.dart';
-import 'package:reconhecimento/pages/Empresa/Dados_Empresa_Page.dart';
+import 'package:reconhecimento/pages/Empresa/dados_empresa_page.dart';
 import 'package:reconhecimento/pages/Auth/login_page.dart';
 import 'package:reconhecimento/pages/Colaborador/relacao_page.dart';
 

@@ -4,73 +4,102 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LocationVerifier {
-static Future<Map<String, dynamic>> obterLocalizacao() async {
-  Map<String, dynamic> localizacao = {'latitude': 'NA', 'longitude': 'NA'};
-
-  try {
-    // 1. Tenta obter localização real via GPS
-    Position currentPosition = kIsWeb
-        ? await _getWebPosition()
-        : await _getCurrentPosition();
-
-    localizacao = {
-      'latitude': currentPosition.latitude,
-      'longitude': currentPosition.longitude,
-    };
-  } catch (_) {
+  static Future<Map<String, dynamic>> obterLocalizacao() async {
     try {
-      // 2. Se falhar, tenta estimar localização por endereço genérico
-      final fallbackEndereco = 'Brasil'; // ou algo como 'São Paulo, SP'
-      final encoded = Uri.encodeComponent(fallbackEndereco);
-      final url = 'https://nominatim.openstreetmap.org/search?q=$encoded&format=json';
+      print("Verificando permissões de localização...");
+      bool permissaoConcedida = await _verificarPermissoes();
 
-      final response = await http.get(Uri.parse(url));
-      final data = json.decode(response.body) as List;
-
-      if (data.isNotEmpty) {
-        final first = data.first;
-        localizacao = {
-          'latitude': double.parse(first['lat']),
-          'longitude': double.parse(first['lon']),
-        };
+      if (!permissaoConcedida) {
+        print("Permissão de localização não concedida.");
+        return await _getFallbackLocation();
       }
-    } catch (_) {
-      // 3. Se tudo falhar, permanece como 'NA'
-      localizacao = {'latitude': 'NA', 'longitude': 'NA'};
+
+      bool gpsAtivo = await Geolocator.isLocationServiceEnabled();
+      if (!gpsAtivo) {
+        print("Serviço de localização está desativado.");
+        return await _getFallbackLocation();
+      }
+
+      print("Obtendo localização atual...");
+      Position position = await _getPositionWithTimeout();
+      print("Localização obtida: ${position.latitude}, ${position.longitude}");
+
+      return {
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+      };
+    } catch (e) {
+      print("Erro ao obter localização: $e");
+      return await _getFallbackLocation();
     }
   }
 
-  return localizacao;
-}
-
-  // Geolocalização no navegador (Web)
-  static Future<Position> _getWebPosition() async {
-    return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-      timeLimit: Duration(seconds: 20),
-    );
+  static Future<Position> _getPositionWithTimeout() async {
+    try {
+      if (kIsWeb) {
+        return await Geolocator.getCurrentPosition(
+          locationSettings: WebSettings(
+            accuracy: LocationAccuracy.best,
+            timeLimit: Duration(seconds: 10),
+          ),
+        ).timeout(Duration(seconds: 12));
+      } else {
+        return await Geolocator.getCurrentPosition(
+          locationSettings: AndroidSettings(
+            accuracy: LocationAccuracy.best,
+            timeLimit: Duration(seconds: 10),
+          ),
+        ).timeout(Duration(seconds: 12));
+      }
+    } catch (e) {
+      print("Erro ao tentar obter posição precisa: $e");
+      rethrow;
+    }
   }
 
-  // Geolocalização em dispositivos móveis
-  static Future<Position> _getCurrentPosition() async {
-    // Verifica permissões
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      await Geolocator.openLocationSettings();
-      throw Exception('Ative o GPS nas configurações');
+  static Future<Map<String, dynamic>> _getFallbackLocation() async {
+    print("Usando localização de fallback...");
+    try {
+      final fallbackEndereco = 'Brasil';
+      final encoded = Uri.encodeComponent(fallbackEndereco);
+      final url =
+          'https://nominatim.openstreetmap.org/search?q=$encoded&format=json';
+
+      final response = await http.get(Uri.parse(url)).timeout(Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as List;
+
+        if (data.isNotEmpty) {
+          final first = data.first;
+          print("Fallback location: ${first['lat']}, ${first['lon']}");
+          return {
+            'latitude': double.parse(first['lat']),
+            'longitude': double.parse(first['lon']),
+          };
+        }
+      }
+    } catch (e) {
+      print('Erro no fallback location: $e');
     }
 
+    return {'latitude': 'N/A', 'longitude': 'N/A'};
+  }
+
+  static Future<bool> _verificarPermissoes() async {
     LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse) {
-        throw Exception('Permissão negada');
+      if (permission == LocationPermission.denied) {
+        return false;
       }
     }
 
-    return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-      timeLimit: Duration(seconds: 20),
-    );
+    if (permission == LocationPermission.deniedForever) {
+      return false;
+    }
+
+    return true;
   }
 }

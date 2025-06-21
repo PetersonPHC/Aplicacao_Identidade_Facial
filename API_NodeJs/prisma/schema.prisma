@@ -1,5 +1,3 @@
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,66 +8,65 @@ datasource db {
 }
 
 model EMPRESA {
-  CNPJ            String               @id @db.VarChar(14)
-  CODIGO_EMPRESA  Int                  @unique @default(autoincrement())
-  NOMEFANTASIA    String               @db.VarChar(35)
+  CNPJ            String           @id @db.VarChar(14)
+  CODIGO_EMPRESA  Int              @unique @default(autoincrement())
+  NOMEFANTASIA    String           @db.VarChar(35)
   CEP             Int
-  UF              String               @db.VarChar(2)
-  CIDADE          String               @db.VarChar(35)
-  BAIRRO          String               @db.VarChar(35)
-  LOGRADOURO      String               @db.VarChar(100)
-  EMAIL           String               @db.VarChar(55)
+  UF              String           @db.VarChar(2)
+  CIDADE          String           @db.VarChar(35)
+  BAIRRO          String           @db.VarChar(35)
+  LOGRADOURO      String           @db.VarChar(100)
+  EMAIL           String           @db.VarChar(55)
   NUMERO          Int
-  COMPLEMENTO     String?              @db.VarChar(50)
-  DATACRIACAO     DateTime             @db.Date
-  COLABORADOR     Colaborador[]
+  COMPLEMENTO     String?          @db.VarChar(50)
+  DATACRIACAO     DateTime         @db.Date
+  COLABORADOR     Colaborador[]    @relation(name: "COLABORADOR_EMPRESA") // <- AQUI
   USUARIO_EMPRESA USUARIO_EMPRESA?
   REGISTRO_PONTO  REGISTRO_PONTO[]
 }
 
 model Colaborador {
-  MATRICULA        String              @db.VarChar(14)
-  CNPJ_EMPRESA     String              @db.VarChar(14)  @map("CNPJ_EMPRESA")
-  NOME             String              @db.VarChar(100)
-  CPF              String              @db.VarChar(11)
-  RG               String              @db.VarChar(9)
-  DATA_NASCIMENTO  DateTime            @db.Date
-  DATA_ADMISSAO    DateTime            @db.Date
-  NIS              String              @db.VarChar(11)
-  CTPS             String              @db.VarChar(11)
-  CARGA_HORARIA    DateTime            @db.Time 
-  CARGO            String              @db.VarChar(40)
-  IMAGEM           Bytes?
-  EMPRESA          EMPRESA             @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
+  MATRICULA           String               @id @db.VarChar(14)
+  CNPJ_EMPRESA        String               @map("CNPJ_EMPRESA") @db.VarChar(14)
+  NOME                String               @db.VarChar(100)
+  CPF                 String               @db.VarChar(11)
+  RG                  String               @db.VarChar(9)
+  DATA_NASCIMENTO     DateTime             @db.Date
+  DATA_ADMISSAO       DateTime             @db.Date
+  NIS                 String               @db.VarChar(11)
+  CTPS                String               @db.VarChar(11)
+  CARGA_HORARIA       DateTime             @db.Time
+  CARGO               String               @db.VarChar(40)
+  IMAGEM              Bytes?
+  EMPRESA             EMPRESA              @relation(name: "COLABORADOR_EMPRESA", fields: [CNPJ_EMPRESA], references: [CNPJ])
   USUARIO_COLABORADOR USUARIO_COLABORADOR?
-  REGISTRO_PONTO   REGISTRO_PONTO[]
+  REGISTRO_PONTO      REGISTRO_PONTO[]
 
-  @@id([MATRICULA, CNPJ_EMPRESA])
   @@unique([MATRICULA, CNPJ_EMPRESA])
   @@unique([MATRICULA]) // Adicionado para a relação com USUARIO_COLABORADOR
 }
 
 model USUARIO_COLABORADOR {
-  USUARIO_ID  String         @id @db.VarChar(14)
-  SENHA       String         @db.VarChar(100)
+  USUARIO_ID  String      @id @db.VarChar(14)
+  SENHA       String      @db.VarChar(100)
   ADM         Boolean
-  colaborador Colaborador    @relation(fields: [USUARIO_ID], references: [MATRICULA])
+  colaborador Colaborador @relation(fields: [USUARIO_ID], references: [MATRICULA])
 }
 
 model USUARIO_EMPRESA {
-  USUARIO_ID String    @id @db.VarChar(14)
-  SENHA      String    @db.VarChar(100)
+  USUARIO_ID String  @id @db.VarChar(14)
+  SENHA      String  @db.VarChar(100)
   ADM        Boolean
-  empresa    EMPRESA   @relation(fields: [USUARIO_ID], references: [CNPJ])
+  empresa    EMPRESA @relation(fields: [USUARIO_ID], references: [CNPJ])
 }
 
 model REGISTRO_PONTO {
-  MATRICULA      String      @db.VarChar(14)
-  CNPJ_EMPRESA   String      @db.VarChar(14)
-  DATA_PONTO     DateTime
-  LOCALIZACAO    String      @db.VarChar(50)
-  colaborador    Colaborador @relation(fields: [MATRICULA, CNPJ_EMPRESA], references: [MATRICULA, CNPJ_EMPRESA])
-  empresa        EMPRESA     @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
+  MATRICULA    String      @db.VarChar(14)
+  CNPJ_EMPRESA String      @db.VarChar(14)
+  DATA_PONTO   DateTime
+  LOCALIZACAO  String      @db.VarChar(50)
+  colaborador  Colaborador @relation(fields: [MATRICULA, CNPJ_EMPRESA], references: [MATRICULA, CNPJ_EMPRESA])
+  empresa      EMPRESA     @relation(fields: [CNPJ_EMPRESA], references: [CNPJ])
 
   @@id([MATRICULA, CNPJ_EMPRESA, DATA_PONTO])
 }

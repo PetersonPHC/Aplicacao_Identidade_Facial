@@ -7,8 +7,8 @@ import 'dart:convert';
 
 class ColaboradorService {
 
- // static const String _baseUrlColaboradores = 'http://10.0.2.2:3000/colaboradores';
- // static const String _baseUrlUsuarios =  'http://10.0.2.2:3000/usuarios';
+ //static const String _baseUrlColaboradores = 'http://192.168.71.195:3000/colaboradores';
+ //static const String _baseUrlUsuarios =  'http://192.168.71.195:3000/usuarios';
   // URL DE ANDROID
   
  static const String _baseUrlColaboradores =   'http://localhost:3000/colaboradores';
@@ -38,6 +38,19 @@ class ColaboradorService {
       // Adiciona headers importantes
       requestColab.headers['Accept'] = 'application/json';
       
+
+
+print('Enviando dados do colaborador: '
+    'Matrícula: $matricula, '
+    'Nome: $nome, '
+    'CPF: ${cpf.replaceAll(RegExp(r'[^0-9]'), '')}, '
+    'Empresa: $cnpj, '
+    'DATAADMISSAO: $dataAdmissao '
+    'CARGAHORARIA $cargaHoraria'
+    'DataNascimento: $dataNascimento '
+    
+);
+
       // Adiciona todos os campos (em MAIÚSCULAS conforme o backend espera)
       requestColab.fields.addAll({
         'MATRICULA': matricula.trim(),

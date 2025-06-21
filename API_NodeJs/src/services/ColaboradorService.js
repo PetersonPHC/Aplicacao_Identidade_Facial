@@ -149,10 +149,12 @@ async converterImagemJPG(imagemBuffer, nomeArquivo) {
     
     return {
       ...colaborador,
-      CARGA_HORARIA: colaborador.CARGA_HORARIA?.toTimeString().substring(0, 8) || null
+      CARGA_HORARIA: colaborador.CARGA_HORARIA.toISOString().substring(11, 19) || null
     };
   }
 
+
+  
   async atualizarColaborador(matricula, colaboradorData) {
 console.log(`chegou ao service`);
   

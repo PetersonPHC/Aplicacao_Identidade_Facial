@@ -6,14 +6,14 @@ import 'dart:convert';
 class EmpresaService {
   
   
-  // static const String _baseUrlUsuarioEmpresa = 'http://10.0.2.2:3000/usuarios/empresa';
-  // static const String _baseUrlEmpresa = 'http://10.0.2.2:3000/empresas';
+//  static const String _baseUrlUsuarioEmpresa = 'http://192.168.71.195:3000/usuarios/empresa';
+ // static const String _baseUrlEmpresa = 'http://192.168.71.195:3000/empresas';
 
 // URL DE ANDROID
 
   
-  static const String _baseUrlUsuarioEmpresa = 'http://localhost:3000/usuarios/empresa';
-  static const String _baseUrlEmpresa = 'http://localhost:3000/empresas';
+   static const String _baseUrlUsuarioEmpresa = 'http://localhost:3000/usuarios/empresa';
+   static const String _baseUrlEmpresa = 'http://localhost:3000/empresas';
 
   Future<bool> cadastrarEmpresa({
     required String nomeFantasia,
@@ -110,13 +110,19 @@ class EmpresaService {
     final senhaController = TextEditingController();
     final confirmarSenhaController = TextEditingController();
 
-    return await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
+return await showModalBottomSheet<String>(
+  context: context,
+  backgroundColor: Colors.white,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  ),
+  builder: (context) {
+    // Variáveis locais para controlar a visibilidade da senha
+    bool obscureSenha = true;
+    bool obscureConfirmarSenha = true;
+
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setState) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -124,14 +130,38 @@ class EmpresaService {
             children: [
               TextField(
                 controller: senhaController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'nova senha'),
+                obscureText: obscureSenha,
+                decoration: InputDecoration(
+                  labelText: 'Nova senha',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureSenha ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscureSenha = !obscureSenha;
+                      });
+                    },
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: confirmarSenhaController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'repita a senha'),
+                obscureText: obscureConfirmarSenha,
+                decoration: InputDecoration(
+                  labelText: 'Repita a senha',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureConfirmarSenha ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscureConfirmarSenha = !obscureConfirmarSenha;
+                      });
+                    },
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               SizedBox(
@@ -155,6 +185,8 @@ class EmpresaService {
         );
       },
     );
+  },
+);
   }
 
   Future<Map<String, dynamic>> buscarEmpresa(String cnpj) async {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:reconhecimento/pages/Colaborador/Relacao_Ponto_Colaborador_Page.dart';
+import 'package:reconhecimento/pages/Colaborador/cadastro_colaborador_page.dart';
+import 'package:reconhecimento/pages/Colaborador/relacao_ponto_colaborador_page.dart';
 import 'package:reconhecimento/pages/Colaborador/perfil_page.dart';
 import 'package:reconhecimento/pages/Colaborador/relacao_page.dart';
 
@@ -169,6 +170,29 @@ class MainPageState extends State<MainPage> {
                       if (widget.isAdm) SizedBox(height: 15),
                       if (widget.isAdm)
                         ListTile(
+                          leading: const Icon(Icons.assignment_outlined,
+                              color: Color.fromARGB(255, 0, 0, 0), size: 28),
+                          title: Text(
+                            "Cadastro de colaboradores",
+                            style: GoogleFonts.roboto(
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CadastroColaboradorPage(cnpj: widget.cnpjEmpresa),
+                              ),
+                            );
+                          },
+                        ),
+                      
+                      if (widget.isAdm) SizedBox(height: 15),
+                      if (widget.isAdm)
+                        ListTile(
                           leading: const Icon(Icons.people,
                               color: Color.fromARGB(255, 0, 0, 0), size:28 ),
                           title: Text(
@@ -183,7 +207,7 @@ class MainPageState extends State<MainPage> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    RelacaoPage(cnpj: widget.cnpjEmpresa),
+                                    RelacaoPage(cnpj: widget.cnpjEmpresa, matricula: widget.matricula),
                               ),
                             );
                           },

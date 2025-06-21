@@ -7,7 +7,8 @@ class AtualizarColaboradorPage extends StatefulWidget {
   final String cnpj;
   final String matricula;
 
-  const AtualizarColaboradorPage({super.key, 
+  const AtualizarColaboradorPage({
+    super.key,
     required this.cnpj,
     required this.matricula,
   });
@@ -20,7 +21,6 @@ class AtualizarColaboradorPage extends StatefulWidget {
 class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
   late AtualizarColaboradorController _controller;
   Uint8List? _imagemSelecionada;
-
 
   @override
   void initState() {
@@ -133,15 +133,11 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
           child: Column(
             children: [
               GestureDetector(
-              onTap: () async {
-  await _controller.selecionarImagem();
-  if (mounted) {
-    setState(() {
-      _imagemSelecionada = _controller.imagemSelecionadaWeb;
-    });
-  }
-},
-  child: Container(
+                onTap: () async {
+                  await _controller.selecionarImagem();
+                  if (mounted) setState(() {}); // Atualiza a UI após seleção
+                },
+                child: Container(
                   width: 200,
                   height: 200,
                   decoration: BoxDecoration(
@@ -164,16 +160,14 @@ class _AtualizarColaboradorPageState extends State<AtualizarColaboradorPage> {
     );
   }
 Widget _buildImageWidget() {
-  if (_imagemSelecionada != null) {
+  // Use apenas as variáveis do controlador
+  if (_controller.imagemSelecionadaWeb != null) {
     return ClipOval(
       child: Image.memory(
-        _imagemSelecionada!,
+        _controller.imagemSelecionadaWeb!,
         fit: BoxFit.cover,
         width: 200,
         height: 200,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildDefaultIcon();
-        },
       ),
     );
   }
@@ -185,16 +179,12 @@ Widget _buildImageWidget() {
         fit: BoxFit.cover,
         width: 200,
         height: 200,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildDefaultIcon();
-        },
       ),
     );
   }
 
   return _buildDefaultIcon();
 }
-
   Widget _buildDefaultIcon() {
     return Icon(
       Icons.add_a_photo,
@@ -341,35 +331,43 @@ Widget _buildImageWidget() {
     );
   }
 
-  Widget _buildUpdateButton() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: ElevatedButton(
-        onPressed: () async {
-          try {
-            await _controller.atualizar(context);
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(e.toString()),
-                duration: Duration(seconds: 2),
-              ),
-            );
+Widget _buildUpdateButton() {
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: ElevatedButton(
+      onPressed: () async {
+        try {
+          await _controller.atualizar(context);
+
+          if (mounted) {
+            setState(() {});
           }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 3, 33, 255),
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-        ),
-        child: Text(
-          'Atualizar',
-          style: GoogleFonts.roboto(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+
+          // Voltar para a tela anterior após atualizar
+          if (mounted) Navigator.pop(context);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 3, 33, 255),
+        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+      ),
+      child: Text(
+        'Atualizar',
+        style: GoogleFonts.roboto(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

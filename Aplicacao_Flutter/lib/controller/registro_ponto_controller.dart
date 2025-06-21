@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:reconhecimento/controller/localizacao_controller.dart';
 import 'package:reconhecimento/service/registro_ponto_service.dart';
@@ -15,7 +16,7 @@ class RegistroPontoController {
     required this.cnpj,
   });
 
-  late CameraController _cameraController;
+   late CameraController _cameraController;
   bool _isCameraInitialized = false;
   Uint8List? _fotoCapturada;
 
@@ -54,7 +55,6 @@ class RegistroPontoController {
     await _cameraController.initialize();
     _isCameraInitialized = true;
   }
-
 
   Future<void> capturarFoto() async {
     if (!_isCameraInitialized) {

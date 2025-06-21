@@ -72,7 +72,7 @@ async criarRegistro(registroData) {
       );
 
      
-
+      console.log(compararFacesResponse.data);
       if (!compararFacesResponse.data || 
           typeof compararFacesResponse.data.face_detectada === 'undefined') {
         throw new Error('Resposta inválida da API de comparação facial');

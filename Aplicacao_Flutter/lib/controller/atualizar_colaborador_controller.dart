@@ -110,10 +110,16 @@ Future<void> carregarDadosColaborador() async {
     nisController.clear();
     cargoController.clear();
     cargaHorariaController.clear();
-     _imagemSelecionada = null;
-    _imagemSelecionadaWeb = null;
-   
+    limparImagem();
+    
   }
+
+void limparImagem() {
+  _imagemSelecionadaWeb = null;
+  _imagemSelecionada = null;
+  _imagemBytes = null;
+  
+}
 
 Future<void> selecionarImagem() async {
   print("Iniciando seleção de imagem...");
@@ -181,11 +187,134 @@ Future<void> selecionarImagem() async {
     );
   }
 
+Future<void> selecionarData(BuildContext context, TextEditingController controller) async {
+  String? errorMessage;
 
-  Future<void> selecionarData(BuildContext context, TextEditingController controller) async {
-    final dataSelecionada = await dateUtils.selecionarData(context);
-    if (dataSelecionada != null) {
-      controller.text = dateUtils.formatarDataParaExibicao(dataSelecionada);
-    }
+  final DateTime? dataSelecionada = await showDialog<DateTime>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Informe a data'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: 'DD/MM/AAAA',
+                    errorText: null, // Sempre null para usar nosso próprio erro
+                    border: const OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 10,
+                  onChanged: (value) {
+                    if (errorMessage != null) {
+                      setState(() => errorMessage = null);
+                    }
+
+                    String newValue = value.replaceAll(RegExp(r'[^0-9]'), '');
+                    String formatted = '';
+
+                    for (int i = 0; i < newValue.length && i < 8; i++) {
+                      if (i == 2 || i == 4) formatted += '/';
+                      formatted += newValue[i];
+                    }
+
+                    if (formatted != value) {
+                      controller.value = TextEditingValue(
+                        text: formatted,
+                        selection: TextSelection.collapsed(offset: formatted.length),
+                      );
+                    }
+                  },
+                ),
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                child: const Text('CANCELAR'),
+                onPressed: () => Navigator.pop(context),
+              ),
+              TextButton(
+                child: const Text('CONFIRMAR'),
+                onPressed: () {
+                  final text = controller.text;
+                  final regex = RegExp(r'^(\d{2})/(\d{2})/(\d{4})$');
+
+                  if (!regex.hasMatch(text)) {
+                    setState(() => errorMessage = 'Formato inválido. Use DD/MM/AAAA');
+                    return;
+                  }
+
+                  final match = regex.firstMatch(text)!;
+                  final dia = int.parse(match.group(1)!);
+                  final mes = int.parse(match.group(2)!);
+                  final ano = int.parse(match.group(3)!);
+
+                  // Validações
+                  if (mes < 1 || mes > 12) {
+                    setState(() => errorMessage = 'Mês deve ser entre 01 e 12');
+                    return;
+                  }
+
+                  if (dia < 1 || dia > 31) {
+                    setState(() => errorMessage = 'Dia deve ser entre 01 e 31');
+                    return;
+                  }
+
+                  if (ano == 0) {
+                    setState(() => errorMessage = 'Ano não pode ser 0000');
+                    return;
+                  }
+
+                  // Valida meses com 30 dias
+                  if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
+                    setState(() => errorMessage = 'Este mês só tem 30 dias');
+                    return;
+                  }
+
+                  // Valida fevereiro
+                  if (mes == 2) {
+                    final bissexto = (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0));
+                    if ((bissexto && dia > 29) || (!bissexto && dia > 28)) {
+                      setState(() => errorMessage = 'Fevereiro tem ${bissexto ? 29 : 28} dias neste ano');
+                      return;
+                    }
+                  }
+
+                  final novaData = DateTime(ano, mes, dia);
+                  if (novaData.day != dia || novaData.month != mes || novaData.year != ano) {
+                    setState(() => errorMessage = 'Data inválida para o mês informado');
+                    return;
+                  }
+
+                  Navigator.pop(context, novaData);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  if (dataSelecionada != null) {
+    controller.text = DateFormat('dd/MM/yyyy').format(dataSelecionada);
   }
+}
+
 }

@@ -34,27 +34,41 @@ class _RegistroPontoPageState extends State<RegistroPontoPage> {
     );
     _initializeCamera();
   }
+Future<void> _initializeCamera() async {
+  try {
+    _cameras = await availableCameras();
 
-  Future<void> _initializeCamera() async {
-    try {
-      _cameras = await availableCameras();
-
-      if (_cameras.isEmpty) {
-        throw Exception("Nenhuma câmera encontrada no dispositivo.");
-      }
-
-      await _controller.initializeCamera(_cameras, _currentCameraIndex);
-
-      setState(() {
-        _cameraInitialized = true;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = "Erro ao acessar a câmera: $e";
-      });
-      _showSnackBar(_errorMessage!);
+    if (_cameras.isEmpty) {
+      throw Exception("Nenhuma câmera encontrada no dispositivo.");
     }
+
+    await _controller.initializeCamera(_cameras, _currentCameraIndex);
+
+    setState(() {
+      _cameraInitialized = true;
+      _errorMessage = null;
+    });
+  } catch (e) {
+    String userFriendlyMessage;
+
+    if (e.toString().contains('cameraNotReadable')) {
+      userFriendlyMessage =
+          "Houve um erro ao inicializar a câmera. Por favor, saia desta tela e entre novamente.";
+    } else if (e.toString().contains('PermissionDenied')) {
+      userFriendlyMessage =
+          "Permissão de câmera negada. Por favor, conceda a permissão e tente novamente.";
+    } else {
+      userFriendlyMessage = "Erro ao acessar a câmera: $e";
+    }
+
+    setState(() {
+      _errorMessage = userFriendlyMessage;
+    });
+
+    _showSnackBar(userFriendlyMessage);
   }
+}
+
 
   Future<void> _toggleCamera() async {
     if (_cameras.length < 2) return;

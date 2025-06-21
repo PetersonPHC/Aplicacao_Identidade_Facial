@@ -209,15 +209,17 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
                               hasMask: true,
                             ),
                             SizedBox(height: 8),
-                            _buildMatriculaWithCodigoEmpresa(), // Substitui o campo matrícula original
+                            _buildMatriculaWithCodigoEmpresa(), 
 
                             SizedBox(height: 8),
                             _buildTextFieldRow(
                                 "CTPS: ", _controller.ctpsController,
+                                requiredLength: 11,
                                 isNumber: true),
                             SizedBox(height: 8),
                             _buildTextFieldRow(
                                 "NIS: ", _controller.nisController,
+                                 requiredLength: 11,
                                 isNumber: true),
                             SizedBox(height: 8),
                             _buildCargaHorariaRow("Carga Horaria: ",
@@ -232,6 +234,11 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
                             SizedBox(height: 8),
                             _buildTextFieldRow(
                                 "Senha: ", _controller.senhaController,
+                                maxLength: 50, isPassword: true),
+                            SizedBox(height: 8),
+                            
+                            _buildTextFieldRow(
+                                "Repita a Senha: ",  _controller.confirmarSenhaController,
                                 maxLength: 50, isPassword: true),
                             SizedBox(height: 8),
                             _buildAdminCheckbox(),
@@ -249,15 +256,7 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
                       if (_validarCampos()) {
                         await _controller.cadastrar(context);
                         setState(() {});
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                Text('Preencha todos os campos corretamente'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
+                      } 
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 3, 33, 255),
@@ -348,77 +347,104 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
       },
     );
   }
+Widget _buildCargaHorariaRow(
+  String label,
+  TextEditingController controller,
+) {
+  // Função interna para formatar o texto enquanto digita
+  void _formatarInput(String value) {
+    final text = value.replaceAll(RegExp(r'[^0-9]'), '');
+    var formatted = '';
 
-  Widget _buildCargaHorariaRow(
-    String label,
-    TextEditingController controller,
-  ) {
-    // Função interna para formatar o texto enquanto digita
-    void _formatarInput(String value) {
-      final text = value.replaceAll(RegExp(r'[^0-9]'), '');
-      var formatted = '';
-
-      if (text.length >= 2) {
-        formatted = '${text.substring(0, 2)}';
-        if (text.length >= 4) {
-          formatted += ':${text.substring(2, 4)}';
-          if (text.length >= 6) {
-            formatted += ':${text.substring(4, 6)}';
-          } else if (text.length > 4) {
-            formatted += ':${text.substring(4)}';
-          }
-        } else if (text.length > 2) {
-          formatted += ':${text.substring(2)}';
-        }
-      } else {
-        formatted = text;
+    if (text.length >= 2) {
+      // Valida horas (00-23)
+      var horas = text.substring(0, 2);
+      if (int.parse(horas) > 23) {
+        horas = '23';
       }
-
-      // Atualiza o controlador apenas se o texto foi modificado
-      if (controller.text != formatted) {
-        controller.value = controller.value.copyWith(
-          text: formatted,
-          selection: TextSelection.collapsed(offset: formatted.length),
-          composing: TextRange.empty,
-        );
+      formatted = horas;
+      
+      if (text.length >= 4) {
+        // Valida minutos (00-59)
+        var minutos = text.substring(2, 4);
+        if (int.parse(minutos) > 59) {
+          minutos = '59';
+        }
+        formatted += ':$minutos';
+        
+        if (text.length >= 6) {
+          // Valida segundos (00-59)
+          var segundos = text.substring(4, 6);
+          if (int.parse(segundos) > 59) {
+            segundos = '59';
+          }
+          formatted += ':$segundos';
+        } else if (text.length > 4) {
+          var segundos = text.substring(4);
+          if (segundos.length == 1 && int.parse(segundos) > 5) {
+            segundos = '5';
+          }
+          formatted += ':$segundos';
+        }
+      } else if (text.length > 2) {
+        var minutos = text.substring(2);
+        if (minutos.length == 1 && int.parse(minutos) > 5) {
+          minutos = '5';
+        }
+        formatted += ':$minutos';
+      }
+    } else {
+      formatted = text;
+      // Valida primeiro dígito das horas (0-2)
+      if (text.isNotEmpty && int.parse(text) > 2) {
+        formatted = '2';
       }
     }
 
-    return Row(
-      children: [
-        Text(label,
-            style: GoogleFonts.roboto(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w700)),
-        Expanded(
-          child: TextFormField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              hintText: 'HH:MM:SS',
-              border: OutlineInputBorder(),
-            ),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
-            ],
-            onChanged: _formatarInput,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor, insira a carga horária';
-              }
-              if (!RegExp(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
-                  .hasMatch(value)) {
-                return 'Formato inválido (use HH:MM:SS)';
-              }
-              return null;
-            },
-          ),
-        ),
-      ],
-    );
+    // Atualiza o controlador apenas se o texto foi modificado
+    if (controller.text != formatted) {
+      controller.value = controller.value.copyWith(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+        composing: TextRange.empty,
+      );
+    }
   }
 
+  return Row(
+    children: [
+      Text(label,
+          style: GoogleFonts.roboto(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w700)),
+      Expanded(
+        child: TextFormField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: 'HH:MM:SS',
+            border: OutlineInputBorder(),
+          ),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
+          ],
+          onChanged: _formatarInput,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor, insira a carga horária';
+            }
+            // Verifica o formato e os valores válidos
+            if (!RegExp(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$').hasMatch(value)) {
+              return 'Formato inválido (use HH:MM:SS entre 00:00:00 e 23:59:59)';
+            }
+            return null;
+          },
+        ),
+      ),
+    ],
+  );
+}
   String? _validateField(String text, int requiredLength, bool hasMask) {
     final digitsOnly = text.replaceAll(RegExp(r'[^0-9]'), '');
 
@@ -468,45 +494,123 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
       ],
     );
   }
-
-  bool _validarCampos() {
-    bool isValid = true;
-
-    // Validação do RG (9 dígitos)
-    if (_controller.rgController.text
-            .replaceAll(RegExp(r'[^0-9]'), '')
-            .length !=
-        9) {
-      isValid = false;
-    }
-
-    // Validação do CPF (11 dígitos)
-    if (_controller.cpfController.text
-            .replaceAll(RegExp(r'[^0-9]'), '')
-            .length !=
-        11) {
-      isValid = false;
-    }
-
-    // Validação da Matrícula (10 dígitos)
-    if (_controller.matriculaController.text
-            .replaceAll(RegExp(r'[^0-9]'), '')
-            .length !=
-        10) {
-      isValid = false;
-    }
-
-    // Validação de campos obrigatórios não vazios
-    if (_controller.nomeController.text.isEmpty ||
-        _controller.dataNascimentoController.text.isEmpty ||
-        _controller.cargoController.text.isEmpty ||
-        _controller.dataAdmissaoController.text.isEmpty ||
-        _controller.senhaController.text.isEmpty) {
-      isValid = false;
-    }
-
-    return isValid;
+bool _validarCampos() {
+  bool isValid = true;
+  
+  // Validação do Nome
+  if (_controller.nomeController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, informe o nome completo')),
+    );
+    isValid = false;
   }
+
+
+// Validação das senhas
+if (_controller.senhaController.text.isEmpty) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Por favor, informe a senha')),
+  );
+  isValid = false;
+} else if (_controller.confirmarSenhaController.text.isEmpty) { // Exemplo: mínimo 6 caracteres
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Por favir confirme a senha ')),
+  );
+  isValid = false;
+} else if (_controller.senhaController.text != _controller.confirmarSenhaController.text) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('As senhas não coincidem')),
+  );
+  isValid = false;
+}
+  // Validação do CPF
+  final cpfDigits = _controller.cpfController.text.replaceAll(RegExp(r'[^0-9]'), '');
+  if (cpfDigits.length != 11) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('CPF inválido! Deve conter 11 dígitos')),
+    );
+    isValid = false;
+  }
+
+  // Validação do RG
+  final rgDigits = _controller.rgController.text.replaceAll(RegExp(r'[^0-9]'), '');
+  if (rgDigits.length != 9) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('RG inválido! Deve conter 9 dígitos')),
+    );
+    isValid = false;
+  }
+
+  // Validação da Matrícula
+  final matriculaDigits = _controller.matriculaController.text.replaceAll(RegExp(r'[^0-9]'), '');
+  if (matriculaDigits.length != 10) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Matrícula inválida! Deve conter 10 dígitos')),
+    );
+    isValid = false;
+  }
+
+  // Validação de campos obrigatórios
+  if (_controller.dataNascimentoController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, informe a data de nascimento')),
+    );
+    isValid = false;
+  }
+   // Validação de campos obrigatórios
+  if (_controller.cargaHorariaController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, informe a data de nascimento')),
+    );
+    isValid = false;
+  }
+
+  if (_controller.cargoController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, informe o cargo')),
+    );
+    isValid = false;
+  }
+
+ 
+  final cargadigits = _controller.cargaHorariaController.text.replaceAll(RegExp(r'[^0-9]'), '');
+  if (cargadigits.length != 06) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, preencha carga horaria no formato correto HH:MM:SS')),
+    );
+    isValid = false;
+  }
+  if (_controller.dataAdmissaoController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, informe a data de admissão')),
+    );
+    isValid = false;
+  }
+
+  if (_controller.senhaController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, crie uma senha')),
+    );
+    isValid = false;
+  }
+
+  final nisDigits = _controller.nisController.text.replaceAll(RegExp(r'[^0-9]'), '');
+  if (nisDigits.length != 11) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('NIS inválido! Deve conter exatamente 11 dígitos')),
+    );
+    isValid = false;
+  }
+   final ctpsDigits = _controller.ctpsController.text.replaceAll(RegExp(r'[^0-9]'), '');
+  if (ctpsDigits.length != 11) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('CTPS inválido! Deve conter exatamente 11 dígitos')),
+    );
+    isValid = false;
+  }
+
+  return isValid;
+}
 
   Widget _buildDateFieldRow(String label, TextEditingController controller) {
     return Row(

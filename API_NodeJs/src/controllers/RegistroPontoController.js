@@ -90,7 +90,6 @@ class RegistroPontoController {
     }
   }
 
-  //Alteração -> CNPJ Removido
   async listarPorColaborador(req, res) {
     try {
       const { matricula, cnpjEmpresa } = req.params;

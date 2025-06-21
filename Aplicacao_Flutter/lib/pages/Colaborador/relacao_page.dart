@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:reconhecimento/pages/Auth/login_page.dart';
 import 'package:reconhecimento/pages/Colaborador/relacao_ponto_colaborador_page.dart';
-import 'package:reconhecimento/pages/colaborador/atualizar_colaborador_page.dart';
-import 'package:reconhecimento/pages/colaborador/perfil_page.dart';
+import 'package:reconhecimento/pages/Colaborador/atualizar_colaborador_page.dart';
+import 'package:reconhecimento/pages/Colaborador/perfil_page.dart';
 import 'package:reconhecimento/widgets/colaborador_card.dart';
 import 'package:reconhecimento/widgets/exclusao_dialog.dart';
 import 'package:reconhecimento/widgets/reset_senha_dialog.dart';
 import 'package:reconhecimento/controller/relacao_controller.dart';
 import 'package:reconhecimento/widgets/confirma_admin_dialog.dart';
-import 'package:reconhecimento/widgets/retira_admin_dialog.dart';
-
+import 'package:reconhecimento/widgets/Retira_admin_dialog.dart';
 class RelacaoPage extends StatefulWidget {
   final String cnpj;
+  final String? matricula; // Adiciona ? para permitir null
   
-  const RelacaoPage({required this.cnpj, Key? key}) : super(key: key);
+  const RelacaoPage({
+    required this.cnpj, 
+    Key? key, 
+    this.matricula, // Remove required e torna nullable
+  }) : super(key: key);
 
   @override
   State<RelacaoPage> createState() => _RelacaoPageState();
 }
-
 class _RelacaoPageState extends State<RelacaoPage> {
   final RelacaoController _controller = RelacaoController();
 
@@ -26,18 +30,21 @@ class _RelacaoPageState extends State<RelacaoPage> {
     super.initState();
     _carregarColaboradores();
   }
-
-   Future<void> _carregarColaboradores() async {
-    try {
-      // Passa o CNPJ que veio como parâmetro para a página
-      await _controller.fetchColaboradores(cnpj: widget.cnpj);
+Future<void> _carregarColaboradores() async {
+  try {
+    // Passa o CNPJ que veio como parâmetro para a página
+    await _controller.fetchColaboradores(cnpj: widget.cnpj);
+    if (mounted) {
       setState(() {});
-    } catch (error) {
+    }
+  } catch (error) {
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error.toString())),
       );
     }
   }
+}
 
   void _redirecionarPonto(String matricula, String cnpj) {
     Navigator.push(
@@ -105,35 +112,46 @@ class _RelacaoPageState extends State<RelacaoPage> {
               ),
             );
             break;
-            case 'AdminTrue':
-            showDialog(
-              context: context,
-              builder: (context) => ConfirmarAdminDialog(
-                matricula: colaborador['matricula'],
-                onConfirm: () => _controller.tornarAdministrador(
-                  colaborador['cnpj'],
-                  colaborador['matricula'],
-                  true,
-                  context,
-                ),
-              ),
-            );
-            break;
-             case 'AdminFalse':
-            showDialog(
-              context: context,
-              builder: (context) => RetiraAdminDialog(
-                matricula: colaborador['matricula'],
-                onConfirm: () => _controller.tornarAdministrador(
-                  colaborador['cnpj'],
-                  colaborador['matricula'],
-                  false,
-                  context,
-                ),
-              ),
-            );
-            break;
-
+          case 'AdminTrue':
+  showDialog(
+    context: context,
+    builder: (context) => ConfirmarAdminDialog(
+      matricula: colaborador['matricula'],
+      onConfirm: () async {
+        await _controller.tornarAdministrador(
+          colaborador['cnpj'],
+          colaborador['matricula'],
+          true,
+          context,
+        );
+        if (mounted) {
+          await _carregarColaboradores();
+          _verificarAdminAlterado(colaborador['matricula']);
+        }
+      },
+    ),
+  );
+  break;
+case 'AdminFalse':
+  showDialog(
+    context: context,
+    builder: (context) => RetiraAdminDialog(
+      matricula: colaborador['matricula'],
+      onConfirm: () async {
+        await _controller.tornarAdministrador(
+          colaborador['cnpj'],
+          colaborador['matricula'],
+          false,
+          context,
+        );
+        if (mounted) {
+          await _carregarColaboradores();
+          _verificarAdminAlterado(colaborador['matricula']);
+        }
+      },
+    ),
+  );
+  break;
 
           case 'Relacao_Ponto':
             _redirecionarPonto(colaborador['matricula'], colaborador['cnpj']);
@@ -192,4 +210,20 @@ class _RelacaoPageState extends State<RelacaoPage> {
                 ),
     );
   }
+
+  
+void _verificarAdminAlterado(String matriculaAlterada) {
+  // Verifica se o widget ainda está montado
+  if (!mounted) return;
+  
+  // Verifica se a matrícula do widget não é nula E se é igual à matrícula que foi alterada
+  if (widget.matricula != null && widget.matricula == matriculaAlterada) {
+    // Redireciona para a LoginPage
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+      (Route<dynamic> route) => false,
+    );
+  }
+}
 }
