@@ -222,7 +222,7 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
                                  requiredLength: 11,
                                 isNumber: true),
                             SizedBox(height: 8),
-                            _buildCargaHorariaRow("Carga Horaria: ",
+                            _buildCargaHorariaRow("Carga Horaria Diaria: ",
                                 _controller.cargaHorariaController),
                             SizedBox(height: 8),
                             _buildTextFieldRow(
@@ -280,73 +280,88 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
       ),
     );
   }
+Widget _buildTextFieldRow(
+  String label,
+  TextEditingController controller, {
+  bool isNumber = false,
+  int? maxLength,
+  bool isPassword = false,
+  int? requiredLength,
+  bool hasMask = false,
+}) {
+  bool isTouched = false;
+  bool showPassword = false; // Novo estado para controlar a visibilidade da senha
 
-  Widget _buildTextFieldRow(
-    String label,
-    TextEditingController controller, {
-    bool isNumber = false,
-    int? maxLength,
-    bool isPassword = false,
-    int? requiredLength,
-    bool hasMask = false, // Novo parâmetro para indicar campos com máscara
-  }) {
-    bool isTouched = false;
-
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.roboto(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.roboto(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
             ),
-            Expanded(
-              child: TextField(
-                controller: controller,
-                obscureText: isPassword,
-                style: TextStyle(color: Colors.black),
-                keyboardType:
-                    isNumber ? TextInputType.number : TextInputType.text,
-                inputFormatters: [
-                  if (requiredLength != null && !hasMask)
-                    LengthLimitingTextInputFormatter(requiredLength),
-                  if (maxLength != null)
-                    LengthLimitingTextInputFormatter(maxLength),
-                  if (isNumber &&
-                      !hasMask) // Não aplica digitsOnly se tiver máscara
-                    FilteringTextInputFormatter.digitsOnly,
-                ],
-                decoration: InputDecoration(
-                  labelText: label.replaceAll(':', '').trim(),
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  errorText: isTouched && requiredLength != null
-                      ? _validateField(controller.text, requiredLength, hasMask)
-                      : null,
+          ),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              obscureText: isPassword && !showPassword, // Alterado para considerar showPassword
+              style: TextStyle(color: Colors.black),
+              keyboardType:
+                  isNumber ? TextInputType.number : TextInputType.text,
+              inputFormatters: [
+                if (requiredLength != null && !hasMask)
+                  LengthLimitingTextInputFormatter(requiredLength),
+                if (maxLength != null)
+                  LengthLimitingTextInputFormatter(maxLength),
+                if (isNumber && !hasMask)
+                  FilteringTextInputFormatter.digitsOnly,
+              ],
+              decoration: InputDecoration(
+                labelText: label.replaceAll(':', '').trim(),
+                labelStyle: TextStyle(color: Colors.black),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black),
                 ),
-                onTap: () => setState(() => isTouched = true),
-                onChanged: (value) {
-                  if (requiredLength != null) {
-                    setState(() {});
-                  }
-                },
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                errorText: isTouched && requiredLength != null
+                    ? _validateField(controller.text, requiredLength, hasMask)
+                    : null,
+                // Adicionando o ícone de visibilidade quando for campo de senha
+                suffixIcon: isPassword
+                    ? IconButton(
+                        icon: Icon(
+                          showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            showPassword = !showPassword;
+                          });
+                        },
+                      )
+                    : null,
               ),
+              onTap: () => setState(() => isTouched = true),
+              onChanged: (value) {
+                if (requiredLength != null) {
+                  setState(() {});
+                }
+              },
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+        ],
+      );
+    },
+  );
+}
 Widget _buildCargaHorariaRow(
   String label,
   TextEditingController controller,

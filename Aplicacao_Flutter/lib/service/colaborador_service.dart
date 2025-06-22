@@ -93,10 +93,48 @@ print('Enviando dados do colaborador: '
       // 2. Envio da requisição e tratamento da resposta
       var streamedResponse = await requestColab.send();
       var response = await http.Response.fromStream(streamedResponse);
+if (response.statusCode != 201) {
+  final responseBody = response.body;
 
-      if (response.statusCode != 201) {
-        throw Exception('Falha ao cadastrar colaborador: ${response.body}');
-      }
+  // Verifica se houve falha de constraint única
+  if (responseBody.contains('Unique constraint failed')) {
+    String campoDuplicado = '';
+
+    if (responseBody.contains('MATRICULA')) {
+      campoDuplicado = 'Matrícula';
+    } else if (responseBody.contains('RG')) {
+      campoDuplicado = 'RG';
+    } else if (responseBody.contains('CPF')) {
+      campoDuplicado = 'CPF';
+    } else if (responseBody.contains('NIS')) {
+      campoDuplicado = 'NIS';
+    } else if (responseBody.contains('CTPS')) {
+      campoDuplicado = 'CTPS';
+    }
+
+    if (campoDuplicado.isNotEmpty) {
+      throw Exception('Já existe um colaborador cadastrado com o campo: $campoDuplicado.');
+    }
+  }
+if (responseBody.contains('Erro na verificação')) {
+    String campoDuplicado = 'forneça outra imagem';
+
+  
+    if (campoDuplicado.isNotEmpty) {
+      throw Exception('não foi detectado rosto nessa imagem: $campoDuplicado.');
+    }
+  }
+if (responseBody.contains('Erro na verificação')) {
+    String campoDuplicado = 'forneça outra imagem';
+
+  
+    if (campoDuplicado.isNotEmpty) {
+      throw Exception('não foi detectado rosto nessa imagem: $campoDuplicado.');
+    }
+  }
+  // Se for outro erro, retorna o corpo da resposta original
+  throw Exception('Falha ao cadastrar colaborador: $responseBody');
+}
 
       // 3. Cadastro do usuário associado
       var responseUser = await http.post(

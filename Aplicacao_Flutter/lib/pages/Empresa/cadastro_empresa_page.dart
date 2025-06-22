@@ -243,6 +243,11 @@ Widget _buildNumericTextFieldRow(String label, TextEditingController controller)
 bool _validarCampos() {
   bool isValid = true;
 
+final text = _controller.numeroController.text.trim();
+if (text.isEmpty || text == '0') {
+  isValid = false;
+}
+
   // Validação do CNPJ (14 dígitos)
   if (_controller.cnpjController.text.replaceAll(RegExp(r'[^0-9]'), '').length != 14) {
     isValid = false;
@@ -371,7 +376,10 @@ String _obterMensagemErroValidacao() {
   if (_controller.cepController.text.replaceAll(RegExp(r'[^0-9]'), '').length != 8) {
     mensagem += '- CEP deve ter 8 dígitos\n';
   }
-
+final text = _controller.numeroController.text.trim();
+if ( text == '0') {
+  mensagem += 'numero não pode ser 0';
+}
   // Validação do UF
   if (_controller.UFController.text.length != 2 || 
       !RegExp(r'^[a-zA-Z]{2}$').hasMatch(_controller.UFController.text)) {

@@ -281,20 +281,28 @@ console.log(`chegou ao service`);
       }
       throw error;
     }
-  }
+  }async listarColaboradoresPorEmpresa(cnpjEmpresa) {
+  await EmpresaRepository.findByCNPJ(cnpjEmpresa); // Verifica se a empresa existe
+  
+  const colaboradores = await ColaboradorRepository.findAllByEmpresa(cnpjEmpresa);
+  
+  const resultado = colaboradores.map(colab => {
+    const cargaHorariaOriginal = colab.CARGA_HORARIA;
+    const cargaHorariaConvertida = cargaHorariaOriginal
+      ? cargaHorariaOriginal.toISOString().substring(11, 19)
+      : null;
 
-  async listarColaboradoresPorEmpresa(cnpjEmpresa) {
-    await EmpresaRepository.findByCNPJ(cnpjEmpresa); // Verifica se a empresa existe
-    
-    const colaboradores = await ColaboradorRepository.findAllByEmpresa(cnpjEmpresa);
-    
-    return colaboradores.map(colab => ({
+    return {
       ...colab,
-      CARGA_HORARIA: colab.CARGA_HORARIA.toTimeString().substring(0, 8)
-    }));
-  }
+      CARGA_HORARIA: cargaHorariaConvertida
+    };
+  });
+
+  return resultado;
 }
 
-
+}
+ // CARGA_HORARIA: colaborador.CARGA_HORARIA?.toTimeString().substring(0, 8) || null,
+     
 // Exporta uma instância Singleton
 module.exports = new ColaboradorService();

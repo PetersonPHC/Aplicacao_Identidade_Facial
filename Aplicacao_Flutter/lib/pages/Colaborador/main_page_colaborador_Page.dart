@@ -4,6 +4,7 @@ import 'package:reconhecimento/pages/Colaborador/cadastro_colaborador_page.dart'
 import 'package:reconhecimento/pages/Colaborador/relacao_ponto_colaborador_page.dart';
 import 'package:reconhecimento/pages/Colaborador/perfil_page.dart';
 import 'package:reconhecimento/pages/Colaborador/relacao_page.dart';
+import 'package:reconhecimento/pages/Empresa/dados_empresa_page.dart';
 
 import 'package:reconhecimento/pages/RegistroPonto/registro_ponto_page.dart';
 import 'package:reconhecimento/pages/Auth/login_page.dart';
@@ -189,7 +190,30 @@ class MainPageState extends State<MainPage> {
                             );
                           },
                         ),
-                      
+                       if (widget.isAdm) SizedBox(height: 15),
+                      if (widget.isAdm)
+                        ListTile(
+                          leading: const Icon(Icons.business_outlined,
+                              size: 28, color: Color.fromARGB(255, 0, 0, 0)),
+                          title: Text(
+                            "Dados da Empresa",
+                            style: GoogleFonts.roboto(
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              fontSize: 20,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DadosEmpresaPage(cnpj: widget.cnpjEmpresa),
+                              ),
+                            );
+                          },
+                        ),
+                     
                       if (widget.isAdm) SizedBox(height: 15),
                       if (widget.isAdm)
                         ListTile(

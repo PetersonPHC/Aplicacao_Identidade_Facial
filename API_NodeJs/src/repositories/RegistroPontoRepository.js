@@ -6,27 +6,24 @@ class RegistroPontoRepository {
     this.prisma = require('../config/prisma');
   } 
   
-  
   async create(registroData) {
-    try {
-      // Converter DATA_HORA string para Date, ou usar a data atual se não for fornecida
-      const dataPonto = registroData.DATA_HORA
-        ? new Date(registroData.DATA_HORA.replace(' ', 'T') + 'Z')
-        : new Date();
+  try {
+    const dataPonto = registroData.DATA_HORA
+      ? new Date(registroData.DATA_HORA.replace(' ', 'T') + 'Z')
+      : new Date();
 
-      return await prisma.rEGISTRO_PONTO.create({
-        data: {
-          LOCALIZACAO: registroData.LOCALIZACAO,
-          MATRICULA: registroData.MATRICULA,
-          CNPJ_EMPRESA: registroData.CNPJ_EMPRESA,
-          DATA_PONTO: dataPonto
-        }
-      });
-    } catch (error) {
-      
-      throw new Error(`Falha ao criar registro: ${error.message}`);
-    }
+    return await prisma.registroPonto.create({  // Note o camelCase aqui
+      data: {
+        localizacao: registroData.LOCALIZACAO,  
+        matricula: registroData.MATRICULA,      
+        cnpjEmpresa: registroData.CNPJ_EMPRESA, 
+        dataPonto: dataPonto                   
+      }
+    });
+  } catch (error) {
+    throw new Error(`Falha ao criar registro: ${error.message}`);
   }
+}
   
   
   async include(CNPJ, MATRICULA, DATA) {

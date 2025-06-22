@@ -97,7 +97,7 @@ class ColaboradorController {
         _mostrarSnackBar(context, 'Erro ao cadastrar colaborador');
       }
     } catch (error) {
-      _mostrarSnackBar(context, 'Erro ao conectar com a API: $error');
+      _mostrarSnackBar(context, 'Erro : $error');
     }
   }
 

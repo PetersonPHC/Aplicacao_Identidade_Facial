@@ -26,14 +26,6 @@ class ColaboradorRepository {
   
   async create(colaborador) {
 
-    console.log('Data de Nascimento:', colaborador.DATA_NASCIMENTO);
-    console.log('Data formatada Nascimento:', this.formatDate(colaborador.DATA_NASCIMENTO));
-    
-    console.log('Data de Admissão:', colaborador.DATA_ADMISSAO);
-    console.log('Data formatada Admissão:', this.formatDate(colaborador.DATA_ADMISSAO));
-    
-    console.log('Carga Horária original:', colaborador.CARGA_HORARIA);
-    console.log('Carga Horária formatada:', this.formatarCargaHoraria(colaborador.CARGA_HORARIA));
     return await prisma.colaborador.create({
 
       
