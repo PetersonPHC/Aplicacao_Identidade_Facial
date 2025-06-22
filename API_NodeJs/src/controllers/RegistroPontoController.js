@@ -46,19 +46,25 @@ class RegistroPontoController {
         });
       }
     }
-  
+
   //Alteração -> CNPJ Removido
   async buscar(req, res) {
     try {
       const { matricula, data, cnpjEmpresa } = req.params;
-     
       
       if (!matricula) {
         throw new Error('Parâmetros obrigatórios não fornecidos');
       }
-
       const registro = await RegistroPontoService.buscar(cnpjEmpresa, matricula, data);
-      res.json(registro);
+
+      // Calcula o banco de horas mensal
+      const bancoDeHorasMensal = await RegistroPontoService.calcularBancoDeHorasMensal(cnpjEmpresa, matricula, data);
+
+      res.json({
+        registro,
+        bancoDeHorasMensal
+      });
+
     } catch (error) {
       const statusCode = error.message === 'Registro não encontrado' ? 404 : 500;
       res.status(statusCode).json({ 
@@ -67,6 +73,8 @@ class RegistroPontoController {
       });
     }
   }
+
+
 
   //Alteração -> CNPJ Removido
    deletar =  async (req, res) => {
@@ -90,6 +98,7 @@ class RegistroPontoController {
     }
   }
 
+  //Alteração -> CNPJ Removido
   async listarPorColaborador(req, res) {
     try {
       const { matricula, cnpjEmpresa } = req.params;
@@ -109,8 +118,6 @@ class RegistroPontoController {
       });
     }
   }
-
-  
 
 }
 

@@ -173,6 +173,73 @@ async criarRegistro(registroData) {
     await ColaboradorService.buscarColaborador(matricula);
     return await RegistroPontoRepository.findAllByColaborador(matricula);
   }
+
+  /**
+   * Calcula o banco de horas mensal de um colaborador
+   * @param {string} cnpj
+   * @param {string} matricula
+   * @param {string|Date} data - Data de referência (qualquer dia do mês desejado)
+   * @returns {Promise<number>} - Saldo de horas em milissegundos
+   */
+  async calcularBancoDeHorasMensal(cnpj, matricula, data) {
+    // Buscar colaborador para obter carga horária
+    const colaborador = await UsuarioRepository.findByMatriculaAndCNPJ(cnpj, matricula);
+    if (!colaborador) throw new Error('Colaborador não encontrado');
+    if (!colaborador.CARGA_HORARIA) throw new Error('Carga horária não cadastrada');
+
+    // Extrair carga horária diária em milissegundos
+    let cargaHoraria;
+    if (typeof colaborador.CARGA_HORARIA === 'string') {
+      // Espera-se formato HH:mm:ss
+      const [h, m, s] = colaborador.CARGA_HORARIA.split(':').map(Number);
+      cargaHoraria = ((h || 0) * 3600 + (m || 0) * 60 + (s || 0)) * 1000;
+    } else if (colaborador.CARGA_HORARIA instanceof Date) {
+      cargaHoraria = (colaborador.CARGA_HORARIA.getHours() * 3600 + colaborador.CARGA_HORARIA.getMinutes() * 60 + colaborador.CARGA_HORARIA.getSeconds()) * 1000;
+    } else {
+      throw new Error('Formato de carga horária inválido');
+    }
+
+    // Extrair mês e ano da data
+    const refDate = new Date(data);
+    const year = refDate.getUTCFullYear();
+    const month = refDate.getUTCMonth() + 1; // 1-12
+    const today = new Date();
+    
+    // Verifica se é o Mês atual, caso seja, será retornado o calculo até o dia de ontem
+    const isCurrentMonth = (refDate.getUTCFullYear() === today.getUTCFullYear() && refDate.getUTCMonth() === today.getUTCMonth());
+    const lastDay = isCurrentMonth ? today.getUTCDate() - 1 : new Date(Date.UTC(year, month, 0)).getUTCDate();
+
+    // Buscar todos os registros do mês
+    const registros = await RegistroPontoRepository.findAllByMonth(cnpj, matricula, year, month);
+
+    // Agrupar registros por dia //TODO: Pegar Apenas dias úteis
+    const registrosPorDia = {};
+    for (const reg of registros) {
+      const d = new Date(reg.DATA_PONTO);
+      const dia = d.getUTCDate();
+      if (!registrosPorDia[dia]) registrosPorDia[dia] = [];
+      registrosPorDia[dia].push(d);
+    }
+
+    let bancoDeHoras = 0;
+    for (let dia = 1; dia <= lastDay; dia++) {
+      const pontos = (registrosPorDia[dia] || []).sort((a, b) => a - b);
+      if (pontos.length >= 2) {
+        // Considera o primeiro como entrada e o último como saída
+        const entrada = pontos[0];
+        const saida = pontos[pontos.length - 1];
+        const trabalhado = saida - entrada;
+        bancoDeHoras += (trabalhado - cargaHoraria);
+      } else if (pontos.length === 1) {
+        // Só um ponto: considera falta total
+        bancoDeHoras -= cargaHoraria;
+      } else {
+        // Nenhum ponto: considera falta total
+        bancoDeHoras -= cargaHoraria;
+      }
+    }
+    return bancoDeHoras;
+  }
 }
 
 module.exports = new RegistroPontoService();
