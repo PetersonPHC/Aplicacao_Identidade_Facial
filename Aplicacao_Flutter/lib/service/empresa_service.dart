@@ -58,14 +58,17 @@ class EmpresaService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception("Erro ao cadastrar: ${response.body}");
+      if(response.body.contains('Unique constraint failed')){
+        throw Exception('Ja existe uma empresa cadastrada nesse CNPJ');
+      }
     }
+
+    
 
     if (response.statusCode != 201) {
-      throw Exception('Falha ao cadastrar colaborador: ${response.body}');
+      throw Exception('${response.body}');
     }
 
-    // 3. Cadastro do usuário associado
     var responseUser = await http.post(
       Uri.parse("$_baseUrlUsuarioEmpresa"),
       headers: {

@@ -154,6 +154,18 @@ Future<void> selecionarImagem() async {
     }
 
     try {
+      print('Dados enviados para atualização:');
+  print('CNPJ: $cnpj');
+  print('Matrícula: $matricula');
+  print('Nome: ${nomeController.text}');
+  print('CPF: ${cpfController.text.replaceAll(RegExp(r'[^0-9]'), '')}');
+  print('RG: ${rgController.text.replaceAll(RegExp(r'[^0-9]'), '')}');
+  print('Data Nascimento: ${dateUtils.formatarDataParaISO(dataNascimentoController.text)}');
+  print('Data Admissão: ${dateUtils.formatarDataParaISO(dataAdmissaoController.text)}');
+  print('Carga Horária: ${dateUtils.formatarCargaHoraria(cargaHorariaController.text)}');
+  print('CTPS: ${ctpsController.text}');
+  print('Cargo: ${cargoController.text}');
+  print('NIS: ${nisController.text}');
       final response = await _colaboradorService.atualizarColaborador(
         cnpj: cnpj,
         matricula: matricula,
@@ -299,6 +311,16 @@ Future<void> selecionarData(BuildContext context, TextEditingController controll
                   final novaData = DateTime(ano, mes, dia);
                   if (novaData.day != dia || novaData.month != mes || novaData.year != ano) {
                     setState(() => errorMessage = 'Data inválida para o mês informado');
+                    return;
+                  }
+
+                  // Verifica se a data selecionada é maior que a data atual
+                  final dataAtual = DateTime.now();
+                  final dataAtualSemHora = DateTime(dataAtual.year, dataAtual.month, dataAtual.day);
+                  final novaDataSemHora = DateTime(novaData.year, novaData.month, novaData.day);
+                  
+                  if (novaDataSemHora.isAfter(dataAtualSemHora)) {
+                    setState(() => errorMessage = 'A data não pode ser maior que a data atual');
                     return;
                   }
 

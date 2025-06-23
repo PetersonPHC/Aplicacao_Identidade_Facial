@@ -90,31 +90,28 @@ Future<bool> registrarPonto({
     }
   }
 }
+Future<Map<String, dynamic>> buscarRegistrosPonto({
+  required String cnpjEmpresa,
+  required String matricula,
+  required DateTime data,
+}) async {
+  try {
+    final formattedDate = "${data.year}-${data.month.toString().padLeft(2, '0')}-${data.day.toString().padLeft(2, '0')}";
+    final url = Uri.parse('$_baseUrl/$cnpjEmpresa/$matricula/$formattedDate');
+    
+    final response = await http.get(url);
 
-
-   Future<List<Map<String, dynamic>>> buscarRegistrosPonto({
-    required String cnpjEmpresa,
-    required String matricula,
-    required DateTime data,
-  }) async {
-    try {
-      final formattedDate = "${data.year}-${data.month.toString().padLeft(2, '0')}-${data.day.toString().padLeft(2, '0')}";
-      final url = Uri.parse('$_baseUrl/$cnpjEmpresa/$matricula/$formattedDate');
-      
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonResponse = json.decode(response.body);
-        return jsonResponse.cast<Map<String, dynamic>>();
-      } else if (response.statusCode == 404) {
-        return []; // Retorna lista vazia se não encontrar registros
-      } else {
-        throw Exception('Falha ao carregar registros de ponto: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Erro na requisição: $e');
+    if (response.statusCode == 200) {
+      return json.decode(response.body); // Retorna todo o objeto JSON
+    } else if (response.statusCode == 404) {
+      return {'registro': [], 'bancoDeHorasMensal': 0}; // Retorna objeto vazio
+    } else {
+      throw Exception('Falha ao carregar registros de ponto: ${response.statusCode}');
     }
+  } catch (e) {
+    throw Exception('Erro na requisição: $e');
   }
+}
 Future<Map<String, dynamic>> incluirRegistroPonto({
   required String matricula,
   required String cnpjEmpresa,

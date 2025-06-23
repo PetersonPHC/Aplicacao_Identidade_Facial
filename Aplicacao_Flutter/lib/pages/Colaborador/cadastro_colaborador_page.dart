@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:reconhecimento/controller/colaborador_controller.dart';
 import 'package:reconhecimento/controller/dados_empresa_controller.dart';
+import 'package:reconhecimento/utils/date_utils.dart';
 
 class CadastroColaboradorPage extends StatefulWidget {
   final String cnpj;
@@ -253,7 +254,7 @@ class _CadastroColaboradorPageState extends State<CadastroColaboradorPage> {
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (_validarCampos()) {
+                      if (_validarCampos() & validateDates(context)) {
                         await _controller.cadastrar(context);
                         setState(() {});
                       } 
@@ -509,6 +510,61 @@ Widget _buildCargaHorariaRow(
       ],
     );
   }
+ bool validateDates(BuildContext context) {
+  bool isValid = true;
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+
+  // Função para converter data no formato dd/MM/yyyy para DateTime
+  DateTime? parseBrazilianDate(String dateText, String fieldName) {
+    try {
+      final parts = dateText.split('/');
+      if (parts.length != 3) throw FormatException();
+      
+      final day = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final year = int.parse(parts[2]);
+      
+      final date = DateTime(year, month, day);
+      
+      if (date.isAfter(today)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('A data de $fieldName não pode ser maior que a data atual')),
+        );
+        isValid = false;
+      }
+      return date;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Formato inválido na data de $fieldName. Use DD/MM/AAAA')),
+      );
+      isValid = false;
+      return null;
+    }
+  }
+
+  // Validação data de admissão
+  final dataAdmissao = _controller.dataAdmissaoController.text.isNotEmpty
+      ? parseBrazilianDate(_controller.dataAdmissaoController.text, 'admissão')
+      : null;
+
+  // Validação data de nascimento
+  final dataNascimento = _controller.dataNascimentoController.text.isNotEmpty
+      ? parseBrazilianDate(_controller.dataNascimentoController.text, 'nascimento')
+      : null;
+
+  // Validação admissão > nascimento
+  if (dataAdmissao != null && dataNascimento != null) {
+    if (dataAdmissao.isBefore(dataNascimento)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A data de admissão não pode ser antes da data de nascimento')),
+      );
+      isValid = false;
+    }
+  }
+
+  return isValid;
+}
 bool _validarCampos() {
   bool isValid = true;
   
@@ -519,8 +575,6 @@ bool _validarCampos() {
     );
     isValid = false;
   }
-
-
 // Validação das senhas
 if (_controller.senhaController.text.isEmpty) {
   ScaffoldMessenger.of(context).showSnackBar(

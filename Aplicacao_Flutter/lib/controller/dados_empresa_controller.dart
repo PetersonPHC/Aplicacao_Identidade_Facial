@@ -197,7 +197,15 @@ Future<String> carregarCodigoEmpresa() async {
                     setState(() => errorMessage = 'Data inválida para o mês informado');
                     return;
                   }
-
+                  
+                  final dataAtual = DateTime.now();
+                  final dataAtualSemHora = DateTime(dataAtual.year, dataAtual.month, dataAtual.day);
+                  final novaDataSemHora = DateTime(novaData.year, novaData.month, novaData.day);
+                  
+                  if (novaDataSemHora.isAfter(dataAtualSemHora)) {
+                    setState(() => errorMessage = 'A data não pode ser maior que a data atual');
+                    return;
+                  }
                   Navigator.pop(context, novaData);
                 },
               ),

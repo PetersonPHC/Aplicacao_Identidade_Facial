@@ -36,8 +36,12 @@ class _RelacaoPontoColaboradorState extends State<RelacaoPontoPage> {
       matricula: widget.matricula,
       cnpj: widget.cnpj,
     );
+     final now = DateTime.now();
+  _selectedDay = now; // Dia selecionado começa como hoje
+  _focusedDay = now; // Mês/ano em foco começa como o atual
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await initializeDateFormatting('pt_BR', null);
+      _onDaySelected(_selectedDay!, _selectedDay!); // Carrega os dados do dia atual
       setState(() {}); // Força a reconstrução após a inicialização
     });
   }
@@ -278,6 +282,7 @@ class _RelacaoPontoColaboradorState extends State<RelacaoPontoPage> {
                 focusedDay: _focusedDay,
                 firstDay: DateTime(2000),
                 lastDay: DateTime(2100),
+                
                 headerStyle: HeaderStyle(
                   titleTextFormatter: (date, locale) => '',
                   titleCentered: false,
@@ -385,6 +390,17 @@ class _RelacaoPontoColaboradorState extends State<RelacaoPontoPage> {
                             fontSize: 15,
                           ),
                         )),
+                         SizedBox(height: 16),
+                    _buildInfoRow(
+  "Banco de horas mensal:",
+  Text(
+    _formatarBancoDeHoras(_registros['banco_de_horas_mensal'] ?? 0),
+    style: GoogleFonts.roboto(
+      color: Colors.black,
+      fontSize: 15,
+    ),
+  ),
+),
                   ],
                 ),
               ),
@@ -452,4 +468,16 @@ class _RelacaoPontoColaboradorState extends State<RelacaoPontoPage> {
       ],
     );
   }
+  String _formatarBancoDeHoras(int milissegundos) {
+  // Converte para Duration (considera o valor absoluto para cálculo)
+  final duration = Duration(milliseconds: milissegundos.abs());
+  
+  // Formata como HH:MM
+  final horas = duration.inHours;
+  final minutos = duration.inMinutes.remainder(60);
+  final formato = '${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}';
+  
+  // Adiciona sinal negativo se necessário
+  return milissegundos < 0 ? '-$formato' : formato;
+}
 }

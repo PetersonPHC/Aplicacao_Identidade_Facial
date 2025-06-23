@@ -330,7 +330,7 @@ Widget _buildUfTextFieldRow(String label, TextEditingController controller) {
             // Mostra mensagem de erro se ocorrer uma exceção
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Erro ao cadastrar: ${e.toString()}'),
+                content: Text(' ${e.toString()}'),
                 backgroundColor: Colors.red,
               ),
             );

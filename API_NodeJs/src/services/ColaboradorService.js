@@ -167,28 +167,9 @@ console.log(`chegou ao service`);
     if (colaboradorData.DATA_ADMISSAO) {
       colaboradorData.DATA_ADMISSAO = new Date(colaboradorData.DATA_ADMISSAO + 'T00:00:00.000Z');
     }
-  
-    if (colaboradorData.CARGA_HORARIA) {
+    console.log('CARGA HORARIA ANTES DA FORMAT' + colaboradorData.CARGA_HORARIA);
       
-      const timeParts = colaboradorData.CARGA_HORARIA.split(':');
-      if (timeParts.length < 2 || timeParts.length > 3) {
-        throw new Error('Formato de CARGA_HORARIA inválido. Use HH:mm ou HH:mm:ss');
-      }
-      
-      const formattedTime = timeParts.length === 2 
-        ? `${colaboradorData.CARGA_HORARIA}:00` 
-        : colaboradorData.CARGA_HORARIA;
-      
-      const dateObj = new Date(`1970-01-01T${formattedTime}`);
-      
-      if (isNaN(dateObj.getTime())) {
-        console.log(`erro na carga horaria`);
-        throw new Error(`Falha ao converter CARGA_HORARIA: ${colaboradorData.CARGA_HORARIA}`);
-      }
-      
-      colaboradorData.CARGA_HORARIA = dateObj;
-    }
-
+   
     // Verificação facial (se imagem foi fornecida)
     let imagemProcessada = null;
     if (colaboradorData.IMAGEM) {

@@ -29,6 +29,9 @@ class _RelacaoPageState extends State<RelacaoPage> {
   void initState() {
     super.initState();
     _carregarColaboradores();
+    setState(() {
+      
+    });
   }
 Future<void> _carregarColaboradores() async {
   try {
@@ -64,10 +67,8 @@ Future<void> _carregarColaboradores() async {
     );
   }
 
-  void _redirecionarCadastro(String matricula, String cnpj) {
-    
-    
-    Navigator.push(
+void _redirecionarCadastro(String matricula, String cnpj) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => AtualizarColaboradorPage(
@@ -76,8 +77,11 @@ Future<void> _carregarColaboradores() async {
         ),
       ),
     );
+    // Quando voltar da tela de atualização, recarregue os colaboradores
+    if (mounted) {
+      await _carregarColaboradores();
+    }
   }
-
   Widget _buildPopupMenu(BuildContext context, Map<String, dynamic> colaborador) {
     return PopupMenuButton<String>(
       onSelected: (String value) {

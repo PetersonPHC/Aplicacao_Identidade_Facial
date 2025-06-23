@@ -109,11 +109,14 @@ Future<bool> registrarPonto() async {
   required DateTime data,
 }) async {
   try {
-    final registros = await _service.buscarRegistrosPonto(
+    final response = await _service.buscarRegistrosPonto(
       cnpjEmpresa: cnpjEmpresa,
       matricula: matricula,
       data: data,
     );
+    
+       final registros = List<Map<String, dynamic>>.from(response['registro'] ?? []);
+    final bancoDeHorasMensal = response['bancoDeHorasMensal'] ?? 0;
     
     final horarios = registros
         .map((r) => DateTime.parse(r['DATA_PONTO'] as String))
@@ -121,7 +124,6 @@ Future<bool> registrarPonto() async {
 
     horarios.sort();
 
-    // Modificado para incluir os segundos
     final horariosFormatados = horarios
         .map((h) => '${h.hour.toString().padLeft(2, '0')}:${h.minute.toString().padLeft(2, '0')}:${h.second.toString().padLeft(2, '0')}')
         .toList();
@@ -144,6 +146,7 @@ Future<bool> registrarPonto() async {
       'tempo_trabalhado': tempoFormatado,
       'total_minutos': total.inMinutes,
       'total_registros': registros.length,
+      'banco_de_horas_mensal': bancoDeHorasMensal, // Adiciona o banco de horas
     };
 
   } catch (e) {

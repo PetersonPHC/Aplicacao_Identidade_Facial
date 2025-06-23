@@ -457,6 +457,7 @@ class MainPageState extends State<MainPage> {
                     ),
                   ),
                   SizedBox(height: 15),
+                  if (!widget.isAdm)
                   Container(
                     width: double.infinity,
                     margin: const EdgeInsets.all(8.0),
@@ -534,6 +535,92 @@ class MainPageState extends State<MainPage> {
                           },
                           child: Text(
                             "Perfil",
+                            style: GoogleFonts.roboto(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                   if (widget.isAdm)
+                                    Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 215, 221, 231),
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 68, 140, 255),
+                        width: 2.0,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(49, 162, 255, 0.8), // Using RGBO constructor which takes opacity directly
+                          offset: const Offset(0, 6),
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Relacao de Colaboradores",
+                              style: GoogleFonts.roboto(
+                                color: const Color.fromARGB(255, 0, 0, 0),
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.edit_calendar_rounded,
+                              color: Color.fromARGB(255, 29, 80, 163),
+                              size: 25.0,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "IDENTIDADE-FACIAL, a ferramenta que mudará sua concepção de registro de ponto",
+                          style: GoogleFonts.roboto(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 29, 80, 163),
+                            foregroundColor: Color.fromARGB(255, 215, 221, 231),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                              horizontal: 24.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      RelacaoPage(cnpj: widget.cnpjEmpresa)),
+                            );
+                          },
+                          child: Text(
+                            "Relação",
                             style: GoogleFonts.roboto(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,

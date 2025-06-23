@@ -113,6 +113,7 @@ class ColaboradorController {
     cargoController.clear();
     senhaController.clear();
     cargaHorariaController.clear();
+    confirmarSenhaController.clear();
     _imagemSelecionada = null;
     _imagemSelecionadaWeb = null;
     _isAdm = false;

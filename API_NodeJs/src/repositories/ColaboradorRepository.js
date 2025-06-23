@@ -98,10 +98,8 @@ formatarCargaHoraria(cargaHoraria) {
       console.log(`chegou ao repository`);
   
       // Validação adicional para CARGA_HORARIA
-      if (colaboradorData.CARGA_HORARIA && isNaN(colaboradorData.CARGA_HORARIA.getTime())) {
-        throw new Error('CARGA_HORARIA inválida - não é um objeto Date válido');
-      }
-    
+       colaboradorData.CARGA_HORARIA = this.formatarCargaHoraria(colaboradorData.CARGA_HORARIA);
+      
       try {
         const resultado = await this.prisma.colaborador.update({
           where: { MATRICULA: matricula },

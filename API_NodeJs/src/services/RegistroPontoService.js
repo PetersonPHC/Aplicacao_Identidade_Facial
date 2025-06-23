@@ -93,29 +93,72 @@ async criarRegistro(registroData) {
       throw new Error(`Erro na comparação facial: ${error.message}`);
     }
   }
+async prepareImage(imageBuffer) {
 
-  async prepareImage(imageBuffer) {
+  console.log('Iniciando processamento da imagem...');
+
   try {
-    const metadata = await sharp(imageBuffer).metadata();
-    
 
-    const processed = await sharp(imageBuffer)
-  .rotate() 
-  .resize({ width: 800, height: 800, fit: 'cover', position: 'centre' })
-  .normalise()
-  .jpeg({ quality: 70, progressive: true, force: true })
-  .toBuffer();
+    // Verificação inicial do buffer
+
+    if (!imageBuffer || imageBuffer.length < 100) {
+
+      throw new Error('Buffer de imagem inválido ou vazio');
+
+    }
+ 
+    console.log('Verificando metadados...');
 
    
    
-    
+    const processed = await sharp(imageBuffer, { failOnError: false }) // Ignora erros leves
+
+      .rotate() // Corrige orientação automaticamente
+
+      .withMetadata({}) // Remove todos os metadados
+
+      .resize({
+
+        width: 800,
+
+        height: 800,
+
+        fit: 'cover',
+
+        position: 'centre',
+
+        withoutEnlargement: true // Não aumenta imagens pequenas
+
+      })
+
+      .normalise()
+
+      .toFormat('jpeg', {
+
+        quality: 70,
+
+        progressive: true, // Força saída como progressive
+
+        mozjpeg: true, // Usa compressor mais tolerante
+
+        force: true
+
+      })
+
+      .toBuffer();
+ 
+ 
     return processed;
+ 
   } catch (error) {
+
     
-    throw new Error('Falha no processamento da imagem');
+    throw new Error(`Processamento de imagem falhou: ${error.message}`);
+
   }
+
 }
-  async incluir(cnpj, matricula, data) {
+   async incluir(cnpj, matricula, data) {
 
     
     const Registro = await RegistroPontoRepository.include(cnpj, matricula, data);

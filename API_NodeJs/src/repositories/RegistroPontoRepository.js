@@ -36,7 +36,7 @@ class RegistroPontoRepository {
 
       return await prisma.rEGISTRO_PONTO.create({
         data: {
-          LOCALIZACAO: 'NA',
+          LOCALIZACAO: 'Ponto Inserido manualmente',
           MATRICULA: MATRICULA,
           CNPJ_EMPRESA:CNPJ,
           DATA_PONTO: DATA
